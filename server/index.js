@@ -76,7 +76,7 @@ app.get('/caches', async (req, res) => {
         db_resp.rows.forEach((db_row) => {
             caches.push({
                 cache_id: db_row.cache_id,
-                latitue: db_row.latitue,
+                latitude: db_row.latitude,
                 longitude: db_row.longitude,
                 title: db_row.title,
                 description: db_row.description,
