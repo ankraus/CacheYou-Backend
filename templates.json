@@ -1,0 +1,81 @@
+{
+    "user": {
+        "user_id": "123e4567-e89b-12d3-a456-426614174000",
+        "email": "test@example.com",
+        "username": "TestyMcTestersson",
+        "pw_hash": "$2y$10$Z49xJvZ/k9N7ANLaYoSzy.fOnSoVQZF6em2O4JQgTxGDCg7BVAYDO",
+        "points": 0
+    },
+
+    "follows": [
+        {
+            "user_id":"ec243ba7-5071-4130-bd64-237dd35100cf",
+            "username":"dummy789"
+        }
+    ],
+
+    "cache": {
+        "cache_id": "9825e140-548b-4786-bebf-ffc5808ca26d",
+        "latitue": 48.371770,
+        "longitude": 10.889295,
+        "title": "Wandgemälde bei der Esso Tankstelle",
+        "description": "Dies ist ein großes Wandgemälde an einer großen Wand gemalt wurde.",
+        "link": "",
+        "type": "default",
+        "tags": [
+            "streetart"
+        ],
+        "creator": {
+            "username":"dummy789",
+            "user_id":"ec243ba7-5071-4130-bd64-237dd35100cf"
+        },
+        "created_at": "2017-08-15 21:05:15.723336+07"
+    },
+
+    "comments": [
+        {
+            "comment_id": "c72915ca-4ff0-4d33-8634-c9e8122a4a89",
+            "user": {
+                "username":"dummy789",
+                "user_id":"ec243ba7-5071-4130-bd64-237dd35100cf"
+            },
+            "content": "Ganz schön groß, dieses Gemälde!",
+            "created_at": "2019-03-12 15:05:15.723336+07"
+        }
+    ],
+
+    "collected": [
+        {
+            "user":{
+                "user_id": "123e4567-e89b-12d3-a456-426614174000",
+                "username": "TestyMcTestersson"
+            },
+            "cache": {
+                "cache_id":"a27392f6-bfda-4b0f-b5e3-4bf3a5cfd1ae",
+                "tags":[
+                    "streetart"
+                ],
+                "type":"default",
+                "title":"Wandgemälde bei der Esso Tankstelle"
+            },
+            "rating": 3,
+            "created_at": "2020-08-31 12:04:15.723336+07"
+        }, 
+        {
+            "user":{
+                "user_id": "123e4567-e89b-12d3-a456-426614174000",
+                "username": "TestyMcTestersson"
+            },
+            "cache":{
+                "cache_id": "f8f87ffe-d6ae-4384-a0ee-c1bc94ebedd9",
+                "tags":[
+                    "wassersystem"
+                ],
+                "type":"default",
+                "title":"Unterer Brunnenturm"
+            },
+            "rating": 2,
+            "created_at": "2019-03-12 14:05:15.723336+07"
+        }
+    ]
+}

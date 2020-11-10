@@ -1,0 +1,19 @@
+FROM node
+
+#create app directory
+WORKDIR /usr/src/app
+
+#install app dependencies
+COPY package*.json ./
+
+RUN npm install
+#if in production use this instead:
+#RUN npm ci --only=production
+
+#bundle app source
+COPY . .
+
+#expose port 8080
+EXPOSE 8080
+
+CMD [ "npm", "run", "start"]

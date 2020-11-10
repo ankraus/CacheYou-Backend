@@ -1,0 +1,17 @@
+# docker-compose.yml
+version: '3'
+services:
+  server:
+    image: "akr/ia5-testdata"
+    ports:
+      - 8080:8080
+  database:
+    image: "postgres" # use latest official postgres version
+    ports:
+      - 5432:5432
+    env_file:
+      - database.env # configure postgres
+    volumes:
+      - data:/var/lib/postgresql/data/ # persist data even if container shuts downvolumes:
+volumes:
+  data: # named volumes can be managed easier using docker-compose
