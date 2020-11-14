@@ -3,14 +3,17 @@ version: '3'
 services:
   server:
     build: ./server
+    image: ia5_backend
     ports:
       - 8080:8080
   database:
-    image: "postgres" # use latest official postgres version
+    build:
+      context: ./db
+    image: ia5_db
     ports:
       - 5432:5432
     env_file:
-      - database.env # configure postgres
+      - ./db/database.env # configure postgres
     volumes:
       - data:/var/lib/postgresql/data/ # persist data even if container shuts downvolumes:
 volumes:
