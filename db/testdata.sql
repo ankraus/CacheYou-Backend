@@ -123,7 +123,7 @@ INSERT INTO images(image_id, image) VALUES
 INSERT INTO users(user_id, email, username, pw_hash, image_id) VALUES 
     (
         '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid,
-        'testTESTTESTTEST@example.com',
+        'test@example.com',
         'TestyMcTestersson',
         '$2y$10$Z49xJvZ/k9N7ANLaYoSzy.fOnSoVQZF6em2O4JQgTxGDCg7BVAYDO',
         '166fc680-8dc3-4707-8f49-dfd223e58e2c'

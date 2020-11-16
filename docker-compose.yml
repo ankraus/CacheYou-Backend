@@ -2,6 +2,8 @@
 version: '3'
 services:
   server:
+    depends_on: 
+      - database
     build: ./server
     image: ia5_backend
     ports:
