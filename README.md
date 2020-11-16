@@ -53,10 +53,10 @@ Desweiteren gibt es eine fürs erste öffentlich zugängliche Version auf ia5.ak
 *(Es ist nicht garantiert, dass diese Version immer den aktuellsten Entwicklungsstand widerspiegelt.)*
 ### Routen
 Der Server liefert bei Anfrage an die Root-Route (localhost:8080/) eine Liste aller aktuell verfügbaren Routen aus.  
-Aktuell sind folgende Routen verfügbar:  
-**Alle "_id" Parameter sind uuids. Sollte der übergebene Wert nicht dem Format einer uuid entsprechen wird der Server (aktuell) einen Fehlercode 500 zurückliefern.**  
+Aktuell sind folgende Routen verfügbar:   
+
 | Route                       | Beschreibung                                                                |
-| --------------------------- | --------------------------------------------------------------------------- |
+| --- | --- |
 | /                           | alle Routen                                                                 |
 | /users                      | alle User                                                                   |
 | /users/:user_id/follows     | alle User, denen der User mit :user_id folgt                                |
@@ -69,7 +69,9 @@ Aktuell sind folgende Routen verfügbar:
 | /caches/:cache_id/collected | alle Einträge, bei denen der Cache mit :cache_id eingesammelt wurde         |
 | /images/:image_id           | das Bild mit :image_id (i.d.R. als png)                                     |
 | /collections                | alle Collections                                                            |
-| /collections/:collection_id | die Collection mit :collection_id                                           |
+| /collections/:collection_id | die Collection mit :collection_id                                           |  
+
+**Alle "_id" Parameter sind uuids. Sollte der übergebene Wert nicht dem Format einer uuid entsprechen wird der Server (aktuell) einen Fehlercode 500 zurückliefern.** 
 ## Repositorystruktur, Branches und Entwicklung
 - Es gibt immer einen `master` und einen `dev` Branch. 
 - Einzelne Features werden in eigenen Branches (benannt nach Jira-Task z.B. `WW-59 - README Backend`) implementiert und dann in den `dev` Branch gemerged.
