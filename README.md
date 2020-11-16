@@ -11,6 +11,8 @@
   - [Nutzung](#nutzung)
     - [Servererreichbarkeit](#servererreichbarkeit)
     - [Routen](#routen)
+  - [Repositorystruktur, Branches und Entwicklung](#repositorystruktur-branches-und-entwicklung)
+  - [Entwickler](#entwickler)
 ## Installation
 ### Voraussetzungen
 Klonen Sie dieses Repository auf Ihre Maschine:  
@@ -52,7 +54,7 @@ Desweiteren gibt es eine fürs erste öffentlich zugängliche Version auf ia5.ak
 ### Routen
 Der Server liefert bei Anfrage an die Root-Route (localhost:8080/) eine Liste aller aktuell verfügbaren Routen aus.  
 Aktuell sind folgende Routen verfügbar:  
-**Alle "_id" Parameter sind uuids. Sollte der übergebene Wert nicht dem Format einer uuid entsprechen wird der Server (aktuell) einen Fehlercode 500 zurückliefern.**
+**Alle "_id" Parameter sind uuids. Sollte der übergebene Wert nicht dem Format einer uuid entsprechen wird der Server (aktuell) einen Fehlercode 500 zurückliefern.**  
 | Route                       | Beschreibung                                                                |
 | --------------------------- | --------------------------------------------------------------------------- |
 | /                           | alle Routen                                                                 |
@@ -68,3 +70,11 @@ Aktuell sind folgende Routen verfügbar:
 | /images/:image_id           | das Bild mit :image_id (i.d.R. als png)                                     |
 | /collections                | alle Collections                                                            |
 | /collections/:collection_id | die Collection mit :collection_id                                           |
+## Repositorystruktur, Branches und Entwicklung
+- Es gibt immer einen `master` und einen `dev` Branch. 
+- Einzelne Features werden in eigenen Branches (benannt nach Jira-Task z.B. `WW-59 - README Backend`) implementiert und dann in den `dev` Branch gemerged.
+- Wenn ein Sprint abgeschlossen ist oder ein Feature abgeschlossen wurde, das vom Frontendteam dringend benötigt wird, wird der `dev` Branch in den `master` gemerged und auf den öffentlichen Server deployed.
+## Entwickler
+Dieses Repository wird von folgenden Entwicklern betreut:
+- [Andreas Kraus](@krauandr)
+- [Andreas Barth](@barthand)
