@@ -3,6 +3,7 @@
 - [IA5 Webapp Backend](#ia5-webapp-backend)
   - [Inhaltsverzeichnis](#inhaltsverzeichnis)
   - [Installation](#installation)
+    - [Brauche ich eine lokale Version des Backends?](#brauche-ich-eine-lokale-version-des-backends)
     - [Voraussetzungen](#voraussetzungen)
     - [Starten der Containerkomposition](#starten-der-containerkomposition)
       - [Duplicate mount point error](#duplicate-mount-point-error)
@@ -14,6 +15,9 @@
   - [Repositorystruktur, Branches und Entwicklung](#repositorystruktur-branches-und-entwicklung)
   - [Entwickler](#entwickler)
 ## Installation
+### Brauche ich eine lokale Version des Backends?
+**Für die Entwicklung des Frontends sollte die [öffentlich zugängliche Version des Backends](#servererreichbarkeit) vollkommen ausreichen! Da docker bei der Installation oft Probleme macht empfehle ich nur Backend-Entwicklern die Verwendung des lokalen Servers.**  
+Desweiteren sind für Frontendentwickler hauptsächlich die [Routen](#routen) interessant.
 ### Voraussetzungen
 Klonen Sie dieses Repository auf Ihre Maschine:  
 ```
