@@ -16,7 +16,8 @@
   - [Entwickler](#entwickler)
 ## Installation
 ### Brauche ich eine lokale Version des Backends?
-**Für die Entwicklung des Frontends sollte die öffentlich zugängliche Version des Backends vollkommen ausreichen! Da docker bei der Installation oft Probleme macht empfehle ich nur Backend-Entwicklern die Verwendung des lokalen Servers.**  
+**Für die Entwicklung des Frontends sollte die [öffentlich zugängliche Version des Backends](#servererreichbarkeit) vollkommen ausreichen! Da docker bei der Installation oft Probleme macht empfehle ich nur Backend-Entwicklern die Verwendung des lokalen Servers.**  
+Desweiteren sind für Frontendentwickler hauptsächlich die [Routen](#routen) interessant.
 ### Voraussetzungen
 Klonen Sie dieses Repository auf Ihre Maschine:  
 ```
