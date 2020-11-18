@@ -99,6 +99,24 @@ app.get('/caches', async (req, res) => {
     }
 });
 
+app.post('/caches', async (req, res) => {
+    const cache = req.body.cache;
+    try {
+        // TODO insert with real user_id when sessions are implemented
+        const cache_insert_resp = await pool.query(`INSERT INTO caches(latitude, longitude, title, description, user_id, created_at) VALUES (
+            $1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING cache_id`, 
+            [cache.latitude, cache.longitude, cache.title, cache.description, '94eff975-1414-4fe4-8d5d-8871dc23c4f4']);
+        const tag_id_resp = await pool.query(`SELECT tag_id FROM tags WHERE name = ANY(SELECT * FROM json_array_elements_text($1))`, [JSON.stringify(cache.tags)]);
+        tag_id_resp.rows.forEach(async row => {
+            await pool.query(`INSERT INTO caches_tags VALUES ($1, $2)`, [cache_insert_resp.rows[0].cache_id, row.tag_id]);
+        });
+        res.end();
+    } catch (error) {
+        res.status(500);
+        res.send(error.detail);
+    }
+});
+
 app.get('/caches/:cache_id/images', async (req, res) => {
     try {
         const db_resp = await pool.query(`
