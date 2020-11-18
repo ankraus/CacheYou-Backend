@@ -52,8 +52,8 @@ Der Befehl `docker-compose exec database` führt einen nachfolgenden Befehl inne
 Sie sollten als Ausgabe einige `CREATE TABLE` und `INSERT` Zeilen sehen. Falls Fehlermeldungen auftreten kontaktieren Sie bitte den Maintainer dieses Repositories.
 ## Nutzung
 ### Servererreichbarkeit
-Der lokale Server ist standardmäßig über localhost:8080 erreichbar.  
-Desweiteren gibt es eine fürs erste öffentlich zugängliche Version auf ia5.akr.cx.  
+Der lokale Server ist standardmäßig über [localhost:8080](http://localhost:8080/) erreichbar.  
+Desweiteren gibt es eine fürs erste öffentlich zugängliche Version auf [ia5.akr.cx](https://ia5.akr.cx).  
 *(Es ist nicht garantiert, dass diese Version immer den aktuellsten Entwicklungsstand widerspiegelt.)*
 ### Routen
 Der Server liefert bei Anfrage an die Root-Route (localhost:8080/) eine Liste aller aktuell verfügbaren Routen aus.  
