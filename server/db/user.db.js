@@ -74,10 +74,17 @@ const getUserCollections = async (user_id) => {
     return collections;
 }
 
+const postRegisterUser = async (newUser) => {
+    await db.query(`INSERT INTO users(email, username, pw_hash) 
+              VALUES ($1, $2, $3)`, [newUser.email, newUser.username, newUser.pw_hash]);
+    return;
+}
+
 module.exports = {
     getUsers,
     getUserFollows,
     getUserCollected,
     getUserCreated,
-    getUserCollections
+    getUserCollections,
+    postRegisterUser
 }
