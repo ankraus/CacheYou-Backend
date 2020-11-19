@@ -1,4 +1,5 @@
 const { userDb } = require('../db');
+const bcrypt = require('bcrypt');
 
 const getUsers = async () => {
     try {
@@ -40,10 +41,22 @@ const getUserCollections = async (user_id) => {
     }
 }
 
+const postRegisterUser = async (newUser) => {
+    try {
+        newUser.pw_hash = await bcrypt.hash(newUser.password, 10)
+        return await userDb.postRegisterUser(newUser)
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+
+
 module.exports = {
     getUsers,
     getUserFollows,
     getUserCollected,
     getUserCreated,
-    getUserCollections
+    getUserCollections,
+    postRegisterUser
 }

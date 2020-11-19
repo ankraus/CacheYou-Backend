@@ -55,10 +55,23 @@ const getUserCollections = async (req, res, next) => {
     }
 }
 
+const postRegisterUser = async (req, res, next) => {
+    const user = req.body
+    try{
+        await userService.postRegisterUser(user);
+        res.sendStatus(201)
+        next()
+    } catch (error) {
+        res.sendStatus(500) && next(error);
+    }
+}
+
+
 module.exports = {
     getUsers,
     getUserFollows,
     getUserCollected,
     getUserCreated,
-    getUserCollections
+    getUserCollections,
+    postRegisterUser
 }
