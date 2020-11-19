@@ -11,6 +11,40 @@ const getUsers = async (req, res, next) => {
     }
 }
 
+const getUserByEmail = async (req, res, next) => {
+    try{
+        const user = await userService.getUserByEmail(req.params.email);
+        res.json({
+            user: user
+        });
+    } catch (error) {
+        res.sendStatus(500) && next(error);
+    }
+}
+
+const getUserByUsername = async (req, res, next) => {
+    try{
+        const user = await userService.getUserByUsername(req.params.username);
+        res.json({
+            user: user
+        });
+    } catch (error) {
+        res.sendStatus(500) && next(error);
+    }
+}
+
+const getUserById = async (req, res, next) => {
+    try{
+        const user = await userService.getUserById(req.params.user_id);
+        res.json({
+            user: user
+        });
+    } catch (error) {
+        res.sendStatus(500) && next(error);
+    }
+}
+
+
 const getUserFollows = async (req, res, next) => {
     try {
         const follows = await userService.getUserFollows(req.params.user_id);
@@ -69,6 +103,9 @@ const postRegisterUser = async (req, res, next) => {
 
 module.exports = {
     getUsers,
+    getUserByEmail,
+    getUserByUsername,
+    getUserById,
     getUserFollows,
     getUserCollected,
     getUserCreated,

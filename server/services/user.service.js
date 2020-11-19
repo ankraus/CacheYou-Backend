@@ -9,6 +9,30 @@ const getUsers = async () => {
     }
 }
 
+const getUserByEmail = async (email) => {
+    try {
+        return await userDb.getUserByEmail(email);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getUserByUsername = async (username) => {
+    try {
+        return await userDb.getUserByUsername(username);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getUserById = async (user_id) => {
+    try {
+        return await userDb.getUserById(user_id);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 const getUserFollows = async (user_id) => {
     try {
         return await userDb.getUserFollows(user_id);
@@ -54,6 +78,9 @@ const postRegisterUser = async (newUser) => {
 
 module.exports = {
     getUsers,
+    getUserByEmail,
+    getUserByUsername,
+    getUserById,
     getUserFollows,
     getUserCollected,
     getUserCreated,

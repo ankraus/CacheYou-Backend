@@ -11,6 +11,9 @@ router.get('/caches/:cache_id/collected', cacheController.getCacheCollected);
 
 router.get('/users', userController.getUsers);
 router.post('/users', userController.postRegisterUser);
+router.get('/users/email/:email', userController.getUserByEmail);
+router.get('/users/username/:username', userController.getUserByUsername);
+router.get('/users/user_id/:user_id', userController.getUserById);
 router.get('/users/:user_id/follows', userController.getUserFollows);
 router.get('/users/:user_id/collected', userController.getUserCollected);
 router.get('/users/:user_id/created', userController.getUserCreated);
