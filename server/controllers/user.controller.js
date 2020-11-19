@@ -100,6 +100,33 @@ const postRegisterUser = async (req, res, next) => {
     }
 }
 
+const postLoginUser = async (req, res, next) => {
+    const {email, password} = req.body;
+    const cookie = req.cookies.token;
+    try {
+        var token = undefined;
+        if(cookie === undefined || cookie === 'deleted'){
+            token = await userService.postLoginUser(email, password);
+        } else {
+            const resp = await userService.validateToken(cookie);
+            token = resp.token;
+        }
+        if (token){
+            res.cookie('token', token, {httpOnly: true});
+            res.sendStatus(200);
+        } else {
+            throw new Error('Wrong email or password');
+        }
+    } catch (error) {
+        if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
+            res.cookie('token', 'deleted', {expires: 0});
+            res.status(401);
+        } else {
+            res.status(500);
+        }
+        res.send(error.message) && next(error);
+    }
+}
 
 module.exports = {
     getUsers,
@@ -110,5 +137,6 @@ module.exports = {
     getUserCollected,
     getUserCreated,
     getUserCollections,
-    postRegisterUser
+    postRegisterUser,
+    postLoginUser
 }

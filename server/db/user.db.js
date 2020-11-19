@@ -8,6 +8,14 @@ const getUsers = async () => {
     return db_resp.rows;
 };
 
+const getUserPwHash = async (user_id) => {
+    const db_resp = await db.query(`
+        SELECT pw_hash
+        FROM users
+        WHERE user_id = $1`, [user_id]);
+    return db_resp.rows[0];
+}
+
 const getUserByEmail = async (email) => {
     const db_resp = await db.query(`
         SELECT user_id, email, username, points, image_id
@@ -106,6 +114,7 @@ const postRegisterUser = async (newUser) => {
 
 module.exports = {
     getUsers,
+    getUserPwHash,
     getUserByEmail,
     getUserByUsername,
     getUserById,

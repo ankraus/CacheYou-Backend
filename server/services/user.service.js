@@ -1,5 +1,6 @@
 const { userDb } = require('../db');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const getUsers = async () => {
     try {
@@ -74,7 +75,39 @@ const postRegisterUser = async (newUser) => {
     }
 }
 
+const postLoginUser = async (email, password) => {
+    try {
+        const user = await userDb.getUserByEmail(email);
+        if(!user){
+            throw new Error('Wrong email or password');
+        }
+        const { pw_hash } = await userDb.getUserPwHash(user.user_id);
+        const match = await bcrypt.compare(password, pw_hash);
+        if(match) {
+            const token = await genToken(user.user_id);
+            return token;
+        } else {
+            return;
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
+const validateToken = async (cookie) => {
+    try {
+        console.log('validate: ' + cookie);
+        const {user_id} = await jwt.verify(cookie, process.env.JWT_SECRET);
+        const token = await genToken(user_id);
+        return {user_id: user_id, token: token};
+    } catch (error) {
+        throw new Error('Token not valid');
+    }
+}
+
+async function genToken(user_id) {
+    return await jwt.sign({user_id: user_id}, process.env.JWT_SECRET, {expiresIn: "5m"});
+}
 
 module.exports = {
     getUsers,
@@ -85,5 +118,7 @@ module.exports = {
     getUserCollected,
     getUserCreated,
     getUserCollections,
-    postRegisterUser
+    postRegisterUser,
+    postLoginUser,
+    validateToken
 }
