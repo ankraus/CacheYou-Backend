@@ -8,6 +8,30 @@ const getUsers = async () => {
     return db_resp.rows;
 };
 
+const getUserByEmail = async (email) => {
+    const db_resp = await db.query(`
+        SELECT user_id, email, username, points, image_id
+        FROM   users 
+        WHERE  email = $1`, [email]);
+    return db_resp.rows[0]  
+}
+
+const getUserByUsername = async (username) => {
+    const db_resp = await db.query(`
+        SELECT user_id, email, username, points, image_id
+        FROM   users 
+        WHERE  username = $1`, [username]);
+    return db_resp.rows[0]
+}
+
+const getUserById = async (user_id) => {
+    const db_resp = await db.query(`
+        SELECT user_id, email, username, points, image_id
+        FROM   users 
+        WHERE  user_id = $1::uuid`, [user_id]);
+    return db_resp.rows[0]
+}
+
 const getUserFollows = async (user_id) => {
     const db_resp = await db.query(`
             SELECT u.user_id, u.username 
@@ -76,12 +100,15 @@ const getUserCollections = async (user_id) => {
 
 const postRegisterUser = async (newUser) => {
     await db.query(`INSERT INTO users(email, username, pw_hash) 
-              VALUES ($1, $2, $3)`, [newUser.email, newUser.username, newUser.pw_hash]);
+                    VALUES ($1, $2, $3)`, [newUser.email, newUser.username, newUser.pw_hash]);
     return;
 }
 
 module.exports = {
     getUsers,
+    getUserByEmail,
+    getUserByUsername,
+    getUserById,
     getUserFollows,
     getUserCollected,
     getUserCreated,
