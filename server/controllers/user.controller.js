@@ -1,4 +1,5 @@
 const { userService } = require('../services');
+const { authUtils } = require('../utils');
 
 const getUsers = async (req, res, next) => {
     try {
@@ -8,6 +9,23 @@ const getUsers = async (req, res, next) => {
         });
     } catch (error) {
         res.sendStatus(500) && next(error);
+    }
+}
+
+const getCurrentUser = async (req, res, next) => {
+    try {
+        const user = await userService.getUserById(req.user_id);
+        res.json({
+            user: user
+        });
+    } catch (error) {
+        if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
+            res.cookie('token', 'deleted', {expires: 0});
+            res.status(401);
+        } else {
+            res.status(500);
+        }
+        res.send(error.message) && next(error);
     }
 }
 
@@ -102,24 +120,16 @@ const postRegisterUser = async (req, res, next) => {
 
 const postLoginUser = async (req, res, next) => {
     const {email, password} = req.body;
-    const cookie = req.cookies.token;
     try {
-        var token = undefined;
-        if(cookie === undefined || cookie === 'deleted'){
-            token = await userService.postLoginUser(email, password);
-        } else {
-            const resp = await userService.validateToken(cookie);
-            token = resp.token;
-        }
-        if (token){
-            res.cookie('token', token, {httpOnly: true});
-            res.sendStatus(200);
-        } else {
+        if(!email || !password){
             throw new Error('Wrong email or password');
         }
+        const token = await userService.postLoginUser(email, password);
+        res.cookie('token', token, {httpOnly: true});
+        res.sendStatus(200);        
     } catch (error) {
         if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
-            res.cookie('token', 'deleted', {expires: 0});
+            authUtils.delToken(res);
             res.status(401);
         } else {
             res.status(500);
@@ -128,8 +138,14 @@ const postLoginUser = async (req, res, next) => {
     }
 }
 
+const postLogoutUser = async (req, res) => {
+    authUtils.delToken(res);
+    res.sendStatus(200);    
+}
+
 module.exports = {
     getUsers,
+    getCurrentUser,
     getUserByEmail,
     getUserByUsername,
     getUserById,
@@ -138,5 +154,6 @@ module.exports = {
     getUserCreated,
     getUserCollections,
     postRegisterUser,
-    postLoginUser
+    postLoginUser,
+    postLogoutUser
 }
