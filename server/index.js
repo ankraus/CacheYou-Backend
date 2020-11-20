@@ -8,7 +8,7 @@ require('dotenv').config();
 const app = express();
 const routes = require('./routes');
 
-const whitelist = ['http://localhost', 'https://ia5.akr.cx']
+const whitelist = ['http://localhost:8100', 'https://ia5.akr.cx']
 const corsOptions = {
   origin: function (origin, callback) {
       console.log("origin: " + origin, "whitelist: " + whitelist);
