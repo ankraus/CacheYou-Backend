@@ -9,8 +9,8 @@ const app = express();
 const routes = require('./routes');
 
 const corsOptions = {
-    origin: 'http://localhost:8100', 
-    allowedHeaders: [ 'Accept-Version', 'Authorization', 'Credentials', 'Content-Type' ]
+    origin: 'http://localhost:8100',
+    credentials: true
 }
 
 
