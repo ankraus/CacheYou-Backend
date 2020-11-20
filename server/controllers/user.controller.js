@@ -139,8 +139,19 @@ const postLoginUser = async (req, res, next) => {
 }
 
 const postLogoutUser = async (req, res) => {
+    try {
+        await userService.postLogoutUser(req.user_id);
+    } catch (error) {
+        res.sendStatus(500);
+    }
     authUtils.delToken(res);
     res.sendStatus(200);    
+}
+
+const getIsLoggedIn = async (req, res) => {
+    res.json({
+        isLoggedIn: req.hasToken && req.tokenValid
+    });
 }
 
 module.exports = {
@@ -155,5 +166,6 @@ module.exports = {
     getUserCollections,
     postRegisterUser,
     postLoginUser,
-    postLogoutUser
+    postLogoutUser,
+    getIsLoggedIn
 }

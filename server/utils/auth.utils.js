@@ -1,14 +1,15 @@
 const jwt = require('jsonwebtoken');
+const { userDb } = require('../db');
 
 const checkAuthenticated = async (req, res, next) => {
     if(req.hasToken) {
         if(req.tokenValid){
             next();
         } else {
-            res.sendStatus(403);
+            res.status(403).send('token invalid');
         }
     } else {
-        res.sendStatus(401);
+        res.status(401).send('no token in request');
     }
 }
 
@@ -18,10 +19,12 @@ const checkToken = async (req, res, next) => {
         req.hasToken = true;
         try {
             const { user_id } = await jwt.verify(cookie, process.env.JWT_SECRET);
-            const token = await genToken(user_id);
+            const hasLoggedOut = await userDb.getUserHasLoggedOut(user_id);
+            if(hasLoggedOut){
+                throw new Error();
+            }
             req.user_id = user_id;
             req.tokenValid = true;
-            res.cookie('token', token, {httpOnly: true});
         } catch (error) {
             req.tokenValid = false;
         }
@@ -36,7 +39,7 @@ const delToken = async (res) => {
 }
 
 const genToken = async (user_id) => {
-    return await jwt.sign({user_id: user_id}, process.env.JWT_SECRET, {expiresIn: "10m"});
+    return await jwt.sign({user_id: user_id}, process.env.JWT_SECRET, {expiresIn: "20m"});
 }
 
 module.exports = {

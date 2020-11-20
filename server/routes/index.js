@@ -17,6 +17,7 @@ router.get('/caches/:cache_id/collected', cacheController.getCacheCollected);
 
 router.get('/users', userController.getUsers);
 router.get('/users/current', authUtils.checkAuthenticated, userController.getCurrentUser);
+router.get('/users/isLoggedIn', userController.getIsLoggedIn);
 router.post('/users', userController.postRegisterUser);
 router.post('/login', userController.postLoginUser);
 router.post('/logout', userController.postLogoutUser);

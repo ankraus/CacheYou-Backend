@@ -84,6 +84,7 @@ const postLoginUser = async (email, password) => {
         }
         const { pw_hash } = await userDb.getUserPwHash(user.user_id);
         const match = await bcrypt.compare(password, pw_hash);
+        await userDb.setUserHasLoggedOut(user.user_id, false);
         if(match) {
             return await authUtils.genToken(user.user_id);
         } else {
@@ -92,6 +93,10 @@ const postLoginUser = async (email, password) => {
     } catch (error) {
         throw new Error('Wrong email or password');
     }
+}
+
+const postLogoutUser = async (user_id) => {
+    await userDb.setUserHasLoggedOut(user_id, true);
 }
 
 module.exports = {
@@ -104,5 +109,6 @@ module.exports = {
     getUserCreated,
     getUserCollections,
     postRegisterUser,
-    postLoginUser
+    postLoginUser,
+    postLogoutUser
 }
