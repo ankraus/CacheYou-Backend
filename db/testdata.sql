@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     pw_hash CHAR(60) NOT NULL,
     image_id uuid REFERENCES images(image_id),
-    points INTEGER DEFAULT 0
+    has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS follows (
