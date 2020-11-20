@@ -2,15 +2,39 @@ const db = require('./db_connection');
 
 const getUsers = async () => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, points, image_id
+        SELECT user_id, email, username, image_id
         FROM users
     `);
     return db_resp.rows;
 };
 
+const getUserPwHash = async (user_id) => {
+    const db_resp = await db.query(`
+        SELECT pw_hash
+        FROM users
+        WHERE user_id = $1`, [user_id]);
+    return db_resp.rows[0];
+}
+
+const getUserHasLoggedOut = async (user_id) => {
+    const db_resp = await db.query(`
+        SELECT has_logged_out
+        FROM users
+        WHERE user_id = $1`, [user_id]);
+    return db_resp.rows[0].has_logged_out;
+}
+
+const setUserHasLoggedOut = async (user_id, value) => {
+    await db.query(`
+        UPDATE users
+        SET has_logged_out = $1
+        WHERE user_id = $2`, [value, user_id]);
+    return;
+}
+
 const getUserByEmail = async (email) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, points, image_id
+        SELECT user_id, email, username, image_id
         FROM   users 
         WHERE  email = $1`, [email]);
     return db_resp.rows[0]  
@@ -18,7 +42,7 @@ const getUserByEmail = async (email) => {
 
 const getUserByUsername = async (username) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, points, image_id
+        SELECT user_id, email, username, image_id
         FROM   users 
         WHERE  username = $1`, [username]);
     return db_resp.rows[0]
@@ -26,7 +50,7 @@ const getUserByUsername = async (username) => {
 
 const getUserById = async (user_id) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, points, image_id
+        SELECT user_id, email, username, image_id
         FROM   users 
         WHERE  user_id = $1::uuid`, [user_id]);
     return db_resp.rows[0]
@@ -106,6 +130,9 @@ const postRegisterUser = async (newUser) => {
 
 module.exports = {
     getUsers,
+    getUserPwHash,
+    getUserHasLoggedOut,
+    setUserHasLoggedOut,
     getUserByEmail,
     getUserByUsername,
     getUserById,

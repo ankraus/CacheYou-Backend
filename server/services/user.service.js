@@ -1,5 +1,7 @@
 const { userDb } = require('../db');
 const bcrypt = require('bcrypt');
+const {authUtils} = require('../utils');
+
 
 const getUsers = async () => {
     try {
@@ -74,7 +76,28 @@ const postRegisterUser = async (newUser) => {
     }
 }
 
+const postLoginUser = async (email, password) => {
+    try {
+        const user = await userDb.getUserByEmail(email);
+        if(!user){
+            throw new Error();
+        }
+        const { pw_hash } = await userDb.getUserPwHash(user.user_id);
+        const match = await bcrypt.compare(password, pw_hash);
+        await userDb.setUserHasLoggedOut(user.user_id, false);
+        if(match) {
+            return await authUtils.genToken(user.user_id);
+        } else {
+            throw new Error();
+        }
+    } catch (error) {
+        throw new Error('Wrong email or password');
+    }
+}
 
+const postLogoutUser = async (user_id) => {
+    await userDb.setUserHasLoggedOut(user_id, true);
+}
 
 module.exports = {
     getUsers,
@@ -85,5 +108,7 @@ module.exports = {
     getUserCollected,
     getUserCreated,
     getUserCollections,
-    postRegisterUser
+    postRegisterUser,
+    postLoginUser,
+    postLogoutUser
 }

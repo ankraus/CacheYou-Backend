@@ -1,4 +1,5 @@
 const { userService } = require('../services');
+const { authUtils } = require('../utils');
 
 const getUsers = async (req, res, next) => {
     try {
@@ -8,6 +9,23 @@ const getUsers = async (req, res, next) => {
         });
     } catch (error) {
         res.sendStatus(500) && next(error);
+    }
+}
+
+const getCurrentUser = async (req, res, next) => {
+    try {
+        const user = await userService.getUserById(req.user_id);
+        res.json({
+            user: user
+        });
+    } catch (error) {
+        if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
+            res.cookie('token', 'deleted', {expires: 0});
+            res.status(401);
+        } else {
+            res.status(500);
+        }
+        res.send(error.message) && next(error);
     }
 }
 
@@ -100,9 +118,45 @@ const postRegisterUser = async (req, res, next) => {
     }
 }
 
+const postLoginUser = async (req, res, next) => {
+    const {email, password} = req.body;
+    try {
+        if(!email || !password){
+            throw new Error('Wrong email or password');
+        }
+        const token = await userService.postLoginUser(email, password);
+        res.cookie('token', token, {httpOnly: true});
+        res.sendStatus(200);        
+    } catch (error) {
+        if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
+            authUtils.delToken(res);
+            res.status(401);
+        } else {
+            res.status(500);
+        }
+        res.send(error.message) && next(error);
+    }
+}
+
+const postLogoutUser = async (req, res) => {
+    try {
+        await userService.postLogoutUser(req.user_id);
+    } catch (error) {
+        res.sendStatus(500);
+    }
+    authUtils.delToken(res);
+    res.sendStatus(200);    
+}
+
+const getIsLoggedIn = async (req, res) => {
+    res.json({
+        isLoggedIn: req.hasToken && req.tokenValid
+    });
+}
 
 module.exports = {
     getUsers,
+    getCurrentUser,
     getUserByEmail,
     getUserByUsername,
     getUserById,
@@ -110,5 +164,8 @@ module.exports = {
     getUserCollected,
     getUserCreated,
     getUserCollections,
-    postRegisterUser
+    postRegisterUser,
+    postLoginUser,
+    postLogoutUser,
+    getIsLoggedIn
 }
