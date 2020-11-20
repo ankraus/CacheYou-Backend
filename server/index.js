@@ -8,16 +8,9 @@ require('dotenv').config();
 const app = express();
 const routes = require('./routes');
 
-const whitelist = ['http://localhost:8100', 'https://ia5.akr.cx']
 const corsOptions = {
-  origin: function (origin, callback) {
-      console.log("origin: " + origin, "whitelist: " + whitelist);
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+    origin: 'http://localhost:8100', 
+    allowedHeaders: [ 'Accept-Version', 'Authorization', 'Credentials', 'Content-Type' ]
 }
 
 
