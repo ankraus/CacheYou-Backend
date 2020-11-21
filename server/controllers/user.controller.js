@@ -20,7 +20,7 @@ const getCurrentUser = async (req, res, next) => {
         });
     } catch (error) {
         if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
-            res.cookie('token', 'deleted', {expires: 0, secure: true});
+            res.cookie('token', 'deleted', {expires: 0, secure: true, sameSite: 'none'});
             res.status(401);
         } else {
             res.status(500);
@@ -125,7 +125,7 @@ const postLoginUser = async (req, res, next) => {
             throw new Error('Wrong email or password');
         }
         const token = await userService.postLoginUser(email, password);
-        res.cookie('token', token, {httpOnly: true, secure: true});
+        res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'none'});
         res.sendStatus(200);
     } catch (error) {
         if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
