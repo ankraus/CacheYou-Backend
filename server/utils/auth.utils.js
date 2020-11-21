@@ -35,7 +35,7 @@ const checkToken = async (req, res, next) => {
 }
 
 const delToken = async (res) => {
-    res.cookie('token', 'deleted', {expires: 0});
+    res.cookie('token', 'deleted', {expires: 0, secure: true, sameSite: 'none'});
 }
 
 const genToken = async (user_id) => {

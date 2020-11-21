@@ -12,8 +12,8 @@ services:
     build:
       context: ./db
     image: ia5_db
-    ports:
-      - 5432:5432
+    expose:
+      - "5432"
     env_file:
       - ./db/database.env # configure postgres
     volumes:
