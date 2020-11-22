@@ -7,7 +7,7 @@ const getCaches = async (req, res, next) => {
             caches: caches
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -18,7 +18,7 @@ const getCacheImages = async (req, res, next) => {
             images: images
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -29,7 +29,7 @@ const getCacheComments = async (req, res, next) => {
             comments: comments
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -40,7 +40,7 @@ const getCacheCollected = async (req, res, next) => {
             collected: collected
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
