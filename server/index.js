@@ -31,6 +31,7 @@ app.use('/', routes);
 
 app.use(errorUtils.errorLogger);
 app.use(errorUtils.authenticationErrorHandler);
+app.use(errorUtils.validationErrorHandler);
 app.use(errorUtils.generalErrorHandler);
 
 const port = 8080;

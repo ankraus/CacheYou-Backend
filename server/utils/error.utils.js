@@ -1,5 +1,6 @@
 const authUtils = require("./auth.utils");
 const { TokenInvalidError, WrongCredentialsError, NoCredentialsInRequestError, NotFoundError, AlreadyExistsError } = require("./errors");
+const ValidationError = require('yup').ValidationError;
 
 
 const errorLogger = (err, req, res, next) => {
@@ -30,6 +31,14 @@ const authenticationErrorHandler = (err, req, res, next) => {
     }
 }
 
+const validationErrorHandler = (err, req, res, next) => {
+    if(err instanceof ValidationError){
+        res.status(400).send('Validation Error: ' + err.message);
+    } else {
+        next(err);
+    }
+}
+
 const generalErrorHandler = (err, req, res, next) => {
     switch (true) {
         case err instanceof NotFoundError:
@@ -37,6 +46,9 @@ const generalErrorHandler = (err, req, res, next) => {
             break;
         case err instanceof AlreadyExistsError:
             res.status(400).send('Already exists');
+            break;
+        case err instanceof SyntaxError:
+            res.status(400).send('Invalid syntax: ' + err.message);
             break;
         default:
             res.status(500).send(err.name) && next(err);
@@ -47,5 +59,6 @@ const generalErrorHandler = (err, req, res, next) => {
 module.exports = {
     errorLogger,
     authenticationErrorHandler,
+    validationErrorHandler,
     generalErrorHandler
 };
