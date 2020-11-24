@@ -9,6 +9,11 @@ const listRegisteredRoutes = (router) => {
     return routes;
 }
 
+const unimplementedRoute = (req, res) => {
+    res.sendStatus(501);
+}
+
 module.exports = {
-    listRegisteredRoutes
+    listRegisteredRoutes,
+    unimplementedRoute
 }

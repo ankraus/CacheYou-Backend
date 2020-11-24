@@ -8,7 +8,7 @@ const getUsers = async (req, res, next) => {
             users: users
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -19,46 +19,40 @@ const getCurrentUser = async (req, res, next) => {
             user: user
         });
     } catch (error) {
-        if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
-            res.cookie('token', 'deleted', {expires: 0, secure: true, sameSite: 'none'});
-            res.status(401);
-        } else {
-            res.status(500);
-        }
-        res.send(error.message) && next(error);
+        next(error);
     }
 }
 
 const getUserByEmail = async (req, res, next) => {
-    try{
+    try {
         const user = await userService.getUserByEmail(req.params.email);
         res.json({
             user: user
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
 const getUserByUsername = async (req, res, next) => {
-    try{
+    try {
         const user = await userService.getUserByUsername(req.params.username);
         res.json({
             user: user
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
 const getUserById = async (req, res, next) => {
-    try{
+    try {
         const user = await userService.getUserById(req.params.user_id);
         res.json({
             user: user
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -70,7 +64,7 @@ const getUserFollows = async (req, res, next) => {
             follows: follows
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -81,7 +75,7 @@ const getUserCollected = async (req, res, next) => {
             collected: collected
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -92,7 +86,7 @@ const getUserCreated = async (req, res, next) => {
             created: created
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
@@ -103,49 +97,40 @@ const getUserCollections = async (req, res, next) => {
             collections: collections
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
 const postRegisterUser = async (req, res, next) => {
     const user = req.body
-    try{
+    try {
         await userService.postRegisterUser(user);
-        res.sendStatus(201)
-        next()
+        res.sendStatus(201);
+        next();        
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
 const postLoginUser = async (req, res, next) => {
     const {email, password} = req.body;
     try {
-        if(!email || !password){
-            throw new Error('Wrong email or password');
-        }
         const token = await userService.postLoginUser(email, password);
         res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'none'});
         res.sendStatus(200);
     } catch (error) {
-        if(error.message === 'Wrong email or password' || error.message === 'Token not valid') {
-            authUtils.delToken(res);
-            res.status(401);
-        } else {
-            res.status(500);
-        }
-        res.send(error.message) && next(error);
+        next(error)
     }
 }
 
-const postLogoutUser = async (req, res) => {
+const postLogoutUser = async (req, res, next) => {
     try {
         await userService.postLogoutUser(req.user_id);
+        authUtils.delToken(res);
+        res.sendStatus(200);
     } catch (error) {
-        res.sendStatus(500);
+        next(error);
     }
-    authUtils.delToken(res);
-    res.sendStatus(200);    
 }
 
 const getIsLoggedIn = async (req, res) => {

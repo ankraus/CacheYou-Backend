@@ -6,7 +6,7 @@ const getImage = async (req, res, next) => {
         res.type('png');
         res.end(image, 'binary');
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 

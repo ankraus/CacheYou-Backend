@@ -1,15 +1,16 @@
 const jwt = require('jsonwebtoken');
 const { userDb } = require('../db');
+const { NoCredentialsInRequestError, TokenInvalidError, DatabaseError } = require('./errors');
 
 const checkAuthenticated = async (req, res, next) => {
     if(req.hasToken) {
         if(req.tokenValid){
             next();
         } else {
-            res.status(403).send('token invalid');
+            next(new TokenInvalidError());
         }
     } else {
-        res.status(401).send('no token in request');
+        next(new NoCredentialsInRequestError());
     }
 }
 
@@ -18,13 +19,14 @@ const checkToken = async (req, res, next) => {
     if (cookie) {
         req.hasToken = true;
         try {
-            const { user_id } = await jwt.verify(cookie, process.env.JWT_SECRET);
-            const hasLoggedOut = await userDb.getUserHasLoggedOut(user_id);
+            const { user_id } = jwt.verify(cookie, process.env.JWT_SECRET);
+            const hasLoggedOut = await userDb.getUserHasLoggedOut(user_id).catch((err) => {next(new DatabaseError(err.message))});
             if(hasLoggedOut){
-                throw new Error();
+                req.tokenValid = false;
+            } else {
+                req.user_id = user_id;
+                req.tokenValid = true;
             }
-            req.user_id = user_id;
-            req.tokenValid = true;
         } catch (error) {
             req.tokenValid = false;
         }
@@ -34,12 +36,12 @@ const checkToken = async (req, res, next) => {
     next();
 }
 
-const delToken = async (res) => {
+const delToken = (res) => {
     res.cookie('token', 'deleted', {expires: 0, secure: true, sameSite: 'none'});
 }
 
-const genToken = async (user_id) => {
-    return await jwt.sign({user_id: user_id}, process.env.JWT_SECRET, {expiresIn: "20m"});
+const genToken = (user_id) => {
+    return jwt.sign({user_id: user_id}, process.env.JWT_SECRET, {expiresIn: "20m"});
 }
 
 module.exports = {
