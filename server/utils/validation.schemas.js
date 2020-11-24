@@ -35,15 +35,10 @@ const commentSchema = yup.object().shape({
 const updateUserSchema = yup.object().shape({
     body: yup.object().shape({
             email: yup.string().email().notRequired(),
-            username: yup.string().notRequired()
+            username: yup.string().notRequired(),
+            password: yup.string().notRequired()
         }).test('at-least-one-field', 'at least one field must be provided', (value) =>
-            !!(value.email || value.username))
-});
-
-const updateUserPasswordSchema = yup.object().shape({
-    body: yup.object().shape({
-            password: yup.string().required('password required')
-        })
+            !!(value.email || value.username || value.password))
 });
 
 const collectionSchema = yup.object().shape({
@@ -67,7 +62,6 @@ module.exports = {
     createCacheSchema,
     commentSchema,
     updateUserSchema,
-    updateUserPasswordSchema,
     collectionSchema,
     updateCollectionSchema
 }

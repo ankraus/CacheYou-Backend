@@ -43,7 +43,6 @@ router.post('/users/logout', userController.postLogoutUser);
 router.post('/users/follow/:user_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 
 router.patch('/users', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, routerUtils.unimplementedRoute);
-router.patch('/users/password', authUtils.checkAuthenticated, validationUtils.validateUpdateUserPassword, routerUtils.unimplementedRoute);
 
 router.delete('/users/current', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);

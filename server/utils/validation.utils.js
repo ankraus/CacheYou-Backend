@@ -9,7 +9,6 @@ const validateRegistration = eym(schemas.registerSchema);
 const validateCreateCache = eym(schemas.createCacheSchema);
 const validateComment = eym(schemas.commentSchema);
 const validateUpdateUser = eym(schemas.updateUserSchema);
-const validateUpdateUserPassword = eym(schemas.updateUserPasswordSchema);
 const validateCollection = eym(schemas.collectionSchema);
 const validateUpdateCollection = eym(schemas.updateCollectionSchema);
 
@@ -19,7 +18,6 @@ module.exports = {
     validateCreateCache,
     validateComment,
     validateUpdateUser,
-    validateUpdateUserPassword,
     validateCollection,
     validateUpdateCollection
 }
