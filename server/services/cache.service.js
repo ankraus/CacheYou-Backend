@@ -33,33 +33,33 @@ const getCacheCollected = async (cache_id) => {
     }
 }
 
-const postCreateCache = async (cache) => {
+const postCache = async (cache) => {
     try {
-        await cacheDb.postCreateCache(cache);
+        await cacheDb.postCache(cache);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const postCollectCache = async (cache) => {
+const postCacheCollect = async (cache) => {
     try {
-        await cacheDb.postCollectCache(cache);
+        await cacheDb.postCacheCollect(cache);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const postCommentCache = async (comment) => {
+const postCacheComment = async (comment) => {
     try {
-        await cacheDb.postCommentCache(comment);
+        await cacheDb.postCacheComment(comment);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const postTagCache = async (tag) => {
+const postCacheTag = async (tag) => {
     try {
-        await cacheDb.postTagCache(tag);
+        await cacheDb.postCacheTag(tag);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
@@ -91,8 +91,50 @@ const patchCacheComment = async (comment) => {
     }
 }
 
+const deleteCache = async (cache) => {
+    try {
+        await cacheDb.getCacheById(cache.id)
+    } catch (error) {
+        throw new NotFoundError();
+    }
+    try {
+        await cacheDb.deleteCache(cache.id);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const deleteCacheComment = async (comment) => {
+    try {
+        await cacheDb.getCommentById(comment.id)
+    } catch (error) {
+        throw new NotFoundError();
+    }
+    try {
+        await cacheDb.deleteCacheComment(comment.id);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const deleteCacheTags = async (cache) => {
+    try {
+        await cacheDb.getCacheById(cache.id)
+    } catch (error) {
+        throw new NotFoundError();
+    }
+    try {
+        await cacheDb.deleteCacheTags(cache.id);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+
+
 module.exports = {
     getCaches, getCacheImages, getCacheComments, getCacheCollected,
-    postCreateCache, postCollectCache, postCommentCache, postTagCache,
-    patchCache, patchCacheComment
+    postCache, postCacheCollect, postCacheComment, postCacheTag,
+    patchCache, patchCacheComment,
+    deleteCache, deleteCacheComment, deleteCacheTags
 }

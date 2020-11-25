@@ -106,22 +106,22 @@ const getCommentById = async (comment_id) => {
     return db_resp.rows[0]
 }
 
-const postCreateCache = async (cache) => {
+const postCache = async (cache) => {
     await db.query(``);
     return;
 }
 
-const postCollectCache = async (cache) => {
+const postCacheCollect = async (cache) => {
     await db.query(``);
     return;
 }
 
-const postCommentCache = async (cache) => {
+const postCacheComment = async (comment) => {
     await db.query(``);
     return;
 }
 
-const postTagCache = async (cache) => {
+const postCacheTag = async (tag) => {
     await db.query(``);
     return;
 }
@@ -131,7 +131,22 @@ const patchCache = async (cache) => {
     return;
 }
 
-const patchCacheComment = async (cache) => {
+const patchCacheComment = async (comment) => {
+    await db.query(``);
+    return;
+}
+
+const deleteCache = async (cache_id) => {
+    await db.query(``);
+    return;
+}
+
+const deleteCacheComment = async (comment_id) => {
+    await db.query(``);
+    return;
+}
+
+const deleteCacheTags = async (cache_id) => {
     await db.query(``);
     return;
 }
@@ -140,6 +155,7 @@ const patchCacheComment = async (cache) => {
 
 module.exports = { 
     getCaches, getCacheImages, getCacheComments, getCacheCollected, getCacheById, getCommentById,
-    postCreateCache, postCollectCache, postCommentCache, postTagCache,
-    patchCache, patchCacheComment 
+    postCache, postCacheCollect, postCacheComment, postCacheTag,
+    patchCache, patchCacheComment,
+    deleteCache, deleteCacheComment, deleteCacheTags 
 }

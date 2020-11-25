@@ -16,17 +16,17 @@ router.get('/caches/:cache_id/images', cacheController.getCacheImages);
 router.get('/caches/:cache_id/comments', cacheController.getCacheComments);
 router.get('/caches/:cache_id/collected', cacheController.getCacheCollected);
 
-router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, cacheController.postCreateCache);
-router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, cacheController.postCollectCache);
-router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateComment, cacheController.postCommentCache);
-router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.postTagCache);
+router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, cacheController.postCache);
+router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, cacheController.postCacheCollect);
+router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateComment, cacheController.postCacheComment);
+router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.postCacheTag);
 
 router.patch('/caches/:cache_id', authUtils.checkAuthenticated, cacheController.patchCache);
 router.patch('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, cacheController.patchCacheComment);
 
-router.delete('/caches/:cache_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
-router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
-router.delete('/caches/:cache_id/tags', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
+router.delete('/caches/:cache_id', authUtils.checkAuthenticated, cacheController.deleteCache);
+router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, cacheController.deleteCacheComment);
+router.delete('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.deleteCacheTags);
 
 //User routes
 router.get('/users', userController.getUsers);
