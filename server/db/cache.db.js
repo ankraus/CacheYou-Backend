@@ -90,6 +90,22 @@ const getCacheCollected = async (cache_id) => {
     return collected;
 }
 
+const getCacheById = async (cache_id) => {
+    const db_resp = await db.query(`
+        SELECT cache_id, latitude, longitude, title, description, link
+        FROM   cache 
+        WHERE  cache_id = $1::uuid`, [cache_id]);
+    return db_resp.rows[0]
+}
+
+const getCommentById = async (comment_id) => {
+    const db_resp = await db.query(`
+        SELECT comment_id, content, created_at
+        FROM   comments
+        WHERE  comment_id = $1::uuid`, [comment_id]);
+    return db_resp.rows[0]
+}
+
 const postCreateCache = async (cache) => {
     await db.query(``);
     return;
@@ -110,7 +126,20 @@ const postTagCache = async (cache) => {
     return;
 }
 
+const patchCache = async (cache) => {
+    await db.query(``);
+    return;
+}
+
+const patchCacheComment = async (cache) => {
+    await db.query(``);
+    return;
+}
+
+
+
 module.exports = { 
-    getCaches, getCacheImages, getCacheComments, getCacheCollected,
-    postCreateCache, postCollectCache, postCommentCache, postTagCache 
+    getCaches, getCacheImages, getCacheComments, getCacheCollected, getCacheById, getCommentById,
+    postCreateCache, postCollectCache, postCommentCache, postTagCache,
+    patchCache, patchCacheComment 
 }

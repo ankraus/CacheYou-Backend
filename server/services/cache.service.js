@@ -1,5 +1,5 @@
 const { cacheDb } = require('../db');
-const { DatabaseError } = require('../utils/errors');
+const { DatabaseError, NotFoundError } = require('../utils/errors');
 
 const getCaches = async () => {
     try {
@@ -49,17 +49,43 @@ const postCollectCache = async (cache) => {
     }
 }
 
-const postCommentCache = async (cache) => {
+const postCommentCache = async (comment) => {
     try {
-        await cacheDb.postCommentCache(cache);
+        await cacheDb.postCommentCache(comment);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const postTagCache = async (cache) => {
+const postTagCache = async (tag) => {
     try {
-        await cacheDb.postTagCache(cache);
+        await cacheDb.postTagCache(tag);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const patchCache = async (cache) => {
+    try {
+        await cacheDb.getCacheById(cache.id)
+    } catch (error) {
+        throw new NotFoundError();
+    }
+    try {
+        await cacheDb.patchCache(cache);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const patchCacheComment = async (comment) => {
+    try {
+        await cacheDb.getCommentById(comment.id)
+    } catch (error) {
+        throw new NotFoundError();
+    }
+    try {
+        await cacheDb.patchCacheComment(comment);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
@@ -67,5 +93,6 @@ const postTagCache = async (cache) => {
 
 module.exports = {
     getCaches, getCacheImages, getCacheComments, getCacheCollected,
-    postCreateCache, postCollectCache, postCommentCache, postTagCache
+    postCreateCache, postCollectCache, postCommentCache, postTagCache,
+    patchCache, patchCacheComment
 }

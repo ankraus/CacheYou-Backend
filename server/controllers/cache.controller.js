@@ -67,9 +67,9 @@ const postCollectCache = async (req, res, next) => {
 }
 
 const postCommentCache = async (req, res, next) => {
-    const cache = req.body
+    const comment = req.body
     try {
-        await cacheService.postCommentCache(cache);
+        await cacheService.postCommentCache(comment);
         res.sendStatus(201);
         next();        
     } catch (error) {
@@ -78,10 +78,32 @@ const postCommentCache = async (req, res, next) => {
 }
 
 const postTagCache = async (req, res, next) => {
+    const tag = req.body
+    try {
+        await cacheService.postTagCache(tag);
+        res.sendStatus(201);
+        next();        
+    } catch (error) {
+        next(error);
+    }
+}
+
+const patchCache = async (req, res, next) => {
     const cache = req.body
     try {
-        await cacheService.postTagCache(cache);
-        res.sendStatus(201);
+        await cacheService.patchCache(cache);
+        res.sendStatus(200);
+        next();        
+    } catch (error) {
+        next(error);
+    }
+}
+
+const patchCacheComment = async (req, res, next) => {
+    const comment = req.body
+    try {
+        await cacheService.patchCacheComment(comment);
+        res.sendStatus(200);
         next();        
     } catch (error) {
         next(error);
@@ -90,5 +112,6 @@ const postTagCache = async (req, res, next) => {
 
 module.exports = {
     getCaches, getCacheImages, getCacheComments, getCacheCollected,
-    postCreateCache, postCollectCache, postCommentCache, postTagCache
+    postCreateCache, postCollectCache, postCommentCache, postTagCache,
+    patchCache, patchCacheComment
 }

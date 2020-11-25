@@ -21,8 +21,8 @@ router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, cacheCont
 router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateComment, cacheController.postCommentCache);
 router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.postTagCache);
 
-router.patch('/caches/:cache_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
-router.patch('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
+router.patch('/caches/:cache_id', authUtils.checkAuthenticated, cacheController.patchCache);
+router.patch('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, cacheController.patchCacheComment);
 
 router.delete('/caches/:cache_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
