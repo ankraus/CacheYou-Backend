@@ -44,6 +44,51 @@ const getCacheCollected = async (req, res, next) => {
     }
 }
 
+const postCreateCache = async (req, res, next) => {
+    const cache = req.body
+    try {
+        await cacheService.postCreateCache(cache);
+        res.sendStatus(201);
+        next();        
+    } catch (error) {
+        next(error);
+    }
+}
+
+const postCollectCache = async (req, res, next) => {
+    const cache = req.body
+    try {
+        await cacheService.postCollectCache(cache);
+        res.sendStatus(201);
+        next();        
+    } catch (error) {
+        next(error);
+    }
+}
+
+const postCommentCache = async (req, res, next) => {
+    const cache = req.body
+    try {
+        await cacheService.postCommentCache(cache);
+        res.sendStatus(201);
+        next();        
+    } catch (error) {
+        next(error);
+    }
+}
+
+const postTagCache = async (req, res, next) => {
+    const cache = req.body
+    try {
+        await cacheService.postTagCache(cache);
+        res.sendStatus(201);
+        next();        
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
-    getCaches, getCacheImages, getCacheComments, getCacheCollected
+    getCaches, getCacheImages, getCacheComments, getCacheCollected,
+    postCreateCache, postCollectCache, postCommentCache, postTagCache
 }

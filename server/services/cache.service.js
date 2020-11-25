@@ -33,6 +33,39 @@ const getCacheCollected = async (cache_id) => {
     }
 }
 
+const postCreateCache = async (cache) => {
+    try {
+        await cacheDb.postCreateCache(cache);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const postCollectCache = async (cache) => {
+    try {
+        await cacheDb.postCollectCache(cache);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const postCommentCache = async (cache) => {
+    try {
+        await cacheDb.postCommentCache(cache);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
+const postTagCache = async (cache) => {
+    try {
+        await cacheDb.postTagCache(cache);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 module.exports = {
-    getCaches, getCacheImages, getCacheComments, getCacheCollected
+    getCaches, getCacheImages, getCacheComments, getCacheCollected,
+    postCreateCache, postCollectCache, postCommentCache, postTagCache
 }

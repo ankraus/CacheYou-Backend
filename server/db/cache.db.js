@@ -90,4 +90,27 @@ const getCacheCollected = async (cache_id) => {
     return collected;
 }
 
-module.exports = { getCaches, getCacheImages, getCacheComments, getCacheCollected };
+const postCreateCache = async (cache) => {
+    await db.query(``);
+    return;
+}
+
+const postCollectCache = async (cache) => {
+    await db.query(``);
+    return;
+}
+
+const postCommentCache = async (cache) => {
+    await db.query(``);
+    return;
+}
+
+const postTagCache = async (cache) => {
+    await db.query(``);
+    return;
+}
+
+module.exports = { 
+    getCaches, getCacheImages, getCacheComments, getCacheCollected,
+    postCreateCache, postCollectCache, postCommentCache, postTagCache 
+}

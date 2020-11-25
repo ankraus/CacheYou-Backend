@@ -16,10 +16,10 @@ router.get('/caches/:cache_id/images', cacheController.getCacheImages);
 router.get('/caches/:cache_id/comments', cacheController.getCacheComments);
 router.get('/caches/:cache_id/collected', cacheController.getCacheCollected);
 
-router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, routerUtils.unimplementedRoute);
-router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
-router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateComment, routerUtils.unimplementedRoute);
-router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
+router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, cacheController.postCreateCache);
+router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, cacheController.postCollectCache);
+router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateComment, cacheController.postCommentCache);
+router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.postTagCache);
 
 router.patch('/caches/:cache_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.patch('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
