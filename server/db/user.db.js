@@ -67,14 +67,9 @@ const getUserFollows = async (user_id) => {
 
 const getUserCollected = async (user_id) => {
     const db_resp = await db.query(`
-            SELECT u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at, array_agg(t.name) AS tags
-            FROM collected col 
-            JOIN users u USING (user_id) 
-            JOIN caches c USING (cache_id) 
-            JOIN caches_tags ct USING (cache_id)
-            JOIN tags t USING (tag_id)
-            WHERE u.user_id = $1
-            GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at`, [user_id]);
+            SELECT *
+            FROM v_user_collected
+            WHERE u.user_id = $1`, [user_id]);
     var collected = [];
     db_resp.rows.forEach((db_row) => {
         collected.push({
@@ -96,13 +91,9 @@ const getUserCollected = async (user_id) => {
 
 const getUserCreated = async (user_id) => {
     const db_resp = await db.query(`
-        SELECT u.user_id, c.cache_id, c.title, c.created_at, array_agg(t.name) AS tags
-        FROM caches c 
-        JOIN users u USING (user_id)
-        JOIN caches_tags ct USING (cache_id)
-        JOIN tags t USING (tag_id)
-        WHERE u.user_id = $1
-        GROUP BY u.user_id, c.cache_id, c.title, c.created_at`, [user_id]);
+        SELECT *
+        FROM v_caches
+        WHERE user_id = $1`, [user_id]);
 
     var caches = [];
     db_resp.rows.forEach((db_row) => {
