@@ -14,6 +14,18 @@ const getCaches = async () => {
     }
 }
 
+const getCacheById = async (cache_id) => {
+    try {
+        return await cacheDb.getCacheById(cache_id);
+    } catch (error) {
+        if(error instanceof NotFoundError){
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
+    }
+}
+
 const getCacheImages = async (cache_id) => {
     try {
         return await cacheDb.getCacheImages(cache_id);
@@ -143,6 +155,7 @@ const deleteCacheTags = async (cache) => {
 
 module.exports = {
     getCaches,
+    getCacheById,
     getCacheImages,
     getCacheComments,
     getCacheCollected,

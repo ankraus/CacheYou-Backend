@@ -29,6 +29,33 @@ const getCaches = async () => {
     return caches;
 };
 
+const getCacheById = async (cache_id) => {
+    const db_resp = await db.query(`
+        SELECT * 
+        FROM v_caches
+        WHERE cache_id = $1
+    `, [cache_id]);
+    if(db_resp.rows.length < 1) {
+        throw new NotFoundError();
+    }
+    const db_row = db_resp.rows[0];
+    const cache = {
+        cache_id: db_row.cache_id,
+        latitude: db_row.latitude,
+        longitude: db_row.longitude,
+        title: db_row.title,
+        description: db_row.description,
+        link: db_row.link,
+        tags: db_row.tags,
+        creator: {
+            username: db_row.username,
+            user_id: db_row.user_id
+        },
+        created_at: db_row.created_at
+    }
+    return cache;
+}
+
 const getCacheImages = async (cache_id) => {
     const db_resp = await db.query(`
         SELECT array_agg(image_id) AS image_ids
@@ -79,14 +106,6 @@ const getCacheCollected = async (cache_id) => {
         })
     });
     return collected;
-}
-
-const getCacheById = async (cache_id) => {
-    const db_resp = await db.query(`
-        SELECT cache_id, latitude, longitude, title, description, link
-        FROM   cache 
-        WHERE  cache_id = $1::uuid`, [cache_id]);
-    return db_resp.rows[0]
 }
 
 const getCommentById = async (comment_id) => {
@@ -171,10 +190,10 @@ const deleteCacheTags = async (cache_id) => {
 
 module.exports = {
     getCaches,
+    getCacheById,
     getCacheImages,
     getCacheComments,
     getCacheCollected,
-    getCacheById,
     getCommentById,
     postCache,
     postCacheCollect,

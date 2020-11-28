@@ -25,6 +25,7 @@ router.get('/', (req, res) => {
 
 //Cache routes
 router.get('/caches', cacheController.getCaches);
+router.get('/caches/:cache_id', cacheController.getCacheById);
 router.get('/caches/:cache_id/images', cacheController.getCacheImages);
 router.get('/caches/:cache_id/comments', cacheController.getCacheComments);
 router.get('/caches/:cache_id/collected', cacheController.getCacheCollected);

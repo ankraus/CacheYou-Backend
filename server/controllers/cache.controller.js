@@ -13,6 +13,17 @@ const getCaches = async (req, res, next) => {
     }
 }
 
+const getCacheById = async (req, res, next) => {
+    try {
+        const cache = await cacheService.getCacheById(req.params.cache_id);
+        res.json({
+            cache: cache
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getCacheImages = async (req, res, next) => {
     try {
         const images = await cacheService.getCacheImages(req.params.cache_id);
@@ -148,6 +159,7 @@ const deleteCacheTags = async (req, res, next) => {
 
 module.exports = {
     getCaches,
+    getCacheById,
     getCacheImages,
     getCacheComments,
     getCacheCollected,
