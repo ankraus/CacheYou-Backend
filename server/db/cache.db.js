@@ -2,12 +2,7 @@ const db = require('./db_connection')
 
 const getCaches = async () => {
     const db_resp = await db.query(`
-            SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(t.name) AS tags
-            FROM caches c
-            JOIN caches_tags ct USING (cache_id)
-            JOIN users u USING (user_id)
-            JOIN tags t USING (tag_id)
-            GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at
+            SELECT * FROM v_caches
         `);
 
     var caches = [];
@@ -41,10 +36,8 @@ const getCacheImages = async (cache_id) => {
 
 const getCacheComments = async (cache_id) => {
     const db_resp = await db.query(`
-        SELECT c.comment_id, c.content, c.created_at, u.username, u.user_id 
-        FROM comments c 
-        JOIN caches ca USING (cache_id) 
-        JOIN users u ON u.user_id = c.user_id
+        SELECT *
+        FROM v_caches_comments
         WHERE cache_id = $1`, [cache_id]);
     var comments = [];
     db_resp.rows.forEach((db_row) => {
@@ -63,14 +56,9 @@ const getCacheComments = async (cache_id) => {
 
 const getCacheCollected = async (cache_id) => {
     const db_resp = await db.query(`
-            SELECT u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at, array_agg(t.name) AS tags
-            FROM collected col 
-            JOIN users u USING (user_id) 
-            JOIN caches c USING (cache_id) 
-            JOIN caches_tags ct USING (cache_id)
-            JOIN tags t USING (tag_id)
-            WHERE c.cache_id = $1
-            GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at`, [cache_id]);
+            SELECT *
+            FROM v_caches_collected
+            WHERE cache_id = $1`, [cache_id]);
     var collected = [];
     db_resp.rows.forEach((db_row) => {
         collected.push({
