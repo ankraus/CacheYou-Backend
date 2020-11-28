@@ -48,7 +48,7 @@ class ForbiddenError extends Error {
 }
 
 class AlreadyExistsError extends Error {
-    constructor(message){
+    constructor(message) {
         super(message);
         this.name = "AlreadyExistsError";
     }

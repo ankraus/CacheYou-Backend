@@ -17,16 +17,17 @@ const getCollection = async (collection_id) => {
         JOIN users u USING (user_id) 
         WHERE co.collection_id = $1`, [collection_id]);
     const collection = {
-            title: db_collection_resp.rows[0].title,
-            creator: {
-                user_id: db_collection_resp.rows[0].user_id,
-                username: db_collection_resp.rows[0].username
-            },
-            caches: db_resp.rows
-        };
+        title: db_collection_resp.rows[0].title,
+        creator: {
+            user_id: db_collection_resp.rows[0].user_id,
+            username: db_collection_resp.rows[0].username
+        },
+        caches: db_resp.rows
+    };
     return collection;
 }
 
 module.exports = {
-    getCollections, getCollection
+    getCollections,
+    getCollection
 }

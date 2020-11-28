@@ -1,5 +1,10 @@
-const { cacheDb } = require('../db');
-const { DatabaseError, NotFoundError } = require('../utils/errors');
+const {
+    cacheDb
+} = require('../db');
+const {
+    DatabaseError,
+    NotFoundError
+} = require('../utils/errors');
 
 const getCaches = async () => {
     try {
@@ -33,11 +38,15 @@ const getCacheCollected = async (cache_id) => {
     }
 }
 
-const postCache = async (cache) => {
+const postCache = async (cache, user_id) => {
     try {
-        await cacheDb.postCache(cache);
+        return await cacheDb.postCache(cache, user_id);
     } catch (error) {
-        throw new DatabaseError(error.message);
+        if(error instanceof NotFoundError) {
+            throw error
+        } else {
+            throw new DatabaseError(error.message);
+        }
     }
 }
 
@@ -57,35 +66,35 @@ const postCacheComment = async (comment) => {
     }
 }
 
-const postCacheTag = async (tag) => {
+const postCacheTags = async (tag) => {
     try {
-        await cacheDb.postCacheTag(tag);
+        await cacheDb.postCacheTags(tag);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const patchCache = async (cache) => {
+const putCache = async (cache) => {
     try {
         await cacheDb.getCacheById(cache.id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.patchCache(cache);
+        await cacheDb.putCache(cache);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const patchCacheComment = async (comment) => {
+const putCacheComment = async (comment) => {
     try {
         await cacheDb.getCommentById(comment.id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.patchCacheComment(comment);
+        await cacheDb.putCacheComment(comment);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
@@ -133,8 +142,17 @@ const deleteCacheTags = async (cache) => {
 
 
 module.exports = {
-    getCaches, getCacheImages, getCacheComments, getCacheCollected,
-    postCache, postCacheCollect, postCacheComment, postCacheTag,
-    patchCache, patchCacheComment,
-    deleteCache, deleteCacheComment, deleteCacheTags
+    getCaches,
+    getCacheImages,
+    getCacheComments,
+    getCacheCollected,
+    postCache,
+    postCacheCollect,
+    postCacheComment,
+    postCacheTags,
+    putCache,
+    putCacheComment,
+    deleteCache,
+    deleteCacheComment,
+    deleteCacheTags
 }

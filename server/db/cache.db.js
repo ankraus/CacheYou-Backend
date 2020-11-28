@@ -1,4 +1,7 @@
 const db = require('./db_connection')
+const {
+    NotFoundError
+} = require('../utils/errors');
 
 const getCaches = async () => {
     const db_resp = await db.query(`
@@ -94,9 +97,34 @@ const getCommentById = async (comment_id) => {
     return db_resp.rows[0]
 }
 
-const postCache = async (cache) => {
-    await db.query(``);
-    return;
+const postCache = async (cache, user_id) => {
+    const all_tags_not_in_db = await db.query(`
+        SELECT name
+        FROM (
+            SELECT UNNEST($1::varchar[]) as name
+        ) as tags_input
+        WHERE tags_input.name NOT IN (
+            SELECT name FROM tags
+        )`, [cache.tags]);
+    if (all_tags_not_in_db.rows.length != 0) {
+        const notFoundTags = all_tags_not_in_db.rows.map(x => x.name);
+        throw new NotFoundError('One or more tags do not exist: ' + JSON.stringify(notFoundTags));
+    }
+    const db_resp = await db.query(`
+        INSERT INTO caches (latitude, longitude, public, title, description, link, user_id) VALUES
+        ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING cache_id`,
+        [cache.latitude, cache.longitude, cache.public, cache.title, cache.description, cache.link, user_id]);
+    const cache_id = db_resp.rows[0].cache_id;
+    await db.query(`
+        INSERT INTO caches_tags(tag_id, cache_id)(
+            SELECT tag_id, $1 as cache_id
+            FROM tags t
+            WHERE t.name IN (
+                SELECT UNNEST($2::varchar[])
+            )
+        )`, [cache_id, cache.tags]);
+    return cache_id;
 }
 
 const postCacheCollect = async (cache) => {
@@ -109,17 +137,17 @@ const postCacheComment = async (comment) => {
     return;
 }
 
-const postCacheTag = async (tag) => {
+const postCacheTags = async (tag) => {
     await db.query(``);
     return;
 }
 
-const patchCache = async (cache) => {
+const putCache = async (cache) => {
     await db.query(``);
     return;
 }
 
-const patchCacheComment = async (comment) => {
+const putCacheComment = async (comment) => {
     await db.query(``);
     return;
 }
@@ -141,9 +169,20 @@ const deleteCacheTags = async (cache_id) => {
 
 
 
-module.exports = { 
-    getCaches, getCacheImages, getCacheComments, getCacheCollected, getCacheById, getCommentById,
-    postCache, postCacheCollect, postCacheComment, postCacheTag,
-    patchCache, patchCacheComment,
-    deleteCache, deleteCacheComment, deleteCacheTags 
+module.exports = {
+    getCaches,
+    getCacheImages,
+    getCacheComments,
+    getCacheCollected,
+    getCacheById,
+    getCommentById,
+    postCache,
+    postCacheCollect,
+    postCacheComment,
+    postCacheTags,
+    putCache,
+    putCacheComment,
+    deleteCache,
+    deleteCacheComment,
+    deleteCacheTags
 }

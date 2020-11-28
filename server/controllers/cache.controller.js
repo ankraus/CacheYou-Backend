@@ -1,4 +1,6 @@
-const { cacheService } = require('../services');
+const {
+    cacheService
+} = require('../services');
 
 const getCaches = async (req, res, next) => {
     try {
@@ -45,99 +47,99 @@ const getCacheCollected = async (req, res, next) => {
 }
 
 const postCache = async (req, res, next) => {
-    const cache = req.body
+    const cache = req.body;
     try {
-        await cacheService.postCache(cache);
-        res.sendStatus(201);
-        next();        
+        const cache_id = await cacheService.postCache(cache, req.user_id);
+        res.status(201).json({cache_id: cache_id});
+        next();
     } catch (error) {
         next(error);
     }
 }
 
 const postCacheCollect = async (req, res, next) => {
-    const cache = req.body
+    const cache = req.body;
     try {
         await cacheService.postCacheCollect(cache);
         res.sendStatus(201);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
 const postCacheComment = async (req, res, next) => {
-    const comment = req.body
+    const comment = req.body;
     try {
         await cacheService.postCacheComment(comment);
         res.sendStatus(201);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
-const postCacheTag = async (req, res, next) => {
-    const tag = req.body
+const postCacheTags = async (req, res, next) => {
+    const tag = req.body;
     try {
-        await cacheService.postCacheTag(tag);
+        await cacheService.postCacheTags(tag);
         res.sendStatus(201);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
-const patchCache = async (req, res, next) => {
-    const cache = req.body
+const putCache = async (req, res, next) => {
+    const cache = req.body;
     try {
-        await cacheService.patchCache(cache);
+        await cacheService.putCache(cache);
         res.sendStatus(200);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
-const patchCacheComment = async (req, res, next) => {
-    const comment = req.body
+const putCacheComment = async (req, res, next) => {
+    const comment = req.body;
     try {
-        await cacheService.patchCacheComment(comment);
+        await cacheService.putCacheComment(comment);
         res.sendStatus(200);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
 const deleteCache = async (req, res, next) => {
-    const cache = req.body
+    const cache = req.body;
     try {
         await cacheService.deleteCache(cache);
         res.sendStatus(200);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
 const deleteCacheComment = async (req, res, next) => {
-    const comment = req.body
+    const comment = req.body;
     try {
         await cacheService.deleteCacheComment(comment);
         res.sendStatus(200);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
 const deleteCacheTags = async (req, res, next) => {
-    const cache = req.body
+    const cache = req.body;
     try {
         await cacheService.deleteCacheTags(cache);
         res.sendStatus(200);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
@@ -145,8 +147,17 @@ const deleteCacheTags = async (req, res, next) => {
 
 
 module.exports = {
-    getCaches, getCacheImages, getCacheComments, getCacheCollected,
-    postCache, postCacheCollect, postCacheComment, postCacheTag,
-    patchCache, patchCacheComment,
-    deleteCache, deleteCacheComment, deleteCacheTags
+    getCaches,
+    getCacheImages,
+    getCacheComments,
+    getCacheCollected,
+    postCache,
+    postCacheCollect,
+    postCacheComment,
+    postCacheTags,
+    putCache,
+    putCacheComment,
+    deleteCache,
+    deleteCacheComment,
+    deleteCacheTags
 }

@@ -1,10 +1,28 @@
 const jwt = require('jsonwebtoken');
-const { userDb } = require('../db');
-const { NoCredentialsInRequestError, TokenInvalidError, DatabaseError } = require('./errors');
+const {
+    userDb
+} = require('../db');
+const {
+    NoCredentialsInRequestError,
+    TokenInvalidError,
+    DatabaseError
+} = require('./errors');
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.ENVIRONMENT == 'prod',
+    sameSite: 'none'
+};
+
+const cookieOptionsDeleted = {
+    expires: 0,
+    secure: process.env.ENVIRONMENT == 'prod',
+    sameSite: 'none'
+};
 
 const checkAuthenticated = async (req, res, next) => {
-    if(req.hasToken) {
-        if(req.tokenValid){
+    if (req.hasToken) {
+        if (req.tokenValid) {
             next();
         } else {
             next(new TokenInvalidError());
@@ -19,9 +37,13 @@ const checkToken = async (req, res, next) => {
     if (cookie) {
         req.hasToken = true;
         try {
-            const { user_id } = jwt.verify(cookie, process.env.JWT_SECRET);
-            const hasLoggedOut = await userDb.getUserHasLoggedOut(user_id).catch((err) => {next(new DatabaseError(err.message))});
-            if(hasLoggedOut){
+            const {
+                user_id
+            } = jwt.verify(cookie, process.env.JWT_SECRET);
+            const hasLoggedOut = await userDb.getUserHasLoggedOut(user_id).catch((err) => {
+                next(new DatabaseError(err.message))
+            });
+            if (hasLoggedOut) {
                 req.tokenValid = false;
             } else {
                 req.user_id = user_id;
@@ -37,14 +59,20 @@ const checkToken = async (req, res, next) => {
 }
 
 const delToken = (res) => {
-    res.cookie('token', 'deleted', {expires: 0, secure: true, sameSite: 'none'});
+    res.cookie('token', 'deleted', cookieOptionsDeleted);
 }
 
 const genToken = (user_id) => {
-    return jwt.sign({user_id: user_id}, process.env.JWT_SECRET, {expiresIn: "20m"});
+    return jwt.sign({
+        user_id: user_id
+    }, process.env.JWT_SECRET, {
+        expiresIn: "20m"
+    });
 }
 
 module.exports = {
+    cookieOptions,
+    cookieOptionsDeleted,
     checkAuthenticated,
     checkToken,
     delToken,

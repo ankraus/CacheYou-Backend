@@ -3,7 +3,7 @@ const userDb = require('./user.db')
 const imageDb = require('./image.db');
 const collectionDb = require('./collection.db')
 
-module.exports = { 
+module.exports = {
     cacheDb,
     userDb,
     imageDb,

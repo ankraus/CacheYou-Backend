@@ -1,7 +1,17 @@
-const { userDb } = require('../db');
+const {
+    userDb
+} = require('../db');
 const bcrypt = require('bcrypt');
-const {authUtils} = require('../utils');
-const { NotFoundError, DatabaseError, HashingError, WrongCredentialsError, AlreadyExistsError } = require('../utils/errors');
+const {
+    authUtils
+} = require('../utils');
+const {
+    NotFoundError,
+    DatabaseError,
+    HashingError,
+    WrongCredentialsError,
+    AlreadyExistsError
+} = require('../utils/errors');
 
 
 const getUsers = async () => {
@@ -19,7 +29,7 @@ const getUserByEmail = async (email) => {
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(!user){
+    if (!user) {
         throw new NotFoundError();
     }
     return user;
@@ -32,7 +42,7 @@ const getUserByUsername = async (username) => {
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(!user){
+    if (!user) {
         throw new NotFoundError();
     }
     return user;
@@ -45,7 +55,7 @@ const getUserById = async (user_id) => {
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(!user){
+    if (!user) {
         throw new NotFoundError();
     }
     return user;
@@ -84,7 +94,9 @@ const getUserCollections = async (user_id) => {
 }
 
 const postRegisterUser = async (newUser) => {
-    newUser.pw_hash = await bcrypt.hash(newUser.password, 10).catch((err) => {throw new HashingError(err.message)});
+    newUser.pw_hash = await bcrypt.hash(newUser.password, 10).catch((err) => {
+        throw new HashingError(err.message)
+    });
     var userByEmail;
     var userByUsername;
     try {
@@ -93,7 +105,7 @@ const postRegisterUser = async (newUser) => {
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(userByEmail || userByUsername){
+    if (userByEmail || userByUsername) {
         throw new AlreadyExistsError();
     }
     try {
@@ -104,9 +116,11 @@ const postRegisterUser = async (newUser) => {
 }
 
 const postLoginUser = async (email, password) => {
-    const user = await userDb.getUserByEmail(email).catch((err) => {throw new DatabaseError(err.message)});
+    const user = await userDb.getUserByEmail(email).catch((err) => {
+        throw new DatabaseError(err.message)
+    });
     var pw_hash;
-    if(!user){
+    if (!user) {
         throw new WrongCredentialsError();
     }
     try {
@@ -114,16 +128,18 @@ const postLoginUser = async (email, password) => {
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(!pw_hash) {
+    if (!pw_hash) {
         throw new WrongCredentialsError();
     }
-    const match = await bcrypt.compare(password, pw_hash).catch((err) => {throw new HashingError(err.message)});
+    const match = await bcrypt.compare(password, pw_hash).catch((err) => {
+        throw new HashingError(err.message)
+    });
     try {
         await userDb.setUserHasLoggedOut(user.user_id, false);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(match) {
+    if (match) {
         return authUtils.genToken(user.user_id);
     } else {
         throw new WrongCredentialsError();

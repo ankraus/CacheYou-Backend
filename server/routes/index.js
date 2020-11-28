@@ -1,14 +1,27 @@
 const express = require('express');
-const { routerUtils, authUtils, validationUtils } = require('../utils');
+const {
+    routerUtils,
+    authUtils,
+    validationUtils
+} = require('../utils');
 
 const router = express.Router();
 
-const { cacheController, userController, imageController, collectionController } = require('../controllers');
+const {
+    cacheController,
+    userController,
+    imageController,
+    collectionController
+} = require('../controllers');
 
 //check all requests for tokens, sets user_id in req object if token is valid
 router.use(authUtils.checkToken);
 
-router.get('/', (req, res) => {res.json({routes: routerUtils.listRegisteredRoutes(router)})});
+router.get('/', (req, res) => {
+    res.json({
+        routes: routerUtils.listRegisteredRoutes(router)
+    })
+});
 
 //Cache routes
 router.get('/caches', cacheController.getCaches);
@@ -19,10 +32,10 @@ router.get('/caches/:cache_id/collected', cacheController.getCacheCollected);
 router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, cacheController.postCache);
 router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, cacheController.postCacheCollect);
 router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateComment, cacheController.postCacheComment);
-router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.postCacheTag);
+router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, cacheController.postCacheTags);
 
-router.patch('/caches/:cache_id', authUtils.checkAuthenticated, cacheController.patchCache);
-router.patch('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, cacheController.patchCacheComment);
+router.put('/caches/:cache_id', authUtils.checkAuthenticated, cacheController.putCache);
+router.put('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, cacheController.putCacheComment);
 
 router.delete('/caches/:cache_id', authUtils.checkAuthenticated, cacheController.deleteCache);
 router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, cacheController.deleteCacheComment);
@@ -42,7 +55,7 @@ router.post('/users/login', validationUtils.validateLogin, userController.postLo
 router.post('/users/logout', userController.postLogoutUser);
 router.post('/users/follow/:user_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 
-router.patch('/users', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, routerUtils.unimplementedRoute);
+router.put('/users', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, routerUtils.unimplementedRoute);
 
 router.delete('/users/current', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
@@ -62,7 +75,7 @@ router.get('/collections/:collection_id', collectionController.getCollection);
 router.post('/collections', authUtils.checkAuthenticated, validationUtils.validateCollection, routerUtils.unimplementedRoute);
 router.post('/collections/:collection_id/:cache_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 
-router.patch('/collections/:collection_id', authUtils.checkAuthenticated, validationUtils.validateUpdateCollection, routerUtils.unimplementedRoute);
+router.put('/collections/:collection_id', authUtils.checkAuthenticated, validationUtils.validateUpdateCollection, routerUtils.unimplementedRoute);
 
 router.delete('/collections/:collection_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.delete('/collections/:collection_id/:cache_id', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);

@@ -1,4 +1,3 @@
-
 const listRegisteredRoutes = (router) => {
     var routes = [];
     router.stack.forEach(element => {

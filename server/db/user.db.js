@@ -37,7 +37,7 @@ const getUserByEmail = async (email) => {
         SELECT user_id, email, username, image_id
         FROM   users 
         WHERE  email = $1`, [email]);
-    return db_resp.rows[0]  
+    return db_resp.rows[0]
 }
 
 const getUserByUsername = async (username) => {
