@@ -57,11 +57,24 @@ const getCacheCollected = async (req, res, next) => {
     }
 }
 
+const getTags = async (req, res, next) => {
+    try {
+        const tags = await cacheService.getTags();
+        res.json({
+            tags: tags
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const postCache = async (req, res, next) => {
     const cache = req.body;
     try {
         const cache_id = await cacheService.postCache(cache, req.user_id);
-        res.status(201).json({cache_id: cache_id});
+        res.status(201).json({
+            cache_id: cache_id
+        });
         next();
     } catch (error) {
         next(error);
@@ -163,6 +176,7 @@ module.exports = {
     getCacheImages,
     getCacheComments,
     getCacheCollected,
+    getTags,
     postCache,
     postCacheCollect,
     postCacheComment,

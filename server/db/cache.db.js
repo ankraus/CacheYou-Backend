@@ -36,7 +36,7 @@ const getCacheById = async (cache_id) => {
         FROM v_caches
         WHERE cache_id = $1
     `, [cache_id]);
-    if(db_resp.rows.length < 1) {
+    if (db_resp.rows.length < 1) {
         throw new NotFoundError();
     }
     const db_row = db_resp.rows[0];
@@ -117,6 +117,14 @@ const getCommentById = async (comment_id) => {
     return db_resp.rows[0]
 }
 
+const getTags = async () => {
+    const db_resp = await db.query(`
+        SELECT * FROM tags
+    `);
+    const tags = db_resp.rows.map(tag => tag.name);
+    return tags;
+}
+
 const postCache = async (cache, user_id) => {
     const all_tags_not_in_db = await db.query(`
         SELECT name
@@ -195,6 +203,7 @@ module.exports = {
     getCacheImages,
     getCacheComments,
     getCacheCollected,
+    getTags,
     getCommentById,
     postCache,
     postCacheCollect,

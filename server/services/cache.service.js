@@ -19,7 +19,7 @@ const getCacheById = async (cache_id) => {
     try {
         return await cacheDb.getCacheById(cache_id);
     } catch (error) {
-        if(error instanceof NotFoundError){
+        if (error instanceof NotFoundError) {
             throw error;
         } else {
             throw new DatabaseError(error.message);
@@ -51,11 +51,19 @@ const getCacheCollected = async (cache_id) => {
     }
 }
 
+const getTags = async () => {
+    try {
+        return await cacheDb.getTags();
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 const postCache = async (cache, user_id) => {
     try {
         return await cacheDb.postCache(cache, user_id);
     } catch (error) {
-        if(error instanceof BadRequestError) {
+        if (error instanceof BadRequestError) {
             throw error
         } else {
             throw new DatabaseError(error.message);
@@ -160,6 +168,7 @@ module.exports = {
     getCacheImages,
     getCacheComments,
     getCacheCollected,
+    getTags,
     postCache,
     postCacheCollect,
     postCacheComment,
