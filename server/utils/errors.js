@@ -48,9 +48,16 @@ class ForbiddenError extends Error {
 }
 
 class AlreadyExistsError extends Error {
-    constructor(message){
+    constructor(message) {
         super(message);
         this.name = "AlreadyExistsError";
+    }
+}
+
+class BadRequestError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "BadRequestError";
     }
 }
 
@@ -62,5 +69,6 @@ module.exports = {
     HashingError,
     NoCredentialsInRequestError,
     ForbiddenError,
-    AlreadyExistsError
+    AlreadyExistsError,
+    BadRequestError
 }

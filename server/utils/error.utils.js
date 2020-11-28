@@ -1,12 +1,19 @@
 const authUtils = require("./auth.utils");
-const { TokenInvalidError, WrongCredentialsError, NoCredentialsInRequestError, NotFoundError, AlreadyExistsError } = require("./errors");
+const {
+    TokenInvalidError,
+    WrongCredentialsError,
+    NoCredentialsInRequestError,
+    NotFoundError,
+    AlreadyExistsError,
+    BadRequestError
+} = require("./errors");
 const ValidationError = require('yup').ValidationError;
 
 
 const errorLogger = (err, req, res, next) => {
     const dateString = new Date().toLocaleString();
     const errorMessage = err.message;
-    if(errorMessage) {
+    if (errorMessage) {
         console.log(`[ERROR][${dateString}] ${errorMessage}`);
     }
     next(err);
@@ -32,7 +39,7 @@ const authenticationErrorHandler = (err, req, res, next) => {
 }
 
 const validationErrorHandler = (err, req, res, next) => {
-    if(err instanceof ValidationError){
+    if (err instanceof ValidationError) {
         res.status(400).send('Validation Error: ' + err.message);
     } else {
         next(err);
@@ -41,8 +48,11 @@ const validationErrorHandler = (err, req, res, next) => {
 
 const generalErrorHandler = (err, req, res, next) => {
     switch (true) {
+        case err instanceof BadRequestError:
+            res.status(400).send('Bad request' + (err.message?': ' + err.message:''));
+            break;
         case err instanceof NotFoundError:
-            res.status(404).send('Not found');
+            res.status(404).send('Not found' + (err.message?': ' + err.message:''));
             break;
         case err instanceof AlreadyExistsError:
             res.status(400).send('Already exists');

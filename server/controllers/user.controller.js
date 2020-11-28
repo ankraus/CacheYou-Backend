@@ -1,5 +1,9 @@
-const { userService } = require('../services');
-const { authUtils } = require('../utils');
+const {
+    userService
+} = require('../services');
+const {
+    authUtils
+} = require('../utils');
 
 const getUsers = async (req, res, next) => {
     try {
@@ -106,17 +110,20 @@ const postRegisterUser = async (req, res, next) => {
     try {
         await userService.postRegisterUser(user);
         res.sendStatus(201);
-        next();        
+        next();
     } catch (error) {
         next(error);
     }
 }
 
 const postLoginUser = async (req, res, next) => {
-    const {email, password} = req.body;
+    const {
+        email,
+        password
+    } = req.body;
     try {
         const token = await userService.postLoginUser(email, password);
-        res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'none'});
+        res.cookie('token', token, authUtils.cookieOptions);
         res.sendStatus(200);
     } catch (error) {
         next(error)

@@ -1,4 +1,6 @@
-const {collectionService} = require('../services');
+const {
+    collectionService
+} = require('../services');
 
 const getCollections = async (req, res, next) => {
     try {
@@ -23,5 +25,6 @@ const getCollection = async (req, res, next) => {
 }
 
 module.exports = {
-    getCollections, getCollection
+    getCollections,
+    getCollection
 }

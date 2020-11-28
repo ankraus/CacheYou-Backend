@@ -1,5 +1,10 @@
-const {collectionDb} = require('../db');
-const {DatabaseError, NotFoundError} = require('../utils/errors')
+const {
+    collectionDb
+} = require('../db');
+const {
+    DatabaseError,
+    NotFoundError
+} = require('../utils/errors')
 
 const getCollections = async () => {
     try {
@@ -16,12 +21,13 @@ const getCollection = async (collection_id) => {
     } catch (error) {
         throw new DatabaseError(error.message);
     }
-    if(!collection){
+    if (!collection) {
         throw new NotFoundError();
     }
     return collection;
 }
 
 module.exports = {
-    getCollections, getCollection
+    getCollections,
+    getCollection
 }
