@@ -4,7 +4,8 @@ const {
     WrongCredentialsError,
     NoCredentialsInRequestError,
     NotFoundError,
-    AlreadyExistsError
+    AlreadyExistsError,
+    BadRequestError
 } = require("./errors");
 const ValidationError = require('yup').ValidationError;
 
@@ -47,6 +48,9 @@ const validationErrorHandler = (err, req, res, next) => {
 
 const generalErrorHandler = (err, req, res, next) => {
     switch (true) {
+        case err instanceof BadRequestError:
+            res.status(400).send('Bad request' + (err.message?': ' + err.message:''));
+            break;
         case err instanceof NotFoundError:
             res.status(404).send('Not found' + (err.message?': ' + err.message:''));
             break;

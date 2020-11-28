@@ -54,6 +54,13 @@ class AlreadyExistsError extends Error {
     }
 }
 
+class BadRequestError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "BadRequestError";
+    }
+}
+
 module.exports = {
     TokenInvalidError,
     WrongCredentialsError,
@@ -62,5 +69,6 @@ module.exports = {
     HashingError,
     NoCredentialsInRequestError,
     ForbiddenError,
-    AlreadyExistsError
+    AlreadyExistsError,
+    BadRequestError
 }

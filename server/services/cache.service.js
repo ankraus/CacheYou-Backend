@@ -3,7 +3,8 @@ const {
 } = require('../db');
 const {
     DatabaseError,
-    NotFoundError
+    NotFoundError,
+    BadRequestError
 } = require('../utils/errors');
 
 const getCaches = async () => {
@@ -54,7 +55,7 @@ const postCache = async (cache, user_id) => {
     try {
         return await cacheDb.postCache(cache, user_id);
     } catch (error) {
-        if(error instanceof NotFoundError) {
+        if(error instanceof BadRequestError) {
             throw error
         } else {
             throw new DatabaseError(error.message);

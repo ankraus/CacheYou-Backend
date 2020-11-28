@@ -1,5 +1,6 @@
 const db = require('./db_connection')
 const {
+    BadRequestError,
     NotFoundError
 } = require('../utils/errors');
 
@@ -127,7 +128,7 @@ const postCache = async (cache, user_id) => {
         )`, [cache.tags]);
     if (all_tags_not_in_db.rows.length != 0) {
         const notFoundTags = all_tags_not_in_db.rows.map(x => x.name);
-        throw new NotFoundError('One or more tags do not exist: ' + JSON.stringify(notFoundTags));
+        throw new BadRequestError('One or more tags do not exist: ' + JSON.stringify(notFoundTags));
     }
     const db_resp = await db.query(`
         INSERT INTO caches (latitude, longitude, public, title, description, link, user_id) VALUES
