@@ -1,4 +1,6 @@
-const {collectionService} = require('../services');
+const {
+    collectionService
+} = require('../services');
 
 const getCollections = async (req, res, next) => {
     try {
@@ -7,21 +9,22 @@ const getCollections = async (req, res, next) => {
             collections: collections
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
 const getCollection = async (req, res, next) => {
     try {
-        const collection = await collectionService.getCollection(req.params.collection_id)
+        const collection = await collectionService.getCollection(req.params.collection_id);
         res.json({
             collection: collection
         });
     } catch (error) {
-        res.sendStatus(500) && next(error);
+        next(error);
     }
 }
 
 module.exports = {
-    getCollections, getCollection
+    getCollections,
+    getCollection
 }

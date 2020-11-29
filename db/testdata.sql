@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(50) UNIQUE NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
     pw_hash CHAR(60) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     image_id uuid REFERENCES images(image_id),
     has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
 );
@@ -95,6 +96,55 @@ CREATE TABLE IF NOT EXISTS caches_collections (
     cache_id uuid REFERENCES caches(cache_id),
     PRIMARY KEY (collection_id, cache_id)
 );
+
+--Create views
+
+DROP VIEW IF EXISTS v_caches;
+DROP VIEW IF EXISTS v_caches_comments;
+DROP VIEW IF EXISTS v_caches_collected;
+DROP VIEW IF EXISTS v_user_collected;
+DROP VIEW IF EXISTS v_caches_collections;
+
+CREATE VIEW v_caches AS 
+    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(t.name) AS tags
+    FROM caches c
+    JOIN caches_tags ct USING (cache_id)
+    JOIN users u USING (user_id)
+    JOIN tags t USING (tag_id)
+    GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
+
+CREATE VIEW v_caches_comments AS 
+    SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id 
+    FROM comments c 
+    JOIN caches ca USING (cache_id) 
+    JOIN users u ON u.user_id = c.user_id;
+
+CREATE VIEW v_caches_collected AS
+    SELECT u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at, array_agg(t.name) AS tags
+    FROM collected col 
+    JOIN users u USING (user_id) 
+    JOIN caches c USING (cache_id) 
+    JOIN caches_tags ct USING (cache_id)
+    JOIN tags t USING (tag_id)
+    GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
+
+CREATE VIEW v_caches_collections AS
+    SELECT cc.collection_id, c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username AS creator_username, u.user_id AS creator_id, c.created_at, array_agg(t.name) AS tags
+    FROM caches c
+    JOIN caches_tags ct USING (cache_id)
+    JOIN users u USING (user_id)
+    JOIN tags t USING (tag_id)
+    JOIN caches_collections cc USING (cache_id)
+    GROUP BY cc.collection_id, c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
+
+CREATE VIEW v_user_collected AS
+    SELECT u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at AS collected_at, array_agg(t.name) AS tags
+    FROM collected col 
+    JOIN users u USING (user_id) 
+    JOIN caches c USING (cache_id) 
+    JOIN caches_tags ct USING (cache_id)
+    JOIN tags t USING (tag_id)
+    GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
 
 --Insert dummy data
 

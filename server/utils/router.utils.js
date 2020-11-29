@@ -1,4 +1,3 @@
-
 const listRegisteredRoutes = (router) => {
     var routes = [];
     router.stack.forEach(element => {
@@ -9,6 +8,11 @@ const listRegisteredRoutes = (router) => {
     return routes;
 }
 
+const unimplementedRoute = (req, res) => {
+    res.sendStatus(501);
+}
+
 module.exports = {
-    listRegisteredRoutes
+    listRegisteredRoutes,
+    unimplementedRoute
 }

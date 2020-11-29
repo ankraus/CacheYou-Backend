@@ -1,10 +1,15 @@
-const {imageDb} = require('../db');
+const {
+    imageDb
+} = require('../db');
+const {
+    DatabaseError
+} = require('../utils/errors');
 
 const getImage = async (image_id) => {
     try {
         return await imageDb.getImage(image_id);
     } catch (error) {
-        throw new Error(error.message);
+        throw new DatabaseError(error.message);
     }
 }
 

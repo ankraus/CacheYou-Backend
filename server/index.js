@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const app = express();
 const routes = require('./routes');
+const {errorUtils} = require('./utils');
 
 const whitelist = ['http://localhost:8100', 'http://127.0.0.1:8100'];
 const corsOptions = {
@@ -28,10 +29,15 @@ app.use(cookieParser());
 
 app.use('/', routes);
 
+app.use(errorUtils.errorLogger);
+app.use(errorUtils.authenticationErrorHandler);
+app.use(errorUtils.validationErrorHandler);
+app.use(errorUtils.generalErrorHandler);
+
 const port = 8080;
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port} in ${process.env.ENVIRONMENT} mode`);
 });
 
 module.exports = {
