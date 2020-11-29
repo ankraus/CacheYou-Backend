@@ -1,5 +1,14 @@
 const yup = require('yup');
 
+const uuidSchema = yup.object().shape({
+    params: yup.object().shape({
+        cache_id: yup.string().uuid('id must be in uuid format'),
+        user_id: yup.string().uuid('id must be in uuid format'),
+        image_id: yup.string().uuid('id must be in uuid format'),
+        collection_id: yup.string().uuid('id must be in uuid format')
+    })
+});
+
 const loginSchema = yup.object().shape({
     body: yup.object().shape({
         email: yup.string().email().required('email required'),
@@ -58,6 +67,7 @@ const updateCollectionSchema = yup.object().shape({
 });
 
 module.exports = {
+    uuidSchema,
     loginSchema,
     registerSchema,
     createCacheSchema,
