@@ -17,6 +17,7 @@
     - [Registrierung](#registrierung)
     - [Login](#login)
     - [Logout](#logout)
+    - [Nutzerdaten ändern](#nutzerdaten-ändern)
     - [Alle von einem Nutzer gesammelten Caches](#alle-von-einem-nutzer-gesammelten-caches)
     - [Alle von einem Nutzer erstellten Caches](#alle-von-einem-nutzer-erstellten-caches)
     - [Alle Nutzer, denen ein Nutzer folgt](#alle-nutzer-denen-ein-nutzer-folgt)
@@ -137,6 +138,22 @@ OK
 **Route**: `/users/logout`  
 **Methode**: `POST`  
 **Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Nutzerdaten ändern
+**Route**: `/users/current`  
+**Methode**: `PUT`  
+**Anfrage**: *Mindestens einer der drei Parameter muss übergeben werden.*
+```json
+{
+	"email":"testuser@example.com",
+	"password":"testuser123567",
+	"username": "testuser_123"
+}
+```
 **Antwort**:
 ```
 OK
