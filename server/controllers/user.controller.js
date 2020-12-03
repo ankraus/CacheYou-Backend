@@ -146,6 +146,16 @@ const getIsLoggedIn = async (req, res) => {
     });
 }
 
+const putUpdateUser = async (req, res, next) => {
+    const user = req.body;
+    try {
+        await userService.putUpdateUser(user, req.user_id);
+        res.sendStatus(200);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getUsers,
     getCurrentUser,
@@ -159,5 +169,6 @@ module.exports = {
     postRegisterUser,
     postLoginUser,
     postLogoutUser,
-    getIsLoggedIn
+    getIsLoggedIn,
+    putUpdateUser
 }

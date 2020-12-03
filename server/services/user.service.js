@@ -94,20 +94,10 @@ const getUserCollections = async (user_id) => {
 }
 
 const postRegisterUser = async (newUser) => {
+    await checkIfAlreadyExists(newUser, "");
     newUser.pw_hash = await bcrypt.hash(newUser.password, 10).catch((err) => {
         throw new HashingError(err.message)
     });
-    var userByEmail;
-    var userByUsername;
-    try {
-        userByEmail = await userDb.getUserByEmail(newUser.email);
-        userByUsername = await userDb.getUserByUsername(newUser.username);
-    } catch (error) {
-        throw new DatabaseError(error.message);
-    }
-    if (userByEmail || userByUsername) {
-        throw new AlreadyExistsError();
-    }
     try {
         return await userDb.postRegisterUser(newUser);
     } catch (error) {
@@ -154,6 +144,48 @@ const postLogoutUser = async (user_id) => {
     }
 }
 
+const putUpdateUser = async (user, user_id) => {
+    await checkIfAlreadyExists(user, user_id);
+    try {
+        //if a new password was provided, hash it and store it in user.pw_hash. Else, get old pw_hash from db and use that.
+        if(user.password) {
+            user.pw_hash = await bcrypt.hash(user.password, 10).catch((err) => {
+                throw new HashingError(err.message)
+            });
+        } else {
+            user.pw_hash = (await userDb.getUserPwHash(user_id)).pw_hash;
+        }
+        //get user from db to fill fields that were not provided
+        const dbUser = await userDb.getUserById(user_id);
+        if(!user.username) {
+            user.username = dbUser.username;
+        }
+        if(!user.email) {
+            user.email = dbUser.email;
+        }
+        return await userDb.putUpdateUser(user, user_id);
+    } catch (error) {
+        throw new DatabaseError();
+    }
+}
+
+const checkIfAlreadyExists = async (user, user_id) => {
+    var userByEmail;
+    var userByUsername;
+    try {
+        userByEmail = await userDb.getUserByEmail(user.email);
+        userByUsername = await userDb.getUserByUsername(user.username);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+    //if email or username exist on a different user, throw error
+    if ((userByEmail && userByEmail.user_id != user_id)) {
+        throw new AlreadyExistsError('email');
+    } else if ((userByUsername && userByUsername.user_id != user_id)) {
+        throw new AlreadyExistsError('username');
+    }
+}
+
 module.exports = {
     getUsers,
     getUserByEmail,
@@ -165,5 +197,6 @@ module.exports = {
     getUserCollections,
     postRegisterUser,
     postLoginUser,
-    postLogoutUser
+    postLogoutUser,
+    putUpdateUser
 }

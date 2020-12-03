@@ -119,6 +119,15 @@ const postRegisterUser = async (newUser) => {
     return;
 }
 
+const putUpdateUser = async (user, user_id) => {
+    await db.query(`UPDATE users 
+                    SET username = $1, 
+                        email = $2, 
+                        pw_hash = $3 
+                    WHERE user_id = $4`, [user.username, user.email, user.pw_hash, user_id]);
+    
+}
+
 module.exports = {
     getUsers,
     getUserPwHash,
@@ -131,5 +140,6 @@ module.exports = {
     getUserCollected,
     getUserCreated,
     getUserCollections,
-    postRegisterUser
+    postRegisterUser,
+    putUpdateUser
 }

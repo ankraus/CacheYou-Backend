@@ -57,7 +57,7 @@ router.post('/users/login', validationUtils.validateLogin, userController.postLo
 router.post('/users/logout', userController.postLogoutUser);
 router.post('/users/follow/:user_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 
-router.put('/users', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, routerUtils.unimplementedRoute);
+router.put('/users/current', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, userController.putUpdateUser);
 
 router.delete('/users/current', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
