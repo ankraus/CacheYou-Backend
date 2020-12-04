@@ -5,6 +5,7 @@ const eym = require('express-yup').validate;
 const schemas = require('../utils/validation.schemas');
 
 const validateIds = eym(schemas.uuidSchema);
+const validateImageTypes = eym(schemas.imageTypesSchema);
 const validateLogin = eym(schemas.loginSchema);
 const validateRegistration = eym(schemas.registerSchema);
 const validateCreateCache = eym(schemas.createCacheSchema);
@@ -15,6 +16,7 @@ const validateUpdateCollection = eym(schemas.updateCollectionSchema);
 
 module.exports = {
     validateIds,
+    validateImageTypes,
     validateLogin,
     validateRegistration,
     validateCreateCache,
