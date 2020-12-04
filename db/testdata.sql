@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS caches_images CASCADE;
 DROP TABLE IF EXISTS collections CASCADE;
 DROP TABLE IF EXISTS caches_collections CASCADE;
 DROP TABLE IF EXISTS images CASCADE;
+DROP TABLE IF EXISTS users_images CASCADE;
 
 --Add support for uuids
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -19,7 +20,8 @@ CREATE TABLE IF NOT EXISTS images (
     image_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     image BYTEA NOT NULL,
     mimetype VARCHAR(25) DEFAULT 'image/png' NOT NULL,
-    image_hash CHAR(32)
+    image_hash CHAR(32),
+    is_cover_image BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -30,6 +32,12 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     image_id uuid REFERENCES images(image_id),
     has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users_images (
+    user_id uuid REFERENCES users(user_id) NOT NULL,
+    image_id uuid REFERENCES images(image_id) NOT NULL,
+    PRIMARY KEY (user_id, image_id)
 );
 
 CREATE TABLE IF NOT EXISTS follows (
@@ -105,12 +113,25 @@ DROP VIEW IF EXISTS v_caches_collected;
 DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
 
-CREATE VIEW v_caches AS 
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(t.name) AS tags
+CREATE VIEW v_caches AS
+    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
+    JOIN caches_images ci USING (cache_id)
+    JOIN images i ON ci.image_id = i.image_id
+    WHERE i.is_cover_image
+    GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
+
+CREATE VIEW v_caches_image_array AS 
+    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(i.image_id) AS image_ids, array_agg(t.name) AS tags
+    FROM caches c
+    JOIN caches_tags ct USING (cache_id)
+    JOIN users u USING (user_id)
+    JOIN tags t USING (tag_id)
+    JOIN caches_images ci USING (cache_id)
+    JOIN images i ON ci.image_id = i.image_id
     GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
 
 CREATE VIEW v_caches_comments AS 
@@ -148,27 +169,32 @@ CREATE VIEW v_user_collected AS
 
 --Insert dummy data
 
-INSERT INTO images(image_id, image) VALUES
+INSERT INTO images(image_id, image, is_cover_image) VALUES
     (
         '166fc680-8dc3-4707-8f49-dfd223e58e2c'::uuid,
-        pg_read_binary_file('/test_pic1.png')
+        pg_read_binary_file('/test_pic1.png'),
+        FALSE
     ),
     (
         'a258475f-88de-4f20-a98b-b3b0d830b66e'::uuid,
-        pg_read_binary_file('/test_pic2.png')
+        pg_read_binary_file('/test_pic2.png'),
+        FALSE
     ),
     (
         '36a9575e-fd78-4a8d-927b-1fba938854ea'::uuid,
-        pg_read_binary_file('/test_pic_cache.png')
+        pg_read_binary_file('/test_pic_cache.png'),
+        TRUE
     ),
     (
         '4b3c7735-cec5-40ef-b416-27dcdad3a646'::uuid,
-        pg_read_binary_file('/test_pic_cache2.png')
+        pg_read_binary_file('/test_pic_cache2.png'),
+        TRUE
     ),
     (
         '2155e963-6f90-4370-af16-f2b3d4f05f5a'::uuid,
-        pg_read_binary_file('/test_pic_cache3.png')
-    );
+        pg_read_binary_file('/test_pic_cache3.png'),
+        TRUE
+    );    
 
 INSERT INTO users(user_id, email, username, pw_hash, image_id) VALUES 
     (
@@ -184,6 +210,28 @@ INSERT INTO users(user_id, email, username, pw_hash, image_id) VALUES
         'dummy789',
         '$2y$10$cI6j/HIm/w2lhV8Cq2q37e9l451ODbEnmzSPgbpHkZF.B1nGSE4rW',
         'a258475f-88de-4f20-a98b-b3b0d830b66e'
+    );
+
+INSERT INTO users_images (image_id, user_id) VALUES
+    (
+        '166fc680-8dc3-4707-8f49-dfd223e58e2c'::uuid,
+        '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid
+    ),
+    (
+        'a258475f-88de-4f20-a98b-b3b0d830b66e'::uuid,
+        '94eff975-1414-4fe4-8d5d-8871dc23c4f4'::uuid
+    ),
+    (
+        '36a9575e-fd78-4a8d-927b-1fba938854ea'::uuid,
+        '94eff975-1414-4fe4-8d5d-8871dc23c4f4'::uuid
+    ),
+    (
+        '4b3c7735-cec5-40ef-b416-27dcdad3a646'::uuid,
+        '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid
+    ),
+    (
+        '2155e963-6f90-4370-af16-f2b3d4f05f5a'::uuid,
+        '94eff975-1414-4fe4-8d5d-8871dc23c4f4'::uuid
     );
 
 INSERT INTO follows(follower_id, user_id)

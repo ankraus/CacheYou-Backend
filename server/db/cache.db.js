@@ -13,6 +13,7 @@ const getCaches = async () => {
     db_resp.rows.forEach((db_row) => {
         caches.push({
             cache_id: db_row.cache_id,
+            cover_image_id: db_row.image_id,
             latitude: db_row.latitude,
             longitude: db_row.longitude,
             title: db_row.title,
@@ -33,7 +34,7 @@ const getCaches = async () => {
 const getCacheById = async (cache_id) => {
     const db_resp = await db.query(`
         SELECT * 
-        FROM v_caches
+        FROM v_caches_image_array
         WHERE cache_id = $1
     `, [cache_id]);
     if (db_resp.rows.length < 1) {
@@ -48,6 +49,7 @@ const getCacheById = async (cache_id) => {
         description: db_row.description,
         link: db_row.link,
         tags: db_row.tags,
+        image_ids: db_row.image_ids,
         creator: {
             username: db_row.username,
             user_id: db_row.user_id
