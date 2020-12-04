@@ -24,7 +24,22 @@ const postProfilePicture = async (req, res, next) => {
     }
 }
 
+const postCacheImage = async (req, res, next) => {
+    try {
+        const imageData = req.body;
+        const mimeType = req.header('Content-Type');
+        const userId = req.user_id;
+        const isCoverImage = req.route.path === '/images/caches/:cache_id/cover'
+        const cacheId = req.params.cache_id;
+        const imageId = await imageService.postCacheImage(imageData, mimeType, userId, cacheId, isCoverImage);
+        res.status(200).json(imageId);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getImage,
-    postProfilePicture
+    postProfilePicture,
+    postCacheImage
 }
