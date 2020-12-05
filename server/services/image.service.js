@@ -6,9 +6,9 @@ const {
 } = require('../utils/errors');
 const crypto = require('crypto')
 
-const getImage = async (image_id) => {
+const getImage = async (imageId) => {
     try {
-        return await imageDb.getImage(image_id);
+        return await imageDb.getImage(imageId);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
@@ -32,10 +32,19 @@ const postCacheImage = async (imageData, mimeType, userId, cacheId, isCoverImage
     }
 }
 
+const deleteImage = async (imageId) => {
+    try {
+        await imageDb.deleteImage(imageId);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 const hashImage = (imageData) => crypto.createHash('md5').update(imageData).digest("hex");
 
 module.exports = {
     getImage,
     postProfilePicture,
-    postCacheImage
+    postCacheImage,
+    deleteImage
 }

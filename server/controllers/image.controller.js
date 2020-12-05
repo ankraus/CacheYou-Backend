@@ -38,8 +38,19 @@ const postCacheImage = async (req, res, next) => {
     }
 }
 
+const deleteImage = async (req, res, next) => {
+    try {
+        const imageId = req.params.image_id;
+        await imageService.deleteImage(imageId);
+        res.sendStatus(200);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getImage,
     postProfilePicture,
-    postCacheImage
+    postCacheImage,
+    deleteImage
 }

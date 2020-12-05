@@ -70,7 +70,7 @@ router.post('/images/users/', authUtils.checkAuthenticated, validationUtils.vali
 router.post('/images/caches/:cache_id/cover', authUtils.checkAuthenticated, validationUtils.validateImageTypes, validationUtils.validateIds, imageController.postCacheImage);
 router.post('/images/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateImageTypes, validationUtils.validateIds, imageController.postCacheImage);
 
-router.delete('/images/:image_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
+router.delete('/images/:image_id', authUtils.checkAuthenticated, validationUtils.validateIds, imageController.deleteImage);
 
 //collection routes
 router.get('/collections', collectionController.getCollections);

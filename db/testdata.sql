@@ -30,19 +30,19 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     pw_hash CHAR(60) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
-    image_id uuid REFERENCES images(image_id),
+    image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
     has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_images (
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    image_id uuid REFERENCES images(image_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
+    image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, image_id)
 );
 
 CREATE TABLE IF NOT EXISTS follows (
-    follower_id uuid REFERENCES users(user_id) NOT NULL,
-    user_id uuid REFERENCES users(user_id) NOT NULL,
+    follower_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
     PRIMARY KEY (follower_id, user_id)
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS caches (
     title VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
     link TEXT,
-    user_id uuid REFERENCES users(user_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -78,15 +78,15 @@ CREATE TABLE IF NOT EXISTS comments (
 );
 
 CREATE TABLE IF NOT EXISTS caches_images (
-    image_id uuid REFERENCES images(image_id) NOT NULL,
-    cache_id uuid REFERENCES caches(cache_id) NOT NULL,
+    image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE RESTRICT,
     is_cover_image BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY (image_id, cache_id)
 );
 
 CREATE TABLE IF NOT EXISTS collected (
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    cache_id uuid REFERENCES caches(cache_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE SET NULL,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     liked BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY (user_id, cache_id)
@@ -119,9 +119,8 @@ CREATE VIEW v_caches AS
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
-    JOIN caches_images ci USING (cache_id)
-    JOIN images i ON ci.image_id = i.image_id
-    WHERE ci.is_cover_image
+    LEFT JOIN caches_images ci USING (cache_id)
+    LEFT JOIN images i ON ci.image_id = i.image_id AND ci.is_cover_image
     GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
 CREATE VIEW v_caches_image_array AS 
