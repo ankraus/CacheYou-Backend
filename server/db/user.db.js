@@ -2,11 +2,20 @@ const db = require('./db_connection');
 
 const getUsers = async () => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, image_id
+        SELECT user_id, username, image_id
         FROM users
     `);
     return db_resp.rows;
 };
+
+const getSelf = async (userId) => {
+    const db_resp = await db.query(`
+        SELECT user_id, email, username, image_id
+        FROM users
+        WHERE user_id = $1
+    `, [userId]);
+    return db_resp.rows[0];
+}
 
 const getUserPwHash = async (user_id) => {
     const db_resp = await db.query(`
@@ -50,7 +59,7 @@ const getUserByUsername = async (username) => {
 
 const getUserById = async (user_id) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, image_id
+        SELECT user_id, username, image_id
         FROM   users 
         WHERE  user_id = $1::uuid`, [user_id]);
     return db_resp.rows[0]
@@ -130,6 +139,7 @@ const putUpdateUser = async (user, user_id) => {
 
 module.exports = {
     getUsers,
+    getSelf,
     getUserPwHash,
     getUserHasLoggedOut,
     setUserHasLoggedOut,

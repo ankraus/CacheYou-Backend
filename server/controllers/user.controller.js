@@ -18,7 +18,7 @@ const getUsers = async (req, res, next) => {
 
 const getCurrentUser = async (req, res, next) => {
     try {
-        const user = await userService.getUserById(req.user_id);
+        const user = await userService.getSelf(req.user_id);
         res.json({
             user: user
         });
@@ -50,8 +50,15 @@ const getUserByUsername = async (req, res, next) => {
 }
 
 const getUserById = async (req, res, next) => {
+    const userId = req.tokenValid ? req.user_id : undefined;
+    const requestedUserId = req.params.user_id;
+    var user;
     try {
-        const user = await userService.getUserById(req.params.user_id);
+        if(userId === requestedUserId) {
+            user = await userService.getSelf(userId);
+        } else {
+            user = await userService.getUserById(requestedUserId);
+        }
         res.json({
             user: user
         });

@@ -22,6 +22,14 @@ const getUsers = async () => {
     }
 }
 
+const getSelf = async (userId) => {
+    try {
+        return await userDb.getSelf(userId);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 const getUserByEmail = async (email) => {
     var user;
     try {
@@ -188,6 +196,7 @@ const checkIfAlreadyExists = async (user, user_id) => {
 
 module.exports = {
     getUsers,
+    getSelf,
     getUserByEmail,
     getUserByUsername,
     getUserById,

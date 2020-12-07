@@ -47,6 +47,7 @@ router.delete('/caches/:cache_id/tags', authUtils.checkAuthenticated, validation
 router.get('/users', userController.getUsers);
 router.get('/users/current', authUtils.checkAuthenticated, userController.getCurrentUser);
 router.get('/users/isLoggedIn', userController.getIsLoggedIn);
+router.get('/users/:user_id', validationUtils.validateIds, userController.getUserById);
 router.get('/users/:user_id/follows', validationUtils.validateIds, userController.getUserFollows);
 router.get('/users/:user_id/collected', validationUtils.validateIds, userController.getUserCollected);
 router.get('/users/:user_id/created', validationUtils.validateIds, userController.getUserCreated);
