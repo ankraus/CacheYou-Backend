@@ -107,9 +107,10 @@ const postCacheComment = async (req, res, next) => {
 }
 
 const postCacheTags = async (req, res, next) => {
-    const tag = req.body;
+    const tags = req.body;
+    const cache_id = req.params.cache_id
     try {
-        await cacheService.postCacheTags(tag);
+        await cacheService.postCacheTags(cache_id, tags);
         res.sendStatus(201);
         next();
     } catch (error) {

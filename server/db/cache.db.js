@@ -131,18 +131,7 @@ const getTags = async () => {
 }
 
 const postCache = async (cache, user_id) => {
-    const all_tags_not_in_db = await db.query(`
-        SELECT name
-        FROM (
-            SELECT UNNEST($1::varchar[]) as name
-        ) as tags_input
-        WHERE tags_input.name NOT IN (
-            SELECT name FROM tags
-        )`, [cache.tags]);
-    if (all_tags_not_in_db.rows.length != 0) {
-        const notFoundTags = all_tags_not_in_db.rows.map(x => x.name);
-        throw new BadRequestError('One or more tags do not exist: ' + JSON.stringify(notFoundTags));
-    }
+    await legitTags(cache.tags) 
     const db_resp = await db.query(`
         INSERT INTO caches (latitude, longitude, public, title, description, link, user_id) VALUES
         ($1, $2, $3, $4, $5, $6, $7)
@@ -198,9 +187,17 @@ const postCacheComment = async (comment, cache_id, user_id) => {
     return comment_id;
 }
 
-// Brauchen wir nicht ?
-const postCacheTags = async (tag) => {
-    await db.query(``);
+
+const postCacheTags = async (cache_id, tags) => {
+    await legitTags(tags)
+    await db.query(`
+        INSERT INTO caches_tags(tag_id, cache_id)(
+            SELECT tag_id, $1 as cache_id
+            FROM tags t
+            WHERE t.name IN (
+                SELECT UNNEST($2::varchar[])
+            )
+        )`, [cache_id, tags]);
     return;
 }
 
@@ -238,6 +235,20 @@ const deleteCacheTags = async (cache_id) => {
     return;
 }
 
+const legitTags = async (tags) => {
+    const all_tags_not_in_db = await db.query(`
+        SELECT name
+        FROM (
+            SELECT UNNEST($1::varchar[]) as name
+        ) as tags_input
+        WHERE tags_input.name NOT IN (
+            SELECT name FROM tags
+        )`, [tags]);
+    if (all_tags_not_in_db.rows.length != 0) {
+        const notFoundTags = all_tags_not_in_db.rows.map(x => x.name);
+        throw new BadRequestError('One or more tags do not exist: ' + JSON.stringify(notFoundTags));
+    }
+}
 
 
 module.exports = {

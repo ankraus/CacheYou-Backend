@@ -95,9 +95,9 @@ const postCacheComment = async (comment, cache_id, user_id) => {
     }
 }
 
-const postCacheTags = async (tag) => {
+const postCacheTags = async (cache_id, tags) => {
     try {
-        await cacheDb.postCacheTags(tag);
+        await cacheDb.postCacheTags(cache_id, tags);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
