@@ -93,8 +93,10 @@ const postCacheCollect = async (req, res, next) => {
 
 const postCacheComment = async (req, res, next) => {
     const comment = req.body;
+    const cache_id = req.params.cache_id
+    const user_id = req.user_id
     try {
-        const comment_id = await cacheService.postCacheComment(comment, req.user_id);
+        const comment_id = await cacheService.postCacheComment(comment, cache_id, user_id);
         res.status(201).json({
             comment_id: comment_id
         });
@@ -128,8 +130,11 @@ const putCache = async (req, res, next) => {
 
 const putCacheComment = async (req, res, next) => {
     const comment = req.body;
+    const cache_id = req.params.cache_id
+    const user_id = req.user_id
+    const comment_id = req.params.comment_id
     try {
-        await cacheService.putCacheComment(comment);
+        await cacheService.putCacheComment(comment, cache_id, user_id, comment_id);
         res.sendStatus(200);
         next();
     } catch (error) {

@@ -113,9 +113,12 @@ const getCacheCollected = async (cache_id) => {
 
 const getCommentById = async (comment_id) => {
     const db_resp = await db.query(`
-        SELECT comment_id, content, created_at
+        SELECT comment_id, user_id, cache_id, created_at, content
         FROM   comments
         WHERE  comment_id = $1::uuid`, [comment_id]);
+    if (db_resp.rows.length < 1) {
+        throw new NotFoundError();
+    }
     return db_resp.rows[0]
 }
 
@@ -171,40 +174,49 @@ const postCacheCollect = async (cache_id, user_id) => {
             , [user_id, cache_id]);
     } else if (!alreadyLiked.rows[0].liked) {        // geht das?
         await db.query(`
-            UPDATE collected SET liked = TRUE
+            UPDATE collected 
+            SET liked = TRUE
             WHERE  user_id = $1 AND cache_id = $2`
             , [user_id, cache_id]);
     } else {
         await db.query(`
-            UPDATE collected SET liked = FALSE
+            UPDATE collected 
+            SET liked = FALSE
             WHERE  user_id = $1 AND cache_id = $2`
             , [user_id, cache_id]);
     }
     return;
 }
 
-const postCacheComment = async (comment, user_id) => {
+const postCacheComment = async (comment, cache_id, user_id) => {
     const db_resp = await db.query(`
         INSERT INTO comments (user_id, cache_id, content) VALUES
         ($1, $2, $3)
         RETURNING comment_id`,
-        [user_id, comment.cache_id, comment.content]);
+        [user_id, cache_id, comment]);
     const comment_id = db_resp.rows[0].comment_id;
     return comment_id;
 }
 
+// Brauchen wir nicht ?
 const postCacheTags = async (tag) => {
     await db.query(``);
     return;
 }
 
 const putCache = async (cache) => {
-    await db.query(``);
+    await db.query(`
+        
+    `);
     return;
 }
 
-const putCacheComment = async (comment) => {
-    await db.query(``);
+const putCacheComment = async (comment, cache_id, user_id) => {
+    await db.query(`
+        UPDATE comments 
+        SET content = $1
+        WHERE  cache_id = $2 AND user_id = $3`
+        , [comment, cache_id, user_id]);
     return;
 }
 

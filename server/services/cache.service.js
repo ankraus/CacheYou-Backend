@@ -83,9 +83,9 @@ const postCacheCollect = async (cache_id, user_id) => {
     }
 }
 
-const postCacheComment = async (comment, user_id) => {
+const postCacheComment = async (comment, cache_id, user_id) => {
     try {
-        return await cacheDb.postCacheComment(comment, user_id);
+        return await cacheDb.postCacheComment(comment, cache_id, user_id);
     } catch (error) {
         if (error instanceof BadRequestError) {
             throw error
@@ -116,14 +116,14 @@ const putCache = async (cache) => {
     }
 }
 
-const putCacheComment = async (comment) => {
+const putCacheComment = async (comment, cache_id, user_id, comment_id) => {
     try {
-        await cacheDb.getCommentById(comment.id)
+        await cacheDb.getCommentById(comment_id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.putCacheComment(comment);
+        await cacheDb.putCacheComment(comment, cache_id, user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
