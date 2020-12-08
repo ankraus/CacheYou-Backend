@@ -162,9 +162,14 @@ const postCacheCollect = async (cache) => {
     return;
 }
 
-const postCacheComment = async (comment) => {
-    await db.query(``);
-    return;
+const postCacheComment = async (comment, user_id) => {
+    const db_resp = await db.query(`
+        INSERT INTO comments (user_id, cache_id, content) VALUES
+        ($1, $2, $3)
+        RETURNING comment_id`,
+        [user_id, comment.cache_id, comment.content]);
+    const comment_id = db_resp.rows[0].comment_id;
+    return comment_id;
 }
 
 const postCacheTags = async (tag) => {

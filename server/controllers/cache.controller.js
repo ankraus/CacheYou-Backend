@@ -95,8 +95,10 @@ const postCacheCollect = async (req, res, next) => {
 const postCacheComment = async (req, res, next) => {
     const comment = req.body;
     try {
-        await cacheService.postCacheComment(comment);
-        res.sendStatus(201);
+        const comment_id = await cacheService.postCacheComment(comment, req.user_id);
+        res.status(201).json({
+            comment_id: comment_id
+        });
         next();
     } catch (error) {
         next(error);
