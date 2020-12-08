@@ -71,11 +71,15 @@ const postCache = async (cache, user_id) => {
     }
 }
 
-const postCacheCollect = async (cache) => {
+const postCacheCollect = async (cache_id, user_id) => {
     try {
-        await cacheDb.postCacheCollect(cache);
+        await cacheDb.postCacheCollect(cache_id, user_id);
     } catch (error) {
-        throw new DatabaseError(error.message);
+        if (error instanceof BadRequestError) {
+            throw error
+        } else {
+            throw new DatabaseError(error.message);
+        }
     }
 }
 

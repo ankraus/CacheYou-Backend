@@ -157,8 +157,29 @@ const postCache = async (cache, user_id) => {
     return cache_id;
 }
 
-const postCacheCollect = async (cache) => {
-    await db.query(``);
+// Erstes post: Eintrag in collect; Sonst: Liken oder Entliken    oder lieber neue Route zum liken?
+const postCacheCollect = async (cache_id, user_id) => {
+    const alreadyLiked = await db.query(`
+        SELECT liked
+        FROM   collected
+        WHERE  user_id = $1 AND cache_id = $2`
+        , [user_id, cache_id]);
+    if (alreadyLiked.rows.length == 0){
+        await db.query(`
+            INSERT INTO collected (user_id, cache_id) VALUES
+            ($1, $2)`
+            , [user_id, cache_id]);
+    } else if (!alreadyLiked.rows[0].liked) {        // geht das?
+        await db.query(`
+            UPDATE collected SET liked = TRUE
+            WHERE  user_id = $1 AND cache_id = $2`
+            , [user_id, cache_id]);
+    } else {
+        await db.query(`
+            UPDATE collected SET liked = FALSE
+            WHERE  user_id = $1 AND cache_id = $2`
+            , [user_id, cache_id]);
+    }
     return;
 }
 

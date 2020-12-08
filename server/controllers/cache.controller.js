@@ -82,9 +82,8 @@ const postCache = async (req, res, next) => {
 }
 
 const postCacheCollect = async (req, res, next) => {
-    const cache = req.body;
     try {
-        await cacheService.postCacheCollect(cache);
+        await cacheService.postCacheCollect(req.params.cache_id, req.user_id);
         res.sendStatus(201);
         next();
     } catch (error) {
