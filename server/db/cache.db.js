@@ -205,7 +205,6 @@ const putCache = async (cache) => {
     await db.query(`
         
     `);
-    return;
 }
 
 const putCacheComment = async (comment, cache_id, user_id) => {
@@ -214,7 +213,6 @@ const putCacheComment = async (comment, cache_id, user_id) => {
         SET content = $1
         WHERE  cache_id = $2 AND user_id = $3`
         , [comment, cache_id, user_id]);
-    return;
 }
 
 const deleteCache = async (cache_id) => {
@@ -227,12 +225,13 @@ const deleteCacheComment = async (comment_id) => {
         DELETE FROM comments
         WHERE comment_id = $1`
         , [comment_id]);
-    return;
 }
 
 const deleteCacheTags = async (cache_id) => {
-    await db.query(``);
-    return;
+    await db.query(`
+        DELETE FROM cache_tags
+        WHERE cache_id = $1`
+    , [cache_id]);
 }
 
 const legitTags = async (tags) => {

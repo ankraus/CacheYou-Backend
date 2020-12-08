@@ -166,9 +166,9 @@ const deleteCacheComment = async (req, res, next) => {
 }
 
 const deleteCacheTags = async (req, res, next) => {
-    const cache = req.body;
+    const cache_id = req.params.cache_id;
     try {
-        await cacheService.deleteCacheTags(cache);
+        await cacheService.deleteCacheTags(cache_id);
         res.sendStatus(200);
         next();
     } catch (error) {
