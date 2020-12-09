@@ -174,6 +174,15 @@ const putUpdateUser = async (user, user_id) => {
         if(!user.interests) {
             user.interests = dbUser.interests;
         }
+        if(user.terms_of_use == null) {
+            user.terms_of_use = dbUser.terms_of_use;
+        }
+        if(user.privacy_policy == null) {
+            user.privacy_policy = dbUser.privacy_policy;
+        }
+        if(user.license == null) {
+            user.license = dbUser.license;
+        }
         return await userDb.putUpdateUser(user, user_id);
     } catch (error) {
         throw new DatabaseError();

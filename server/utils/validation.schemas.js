@@ -22,8 +22,8 @@ const registerSchema = yup.object().shape({
         username: yup.string().required('username required'),
         password: yup.string().required('password required'),
         interests: yup.array().of(yup.string()).required('interests required'),
-        termsOfUse: yup.boolean().required('termsOfUse required'),
-        privacyPolicy: yup.boolean().required('privacyPolicy required'),
+        terms_of_use: yup.boolean().required('terms_of_use required'),
+        privacy_policy: yup.boolean().required('privacy_policy required'),
         license: yup.boolean().required('license required')
     })
 });
@@ -51,9 +51,12 @@ const updateUserSchema = yup.object().shape({
         email: yup.string().email().notRequired(),
         username: yup.string().notRequired(),
         password: yup.string().notRequired(),
-        interests: yup.array().of(yup.string()).notRequired()
+        interests: yup.array().of(yup.string()).notRequired(),
+        terms_of_use: yup.boolean().notRequired(),
+        privacy_policy: yup.boolean().notRequired(),
+        license: yup.boolean().notRequired()
     }).test('at-least-one-field', 'at least one field must be provided', (value) =>
-        !!(value.email || value.username || value.password || value.interests))
+        !!(value.email || value.username || value.password || value.interests || (value.terms_of_use != null) || (value.privacy_policy != null) || (value.license != null)))
 });
 
 const collectionSchema = yup.object().shape({

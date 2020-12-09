@@ -124,7 +124,7 @@ const getUserCollections = async (user_id) => {
 
 const postRegisterUser = async (newUser) => {
     const db_resp = await db.query(`INSERT INTO users(email, username, pw_hash, terms_of_use, privacy_policy, license) 
-                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id`, [newUser.email, newUser.username, newUser.pw_hash, newUser.termsOfUse, newUser.privacyPolicy, newUser.license]);
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id`, [newUser.email, newUser.username, newUser.pw_hash, newUser.terms_of_use, newUser.privacy_policy, newUser.license]);
     await insertInterests(db_resp.rows[0].user_id, newUser.interests);
     return;
 }
@@ -133,8 +133,11 @@ const putUpdateUser = async (user, user_id) => {
     await db.query(`UPDATE users 
                     SET username = $1, 
                         email = $2, 
-                        pw_hash = $3 
-                    WHERE user_id = $4`, [user.username, user.email, user.pw_hash, user_id]);
+                        pw_hash = $3,
+                        terms_of_use = $4,
+                        privacy_policy = $5,
+                        license = $6
+                    WHERE user_id = $7`, [user.username, user.email, user.pw_hash, user.terms_of_use, user.privacy_policy, user.license, user_id]);
     await db.query(`DELETE FROM users_interests WHERE user_id = $1`, [user_id]);
     await insertInterests(user_id, user.interests);
     
