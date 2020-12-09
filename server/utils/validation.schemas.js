@@ -21,7 +21,10 @@ const registerSchema = yup.object().shape({
         email: yup.string().email('email must follow email format').required('email required'),
         username: yup.string().required('username required'),
         password: yup.string().required('password required'),
-        interests: yup.array().of(yup.string()).required('interests required')
+        interests: yup.array().of(yup.string()).required('interests required'),
+        termsOfUse: yup.boolean().required('termsOfUse required'),
+        privacyPolicy: yup.boolean().required('privacyPolicy required'),
+        license: yup.boolean().required('license required')
     })
 });
 

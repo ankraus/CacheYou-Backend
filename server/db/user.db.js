@@ -11,7 +11,7 @@ const getUsers = async () => {
 const getSelf = async (userId) => {
     const db_resp = await db.query(`
         SELECT *
-        FROM v_users_with_email
+        FROM v_users_extended
         WHERE user_id = $1
     `, [userId]);
     return db_resp.rows[0];
@@ -44,7 +44,7 @@ const setUserHasLoggedOut = async (user_id, value) => {
 const getUserByEmail = async (email) => {
     const db_resp = await db.query(`
         SELECT *
-        FROM   v_users_with_email 
+        FROM   v_users_extended 
         WHERE  email = $1`, [email]);
     return db_resp.rows[0]
 }
@@ -123,8 +123,8 @@ const getUserCollections = async (user_id) => {
 }
 
 const postRegisterUser = async (newUser) => {
-    const db_resp = await db.query(`INSERT INTO users(email, username, pw_hash) 
-                    VALUES ($1, $2, $3) RETURNING user_id`, [newUser.email, newUser.username, newUser.pw_hash]);
+    const db_resp = await db.query(`INSERT INTO users(email, username, pw_hash, terms_of_use, privacy_policy, license) 
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id`, [newUser.email, newUser.username, newUser.pw_hash, newUser.termsOfUse, newUser.privacyPolicy, newUser.license]);
     await insertInterests(db_resp.rows[0].user_id, newUser.interests);
     return;
 }

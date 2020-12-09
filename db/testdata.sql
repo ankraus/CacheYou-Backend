@@ -37,7 +37,10 @@ CREATE TABLE IF NOT EXISTS users (
     pw_hash CHAR(60) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     image_id uuid REFERENCES images(image_id),
-    has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
+    has_logged_out BOOLEAN DEFAULT TRUE NOT NULL,
+    terms_of_use BOOLEAN DEFAULT FALSE NOT NULL,
+    privacy_policy BOOLEAN DEFAULT FALSE NOT NULL,
+    license BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_images (
@@ -120,7 +123,7 @@ DROP VIEW IF EXISTS v_caches_comments;
 DROP VIEW IF EXISTS v_caches_collected;
 DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
-DROP VIEW IF EXISTS v_users_with_email;
+DROP VIEW IF EXISTS v_users_extended;
 DROP VIEW IF EXISTS v_users;
 
 
@@ -178,12 +181,12 @@ CREATE VIEW v_user_collected AS
     JOIN tags t USING (tag_id)
     GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
 
-CREATE VIEW v_users_with_email AS
-    SELECT user_id, email, username, image_id, array_agg(t.name) AS interests 
+CREATE VIEW v_users_extended AS
+    SELECT user_id, email, username, image_id, terms_of_use, privacy_policy, license, array_agg(t.name) AS interests 
     FROM users 
     LEFT JOIN users_interests USING(user_id) 
     LEFT JOIN tags t USING(tag_id) 
-    GROUP BY user_id, email, username, image_id;
+    GROUP BY user_id, email, username, image_id, terms_of_use, privacy_policy, license;
 
 CREATE VIEW v_users AS
     SELECT user_id, username, image_id, array_agg(t.name) AS interests 
