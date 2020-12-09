@@ -22,6 +22,14 @@ const getUsers = async () => {
     }
 }
 
+const getSelf = async (userId) => {
+    try {
+        return await userDb.getSelf(userId);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 const getUserByEmail = async (email) => {
     var user;
     try {
@@ -156,12 +164,24 @@ const putUpdateUser = async (user, user_id) => {
             user.pw_hash = (await userDb.getUserPwHash(user_id)).pw_hash;
         }
         //get user from db to fill fields that were not provided
-        const dbUser = await userDb.getUserById(user_id);
+        const dbUser = await userDb.getSelf(user_id);
         if(!user.username) {
             user.username = dbUser.username;
         }
         if(!user.email) {
             user.email = dbUser.email;
+        }
+        if(!user.interests) {
+            user.interests = dbUser.interests;
+        }
+        if(user.terms_of_use == null) {
+            user.terms_of_use = dbUser.terms_of_use;
+        }
+        if(user.privacy_policy == null) {
+            user.privacy_policy = dbUser.privacy_policy;
+        }
+        if(user.license == null) {
+            user.license = dbUser.license;
         }
         return await userDb.putUpdateUser(user, user_id);
     } catch (error) {
@@ -188,6 +208,7 @@ const checkIfAlreadyExists = async (user, user_id) => {
 
 module.exports = {
     getUsers,
+    getSelf,
     getUserByEmail,
     getUserByUsername,
     getUserById,

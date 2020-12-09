@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS collections CASCADE;
 DROP TABLE IF EXISTS caches_collections CASCADE;
 DROP TABLE IF EXISTS images CASCADE;
 DROP TABLE IF EXISTS users_images CASCADE;
+DROP TABLE IF EXISTS users_interests CASCADE;
 
 --Add support for uuids
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -24,6 +25,11 @@ CREATE TABLE IF NOT EXISTS images (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS tags (
+    tag_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50)
+);
+
 CREATE TABLE IF NOT EXISTS users (
     user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(50) UNIQUE NOT NULL,
@@ -31,7 +37,10 @@ CREATE TABLE IF NOT EXISTS users (
     pw_hash CHAR(60) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
-    has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
+    has_logged_out BOOLEAN DEFAULT TRUE NOT NULL,
+    terms_of_use BOOLEAN DEFAULT FALSE NOT NULL,
+    privacy_policy BOOLEAN DEFAULT FALSE NOT NULL,
+    license BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_images (
@@ -40,16 +49,18 @@ CREATE TABLE IF NOT EXISTS users_images (
     PRIMARY KEY (user_id, image_id)
 );
 
+CREATE TABLE IF NOT EXISTS users_interests (
+    user_id uuid REFERENCES users(user_id) NOT NULL,
+    tag_id uuid REFERENCES tags(tag_id) NOT NULL,
+    PRIMARY KEY (user_id, tag_id)
+);
+
 CREATE TABLE IF NOT EXISTS follows (
     follower_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
     user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
     PRIMARY KEY (follower_id, user_id)
 );
 
-CREATE TABLE IF NOT EXISTS tags (
-    tag_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(50)
-);
 
 CREATE TABLE IF NOT EXISTS caches (
     cache_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -112,10 +123,12 @@ DROP VIEW IF EXISTS v_caches_comments;
 DROP VIEW IF EXISTS v_caches_collected;
 DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
+DROP VIEW IF EXISTS v_users_extended;
+DROP VIEW IF EXISTS v_users;
 DROP VIEW IF EXISTS v_image_info;
 
 CREATE VIEW v_caches AS
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
+    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id AS cover_image_id, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
@@ -159,13 +172,30 @@ CREATE VIEW v_caches_collections AS
     GROUP BY cc.collection_id, c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
 
 CREATE VIEW v_user_collected AS
-    SELECT u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at AS collected_at, array_agg(t.name) AS tags
+    SELECT u.user_id, u.username, c.cache_id, c.title, ci.image_id, col.liked, col.created_at AS collected_at, array_agg(t.name) AS tags
     FROM collected col 
     JOIN users u USING (user_id) 
     JOIN caches c USING (cache_id) 
     JOIN caches_tags ct USING (cache_id)
     JOIN tags t USING (tag_id)
-    GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
+    JOIN caches_images ci USING (cache_id)
+    WHERE ci.is_cover_image
+    GROUP BY u.user_id, u.username, c.cache_id, c.title, ci.image_id, col.liked, col.created_at;
+
+CREATE VIEW v_users_extended AS
+    SELECT user_id, email, username, image_id, terms_of_use, privacy_policy, license, array_agg(t.name) AS interests 
+    FROM users 
+    LEFT JOIN users_interests USING(user_id) 
+    LEFT JOIN tags t USING(tag_id) 
+    GROUP BY user_id, email, username, image_id, terms_of_use, privacy_policy, license;
+
+CREATE VIEW v_users AS
+    SELECT user_id, username, image_id, array_agg(t.name) AS interests 
+    FROM users 
+    LEFT JOIN users_interests USING(user_id) 
+    LEFT JOIN tags t USING(tag_id) 
+    GROUP BY user_id, username, image_id;
+ 
 
 CREATE VIEW v_image_info AS
     SELECT i.image_id, ui.user_id, u.username, i.created_at, i.mimetype
@@ -374,3 +404,7 @@ INSERT INTO caches_collections (collection_id, cache_id) VALUES
         'e6d4abc1-a627-4d78-8f82-0bfd81a582f0'::uuid
     );
     
+INSERT INTO users_interests (user_id, tag_id)
+    SELECT '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid, tag_id FROM tags WHERE name = 'kurios'
+    UNION
+    SELECT '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid, tag_id FROM tags WHERE name = 'streetart';
