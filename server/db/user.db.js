@@ -2,16 +2,16 @@ const db = require('./db_connection');
 
 const getUsers = async () => {
     const db_resp = await db.query(`
-        SELECT user_id, username, image_id
-        FROM users
+        SELECT *
+        FROM v_users
     `);
     return db_resp.rows;
 };
 
 const getSelf = async (userId) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, image_id
-        FROM users
+        SELECT *
+        FROM v_users_with_email
         WHERE user_id = $1
     `, [userId]);
     return db_resp.rows[0];
@@ -43,24 +43,24 @@ const setUserHasLoggedOut = async (user_id, value) => {
 
 const getUserByEmail = async (email) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, image_id
-        FROM   users 
+        SELECT *
+        FROM   v_users 
         WHERE  email = $1`, [email]);
     return db_resp.rows[0]
 }
 
 const getUserByUsername = async (username) => {
     const db_resp = await db.query(`
-        SELECT user_id, email, username, image_id
-        FROM   users 
+        SELECT *
+        FROM   v_users 
         WHERE  username = $1`, [username]);
     return db_resp.rows[0]
 }
 
 const getUserById = async (user_id) => {
     const db_resp = await db.query(`
-        SELECT user_id, username, image_id
-        FROM   users 
+        SELECT *
+        FROM   v_users 
         WHERE  user_id = $1::uuid`, [user_id]);
     return db_resp.rows[0]
 }

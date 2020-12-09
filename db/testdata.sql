@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS collections CASCADE;
 DROP TABLE IF EXISTS caches_collections CASCADE;
 DROP TABLE IF EXISTS images CASCADE;
 DROP TABLE IF EXISTS users_images CASCADE;
+DROP TABLE IF EXISTS users_interests CASCADE;
 
 --Add support for uuids
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -38,6 +39,12 @@ CREATE TABLE IF NOT EXISTS users_images (
     user_id uuid REFERENCES users(user_id) NOT NULL,
     image_id uuid REFERENCES images(image_id) NOT NULL,
     PRIMARY KEY (user_id, image_id)
+);
+
+CREATE TABLE IF NOT EXISTS users_interests (
+    user_id uuid REFERENCES users(user_id) NOT NULL,
+    tag_id uuid REFERENCES tags(tag_id) NOT NULL,
+    PRIMARY KEY (user_id, tag_id)
 );
 
 CREATE TABLE IF NOT EXISTS follows (
@@ -112,6 +119,9 @@ DROP VIEW IF EXISTS v_caches_comments;
 DROP VIEW IF EXISTS v_caches_collected;
 DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
+DROP VIEW IF EXISTS v_users_with_email;
+DROP VIEW IF EXISTS v_users;
+
 
 CREATE VIEW v_caches AS
     SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
@@ -166,6 +176,14 @@ CREATE VIEW v_user_collected AS
     JOIN caches_tags ct USING (cache_id)
     JOIN tags t USING (tag_id)
     GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
+
+CREATE VIEW v_users_with_email AS
+    SELECT user_id, email, username, image_id
+    FROM users;
+
+CREATE VIEW v_users AS
+    SELECT user_id, username, image_id
+    FROM users; 
 
 --Insert dummy data
 
