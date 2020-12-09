@@ -38,7 +38,7 @@ const postProfilePicture = async (imageData, mimeType, userId, imageHash) => {
         UPDATE users
         SET image_id = $1
         WHERE user_id = $2`, [imageId, userId]);
-    return imageId;
+    return {image_id: imageId};
 }
 
 const postCacheImage = async (imageData, mimeType, userId, imageHash, cacheId, isCoverImage) => {
