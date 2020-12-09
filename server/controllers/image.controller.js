@@ -12,6 +12,15 @@ const getImage = async (req, res, next) => {
     }
 }
 
+const getImageInfo = async (req, res, next) => {
+    try {
+        const imageInfo = await imageService.getImageInfo(req.params.image_id);
+        res.status(200).json(imageInfo);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const postProfilePicture = async (req, res, next) => {
     try {
         const imageData = req.body;
@@ -50,6 +59,7 @@ const deleteImage = async (req, res, next) => {
 
 module.exports = {
     getImage,
+    getImageInfo,
     postProfilePicture,
     postCacheImage,
     deleteImage

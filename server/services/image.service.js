@@ -2,7 +2,8 @@ const {
     imageDb
 } = require('../db');
 const {
-    DatabaseError
+    DatabaseError,
+    NotFoundError
 } = require('../utils/errors');
 const crypto = require('crypto')
 
@@ -10,7 +11,23 @@ const getImage = async (imageId) => {
     try {
         return await imageDb.getImage(imageId);
     } catch (error) {
-        throw new DatabaseError(error.message);
+        if(error instanceof NotFoundError){
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
+    }
+}
+
+const getImageInfo = async (imageId) => {
+    try {
+        return await imageDb.getImageInfo(imageId);
+    } catch (error) {
+        if(error instanceof NotFoundError){
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
     }
 }
 
@@ -44,6 +61,7 @@ const hashImage = (imageData) => crypto.createHash('md5').update(imageData).dige
 
 module.exports = {
     getImage,
+    getImageInfo,
     postProfilePicture,
     postCacheImage,
     deleteImage

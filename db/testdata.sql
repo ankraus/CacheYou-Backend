@@ -112,6 +112,7 @@ DROP VIEW IF EXISTS v_caches_comments;
 DROP VIEW IF EXISTS v_caches_collected;
 DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
+DROP VIEW IF EXISTS v_image_info;
 
 CREATE VIEW v_caches AS
     SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
@@ -165,6 +166,12 @@ CREATE VIEW v_user_collected AS
     JOIN caches_tags ct USING (cache_id)
     JOIN tags t USING (tag_id)
     GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
+
+CREATE VIEW v_image_info AS
+    SELECT i.image_id, ui.user_id, u.username, i.created_at, i.mimetype
+    FROM images i
+    JOIN users_images ui USING (image_id)
+    JOIN users u USING (user_id);
 
 --Insert dummy data
 

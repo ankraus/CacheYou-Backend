@@ -1,3 +1,4 @@
+const { NotFoundError } = require('../utils/errors');
 const db = require('./db_connection');
 
 const getImage = async (imageId) => {
@@ -5,6 +6,20 @@ const getImage = async (imageId) => {
         SELECT image, mimetype
         FROM images 
         WHERE image_id = $1::uuid`, [imageId]);
+    if(db_resp.rowCount != 1){
+        throw new NotFoundError();
+    }
+    return db_resp.rows[0];
+}
+
+const getImageInfo = async (imageId) => {
+    const db_resp = await db.query(`
+        SELECT *
+        FROM v_image_info
+        WHERE image_id = $1::uuid`, [imageId]);
+    if(db_resp.rowCount != 1){
+        throw new NotFoundError();
+    }
     return db_resp.rows[0];
 }
 
@@ -97,6 +112,7 @@ const insertImage = async (imageData, mimeType, userId, imageHash) => {
 
 module.exports = {
     getImage,
+    getImageInfo,
     getImageByImageHash,
     postCacheImage,
     setCoverImage,
