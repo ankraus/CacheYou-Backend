@@ -25,6 +25,11 @@ CREATE TABLE IF NOT EXISTS images (
     is_cover_image BOOLEAN DEFAULT FALSE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS tags (
+    tag_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50)
+);
+
 CREATE TABLE IF NOT EXISTS users (
     user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(50) UNIQUE NOT NULL,
@@ -53,10 +58,6 @@ CREATE TABLE IF NOT EXISTS follows (
     PRIMARY KEY (follower_id, user_id)
 );
 
-CREATE TABLE IF NOT EXISTS tags (
-    tag_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(50)
-);
 
 CREATE TABLE IF NOT EXISTS caches (
     cache_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -178,12 +179,19 @@ CREATE VIEW v_user_collected AS
     GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
 
 CREATE VIEW v_users_with_email AS
-    SELECT user_id, email, username, image_id
-    FROM users;
+    SELECT user_id, email, username, image_id, array_agg(t.name) AS interests 
+    FROM users 
+    LEFT JOIN users_interests USING(user_id) 
+    LEFT JOIN tags t USING(tag_id) 
+    GROUP BY user_id, email, username, image_id;
 
 CREATE VIEW v_users AS
-    SELECT user_id, username, image_id
-    FROM users; 
+    SELECT user_id, username, image_id, array_agg(t.name) AS interests 
+    FROM users 
+    LEFT JOIN users_interests USING(user_id) 
+    LEFT JOIN tags t USING(tag_id) 
+    GROUP BY user_id, username, image_id;
+ 
 
 --Insert dummy data
 
@@ -394,3 +402,7 @@ INSERT INTO caches_collections (collection_id, cache_id) VALUES
         'e6d4abc1-a627-4d78-8f82-0bfd81a582f0'::uuid
     );
     
+INSERT INTO users_interests (user_id, tag_id)
+    SELECT '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid, tag_id FROM tags WHERE name = 'kurios'
+    UNION
+    SELECT '05200483-43b9-4fe4-b96f-1cc173bb8109'::uuid, tag_id FROM tags WHERE name = 'streetart';
