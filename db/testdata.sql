@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS images (
     image BYTEA NOT NULL,
     mimetype VARCHAR(25) DEFAULT 'image/png' NOT NULL,
     image_hash CHAR(32),
-    is_cover_image BOOLEAN DEFAULT FALSE NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -30,19 +30,19 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     pw_hash CHAR(60) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
-    image_id uuid REFERENCES images(image_id),
+    image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
     has_logged_out BOOLEAN DEFAULT TRUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_images (
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    image_id uuid REFERENCES images(image_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
+    image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, image_id)
 );
 
 CREATE TABLE IF NOT EXISTS follows (
-    follower_id uuid REFERENCES users(user_id) NOT NULL,
-    user_id uuid REFERENCES users(user_id) NOT NULL,
+    follower_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
     PRIMARY KEY (follower_id, user_id)
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS caches (
     title VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
     link TEXT,
-    user_id uuid REFERENCES users(user_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -78,15 +78,15 @@ CREATE TABLE IF NOT EXISTS comments (
 );
 
 CREATE TABLE IF NOT EXISTS caches_images (
-    image_id uuid REFERENCES images(image_id) NOT NULL,
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    cache_id uuid REFERENCES caches(cache_id) NOT NULL,
-    PRIMARY KEY (image_id, user_id, cache_id)
+    image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE RESTRICT,
+    is_cover_image BOOLEAN DEFAULT FALSE NOT NULL,
+    PRIMARY KEY (image_id, cache_id)
 );
 
 CREATE TABLE IF NOT EXISTS collected (
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    cache_id uuid REFERENCES caches(cache_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE SET NULL,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     liked BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY (user_id, cache_id)
@@ -112,6 +112,7 @@ DROP VIEW IF EXISTS v_caches_comments;
 DROP VIEW IF EXISTS v_caches_collected;
 DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
+DROP VIEW IF EXISTS v_image_info;
 
 CREATE VIEW v_caches AS
     SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
@@ -119,23 +120,22 @@ CREATE VIEW v_caches AS
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
-    JOIN caches_images ci USING (cache_id)
-    JOIN images i ON ci.image_id = i.image_id
-    WHERE i.is_cover_image
+    LEFT JOIN caches_images ci USING (cache_id)
+    LEFT JOIN images i ON ci.image_id = i.image_id AND ci.is_cover_image
     GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
 CREATE VIEW v_caches_image_array AS 
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(i.image_id) AS image_ids, array_agg(t.name) AS tags
+    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(DISTINCT t.name) AS tags, array_agg(i.image_id ORDER BY is_cover_image DESC) AS image_ids
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
     JOIN caches_images ci USING (cache_id)
     JOIN images i ON ci.image_id = i.image_id
-    GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
+    GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, t.name;
 
 CREATE VIEW v_caches_comments AS 
-    SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id 
+    SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id, u.image_id 
     FROM comments c 
     JOIN caches ca USING (cache_id) 
     JOIN users u ON u.user_id = c.user_id;
@@ -167,33 +167,34 @@ CREATE VIEW v_user_collected AS
     JOIN tags t USING (tag_id)
     GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
 
+CREATE VIEW v_image_info AS
+    SELECT i.image_id, ui.user_id, u.username, i.created_at, i.mimetype
+    FROM images i
+    JOIN users_images ui USING (image_id)
+    JOIN users u USING (user_id);
+
 --Insert dummy data
 
-INSERT INTO images(image_id, image, is_cover_image) VALUES
+INSERT INTO images(image_id, image) VALUES
     (
         '166fc680-8dc3-4707-8f49-dfd223e58e2c'::uuid,
-        pg_read_binary_file('/test_pic1.png'),
-        FALSE
+        pg_read_binary_file('/test_pic1.png')
     ),
     (
         'a258475f-88de-4f20-a98b-b3b0d830b66e'::uuid,
-        pg_read_binary_file('/test_pic2.png'),
-        FALSE
+        pg_read_binary_file('/test_pic2.png')
     ),
     (
         '36a9575e-fd78-4a8d-927b-1fba938854ea'::uuid,
-        pg_read_binary_file('/test_pic_cache.png'),
-        TRUE
+        pg_read_binary_file('/test_pic_cache.png')
     ),
     (
         '4b3c7735-cec5-40ef-b416-27dcdad3a646'::uuid,
-        pg_read_binary_file('/test_pic_cache2.png'),
-        TRUE
+        pg_read_binary_file('/test_pic_cache2.png')
     ),
     (
         '2155e963-6f90-4370-af16-f2b3d4f05f5a'::uuid,
-        pg_read_binary_file('/test_pic_cache3.png'),
-        TRUE
+        pg_read_binary_file('/test_pic_cache3.png')
     );    
 
 INSERT INTO users(user_id, email, username, pw_hash, image_id) VALUES 
@@ -331,21 +332,18 @@ INSERT INTO comments(user_id, cache_id, content)
         WHERE u.username='dummy789'
             AND c.title='Zur Brezn';
 
-INSERT INTO caches_images(user_id, cache_id, image_id)
-        SELECT u.user_id, c.cache_id, '36a9575e-fd78-4a8d-927b-1fba938854ea'::uuid
-        FROM caches c, users u
+INSERT INTO caches_images(cache_id, image_id, is_cover_image)
+        SELECT c.cache_id, '36a9575e-fd78-4a8d-927b-1fba938854ea'::uuid, TRUE
+        FROM caches c
         WHERE c.title='Unterer Brunnenturm'
-            AND u.username='dummy789'
     UNION
-        SELECT u.user_id, c.cache_id, '4b3c7735-cec5-40ef-b416-27dcdad3a646'::uuid
-        FROM caches c, users u
+        SELECT c.cache_id, '4b3c7735-cec5-40ef-b416-27dcdad3a646'::uuid, TRUE
+        FROM caches c
         WHERE c.title='Zur Brezn'
-            AND u.username='TestyMcTestersson'
     UNION
-        SELECT u.user_id, c.cache_id, '2155e963-6f90-4370-af16-f2b3d4f05f5a'::uuid
-        FROM caches c, users u
-        WHERE c.title='Wandgemälde bei der Esso Tankstelle'
-            AND u.username='dummy789';
+        SELECT c.cache_id, '2155e963-6f90-4370-af16-f2b3d4f05f5a'::uuid, TRUE
+        FROM caches c
+        WHERE c.title='Wandgemälde bei der Esso Tankstelle';
 
 INSERT INTO collections(collection_id, user_id, public, title) VALUES
     (

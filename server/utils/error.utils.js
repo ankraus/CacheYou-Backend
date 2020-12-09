@@ -60,6 +60,11 @@ const generalErrorHandler = (err, req, res, next) => {
         case err instanceof SyntaxError:
             res.status(400).send('Invalid syntax' + errMessage(err));
             break;
+        case err.type === 'entity.too.large':
+            var fileSize = (err.length / (1024*1024)).toFixed(2);
+            var fileLimit = (err.limit / (1024*1024)).toFixed(2);
+            res.status(400).send(`Payload too large: ${fileSize} MB, limit is ${fileLimit} MB`);
+            break;
         default:
             res.status(500).send(err.name) && next(err);
             break;
