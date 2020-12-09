@@ -128,7 +128,7 @@ DROP VIEW IF EXISTS v_users;
 
 
 CREATE VIEW v_caches AS
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
+    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id AS cover_image_id, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)

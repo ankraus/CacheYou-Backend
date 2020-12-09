@@ -90,7 +90,7 @@ const getUserCollected = async (user_id) => {
                 cache_id: db_row.cache_id,
                 tags: db_row.tags,
                 title: db_row.title,
-                image_id: db_row.image_id
+                cover_image_id: db_row.image_id
             },
             liked: db_row.liked,
             created_at: db_row.created_at
