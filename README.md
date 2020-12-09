@@ -94,9 +94,12 @@ Aktuell sind folgende Routen verfügbar:
   "users": [
     {
       "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
-      "email": "test@example.com",
       "username": "TestyMcTestersson",
-      "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c"
+      "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c",
+      "interests": [
+        "streetart",
+        "kurios"
+      ]
     },
     ...
   ]
@@ -111,7 +114,14 @@ Aktuell sind folgende Routen verfügbar:
 {
 	"email":"testuser@example.com",
 	"password":"testuser123567",
-	"username": "testuser_123"
+  "username": "testuser_123",
+  "interests": [
+      "streetart",
+      "kurious"
+    ],
+  "license": true,
+  "privacy_policy": true,
+  "terms_of_use": true
 }
 ```
 **Antwort**:
@@ -151,7 +161,13 @@ OK
 {
 	"email":"testuser@example.com",
 	"password":"testuser123567",
-	"username": "testuser_123"
+	"username": "testuser_123",
+  "interests": [
+    "wassersystem"
+  ],
+  "terms_of_use":true,
+  "privacy_policy":false,
+  "license":false
 }
 ```
 **Antwort**:
@@ -177,7 +193,8 @@ OK
         "tags": [
           "kultur"
         ],
-        "title": "Zur Brezn"
+        "title": "Zur Brezn",
+        "image_id": "4b3c7735-cec5-40ef-b416-27dcdad3a646"
       },
       "liked": false,
       "created_at": "2020-11-26T20:28:10.412Z"
@@ -200,7 +217,8 @@ OK
         "streetart"
       ],
       "title": "Wandgemälde bei der Esso Tankstelle",
-      "created_at": "2020-10-30T05:31:08.808Z"
+      "created_at": "2020-10-30T05:31:08.808Z",
+      "cover_image_id":"2155e963-6f90-4370-af16-f2b3d4f05f5a"
     },
     {
       "cache_id": "d80ee03b-90df-4541-8567-e4932198848a",
@@ -208,7 +226,8 @@ OK
         "wassersystem"
       ],
       "title": "Unterer Brunnenturm",
-      "created_at": "2020-08-11T08:23:54.000Z"
+      "created_at": "2020-08-11T08:23:54.000Z",
+      "cover_image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea"
     }
   ]
 }
