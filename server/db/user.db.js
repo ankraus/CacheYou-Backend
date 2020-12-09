@@ -109,6 +109,7 @@ const getUserCreated = async (user_id) => {
     db_resp.rows.forEach((db_row) => {
         caches.push({
             cache_id: db_row.cache_id,
+            cover_image_id: db_row.cover_image_id,
             tags: db_row.tags,
             title: db_row.title,
             created_at: db_row.created_at
