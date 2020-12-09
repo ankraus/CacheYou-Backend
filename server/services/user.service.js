@@ -164,12 +164,15 @@ const putUpdateUser = async (user, user_id) => {
             user.pw_hash = (await userDb.getUserPwHash(user_id)).pw_hash;
         }
         //get user from db to fill fields that were not provided
-        const dbUser = await userDb.getUserById(user_id);
+        const dbUser = await userDb.getSelf(user_id);
         if(!user.username) {
             user.username = dbUser.username;
         }
         if(!user.email) {
             user.email = dbUser.email;
+        }
+        if(!user.interests) {
+            user.interests = dbUser.interests;
         }
         return await userDb.putUpdateUser(user, user_id);
     } catch (error) {

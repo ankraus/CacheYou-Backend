@@ -44,7 +44,7 @@ const setUserHasLoggedOut = async (user_id, value) => {
 const getUserByEmail = async (email) => {
     const db_resp = await db.query(`
         SELECT *
-        FROM   v_users 
+        FROM   v_users_with_email 
         WHERE  email = $1`, [email]);
     return db_resp.rows[0]
 }
@@ -123,8 +123,9 @@ const getUserCollections = async (user_id) => {
 }
 
 const postRegisterUser = async (newUser) => {
-    await db.query(`INSERT INTO users(email, username, pw_hash) 
-                    VALUES ($1, $2, $3)`, [newUser.email, newUser.username, newUser.pw_hash]);
+    const db_resp = await db.query(`INSERT INTO users(email, username, pw_hash) 
+                    VALUES ($1, $2, $3) RETURNING user_id`, [newUser.email, newUser.username, newUser.pw_hash]);
+    await insertInterests(db_resp.rows[0].user_id, newUser.interests);
     return;
 }
 
@@ -134,7 +135,20 @@ const putUpdateUser = async (user, user_id) => {
                         email = $2, 
                         pw_hash = $3 
                     WHERE user_id = $4`, [user.username, user.email, user.pw_hash, user_id]);
+    await db.query(`DELETE FROM users_interests WHERE user_id = $1`, [user_id]);
+    await insertInterests(user_id, user.interests);
     
+}
+
+const insertInterests = async (userId, interests) => {
+    await db.query(`
+    INSERT INTO users_interests(tag_id, user_id)(
+        SELECT tag_id, $1 as user_id
+        FROM tags t
+        WHERE t.name IN (
+            SELECT UNNEST($2::varchar[])
+        )
+    )`, [userId, interests]);
 }
 
 module.exports = {

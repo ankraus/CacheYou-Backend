@@ -20,7 +20,8 @@ const registerSchema = yup.object().shape({
     body: yup.object().shape({
         email: yup.string().email('email must follow email format').required('email required'),
         username: yup.string().required('username required'),
-        password: yup.string().required('password required')
+        password: yup.string().required('password required'),
+        interests: yup.array().of(yup.string()).required('interests required')
     })
 });
 
@@ -46,9 +47,10 @@ const updateUserSchema = yup.object().shape({
     body: yup.object().shape({
         email: yup.string().email().notRequired(),
         username: yup.string().notRequired(),
-        password: yup.string().notRequired()
+        password: yup.string().notRequired(),
+        interests: yup.array().of(yup.string()).notRequired()
     }).test('at-least-one-field', 'at least one field must be provided', (value) =>
-        !!(value.email || value.username || value.password))
+        !!(value.email || value.username || value.password || value.interests))
 });
 
 const collectionSchema = yup.object().shape({
