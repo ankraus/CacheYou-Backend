@@ -34,6 +34,11 @@
     - [Einzelne Collection](#einzelne-collection)
   - [Images](#images)
     - [Einzelnes Bild](#einzelnes-bild)
+    - [Informationen zu einzelnem Bild](#informationen-zu-einzelnem-bild)
+    - [Profilbild posten (aktuell eingeloggter Nutzer)](#profilbild-posten-aktuell-eingeloggter-nutzer)
+    - [Cachebild posten](#cachebild-posten)
+    - [Coverbild posten](#coverbild-posten)
+    - [Bild löschen](#bild-löschen)
 - [Fehlermeldungen](#fehlermeldungen)
 - [Repositorystruktur, Branches und Entwicklung](#repositorystruktur-branches-und-entwicklung)
   - [Entwickler](#entwickler)
@@ -262,6 +267,7 @@ OK
   "caches": [
     {
       "cache_id": "2967319e-5ee6-4ed0-a251-aaa1fa9deb56",
+      "cover_image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea",
       "latitude": "48.3717700000",
       "longitude": "10.8892950000",
       "title": "Wandgemälde bei der Esso Tankstelle",
@@ -297,6 +303,9 @@ OK
     "link": null,
     "tags": [
       "streetart"
+    ],
+    "image_ids": [
+      "e8643294-a0b8-4d76-adea-5a5599e3525b"
     ],
     "creator": {
       "username": "dummy789",
@@ -475,6 +484,64 @@ OK
 **Methode**: `GET`  
 **Anfrage**: -  
 **Antwort**: Das Bild als Binärdaten
+
+---
+### Informationen zu einzelnem Bild
+**Route**: `/images/:image_id/info`  
+**Methode**: `GET`  
+**Anfrage**: -  
+**Antwort**:
+```json
+{
+  "image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea",
+  "user_id": "94eff975-1414-4fe4-8d5d-8871dc23c4f4",
+  "username": "dummy789",
+  "created_at": "2020-12-09T22:27:28.382Z",
+  "mimetype": "image/png"
+}
+```
+---
+### Profilbild posten (aktuell eingeloggter Nutzer)
+**Route**: `/images/profile/`  
+**Methode**: `POST`  
+**Anfrage**: Das Bild als Binärdaten, Anfragetyp gleich Mimetype  
+**Antwort**:
+```json
+{
+  "image_id": "4fed05a3-b680-4830-833a-4c93cb25b09a"
+}
+```
+---
+### Cachebild posten
+**Route**: `/images/caches/:cache_id`  
+**Methode**: `POST`  
+**Anfrage**: Das Bild als Binärdaten, Anfragetyp gleich Mimetype  
+**Antwort**:
+```json
+{
+  "image_id": "4fed05a3-b680-4830-833a-4c93cb25b09a"
+}
+```
+---
+### Coverbild posten
+**Route**: `/images/caches/:cache_id/cover`  
+**Methode**: `POST`  
+**Anfrage**: Das Bild als Binärdaten, Anfragetyp gleich Mimetype  
+**Antwort**:
+```json
+{
+  "image_id": "4fed05a3-b680-4830-833a-4c93cb25b09a"
+}
+```
+---
+### Bild löschen
+**Route**: `/images/:image_id`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
 
 ---
 # Fehlermeldungen

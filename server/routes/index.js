@@ -65,11 +65,13 @@ router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, validation
 
 //image routes
 router.get('/images/:image_id', validationUtils.validateIds, imageController.getImage);
+router.get('/images/:image_id/info', validationUtils.validateIds, imageController.getImageInfo);
 
-router.post('/images/user/', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
-router.post('/images/cache/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
+router.post('/images/profile/', authUtils.checkAuthenticated, validationUtils.validateImageTypes, imageController.postProfilePicture);
+router.post('/images/caches/:cache_id/cover', authUtils.checkAuthenticated, validationUtils.validateImageTypes, validationUtils.validateIds, imageController.postCacheImage);
+router.post('/images/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateImageTypes, validationUtils.validateIds, imageController.postCacheImage);
 
-router.delete('/images/:image_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
+router.delete('/images/:image_id', authUtils.checkAuthenticated, validationUtils.validateIds, imageController.deleteImage);
 
 //collection routes
 router.get('/collections', collectionController.getCollections);

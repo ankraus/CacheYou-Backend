@@ -78,7 +78,8 @@ const getCacheComments = async (cache_id) => {
             comment_id: db_row.comment_id,
             user: {
                 username: db_row.username,
-                user_id: db_row.user_id
+                user_id: db_row.user_id,
+                image_id: db_row.image_id
             },
             content: db_row.content,
             created_at: db_row.created_at

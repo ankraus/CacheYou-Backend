@@ -1,4 +1,6 @@
 const yup = require('yup');
+const isPNG = require('is-png');
+const isJPG = require('is-jpg');
 
 const uuidSchema = yup.object().shape({
     params: yup.object().shape({
@@ -7,6 +9,15 @@ const uuidSchema = yup.object().shape({
         image_id: yup.string().uuid('id must be in uuid format'),
         collection_id: yup.string().uuid('id must be in uuid format')
     })
+});
+
+const imageTypesSchema = yup.object().shape({
+    headers: yup.object().shape({
+        'content-type': yup.string().oneOf(['image/png', 'image/jpeg'], 'content type must be one of  [image/png, image/jpeg]')
+    }),
+    body: yup.mixed().required('image data is required')
+        .test('is-not-empty', 'image data is required', (value) => (value.length > 0))
+        .test('is-image', 'data must be in png or jpg format', (value) => (isPNG(value) || isJPG(value)))
 });
 
 const loginSchema = yup.object().shape({
@@ -76,6 +87,7 @@ const updateCollectionSchema = yup.object().shape({
 
 module.exports = {
     uuidSchema,
+    imageTypesSchema,
     loginSchema,
     registerSchema,
     createCacheSchema,
