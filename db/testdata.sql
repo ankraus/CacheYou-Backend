@@ -135,7 +135,7 @@ CREATE VIEW v_caches_image_array AS
     GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, t.name;
 
 CREATE VIEW v_caches_comments AS 
-    SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id 
+    SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id, u.image_id 
     FROM comments c 
     JOIN caches ca USING (cache_id) 
     JOIN users u ON u.user_id = c.user_id;
