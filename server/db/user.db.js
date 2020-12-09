@@ -78,7 +78,7 @@ const getUserCollected = async (user_id) => {
     const db_resp = await db.query(`
             SELECT *
             FROM v_user_collected
-            WHERE u.user_id = $1`, [user_id]);
+            WHERE user_id = $1`, [user_id]);
     var collected = [];
     db_resp.rows.forEach((db_row) => {
         collected.push({
