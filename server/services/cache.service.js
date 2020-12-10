@@ -105,7 +105,7 @@ const postCacheTags = async (cache_id, tags) => {
 
 const putCache = async (cache) => {
     try {
-        await cacheDb.getCacheById(cache.id)
+        await cacheDb.getCacheById(cache.cache_id)
     } catch (error) {
         throw new NotFoundError();
     }

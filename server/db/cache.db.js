@@ -132,7 +132,7 @@ const getTags = async () => {
 }
 
 const postCache = async (cache, user_id) => {
-    await legitTags(cache.tags) 
+    await legitTags(cache.tags);
     const db_resp = await db.query(`
         INSERT INTO caches (latitude, longitude, public, title, description, link, user_id) VALUES
         ($1, $2, $3, $4, $5, $6, $7)
@@ -204,7 +204,7 @@ const postCacheComment = async (comment, cache_id, user_id) => {
 
 
 const postCacheTags = async (cache_id, tags) => {
-    await legitTags(tags)
+    await legitTags(tags);
     await db.query(`
         INSERT INTO caches_tags(tag_id, cache_id)(
             SELECT tag_id, $1 as cache_id
@@ -217,9 +217,17 @@ const postCacheTags = async (cache_id, tags) => {
 }
 
 const putCache = async (cache) => {
-    await db.query(`
-        
-    `);
+
+    const db_resp = await db.query(`
+        UPDATE caches SET
+        latitude = $1, 
+        longitude = $2, 
+        public = $3, 
+        title = $4, 
+        description = $5, 
+        link = $6 
+        WHERE cache_id = $7`
+        , [cache.latitude, cache.longitude, cache.public, cache.title, cache.description, cache.link, cache.cache_id]);
 }
 
 const putCacheComment = async (comment, cache_id, user_id) => {
