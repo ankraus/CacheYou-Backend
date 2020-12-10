@@ -129,14 +129,14 @@ const putCacheComment = async (comment, cache_id, user_id, comment_id) => {
     }
 }
 
-const deleteCache = async (cache) => {
+const deleteCache = async (cache_id) => {
     try {
-        await cacheDb.getCacheById(cache.id)
+        await cacheDb.getCacheById(cache_id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.deleteCache(cache.id);
+        await cacheDb.deleteCache(cache_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }

@@ -216,7 +216,10 @@ const putCacheComment = async (comment, cache_id, user_id) => {
 }
 
 const deleteCache = async (cache_id) => {
-    await db.query(``);
+    await db.query(`
+        DELETE FROM caches
+        WHERE cache_id = $1`
+    , [cache_id]);
     return;
 }
 
