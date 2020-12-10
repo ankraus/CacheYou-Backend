@@ -137,8 +137,8 @@ Aktuell sind folgende Routen verfügbar:
 **Anfrage**: 
 ```json
 {
-	"email":"testuser@example.com",
-	"password":"testuser123567",
+  "email":"testuser@example.com",
+  "password":"testuser123567",
   "username": "testuser_123",
   "interests": [
       "streetart",
@@ -184,9 +184,9 @@ OK
 **Anfrage**: *Mindestens einer der drei Parameter muss übergeben werden.*
 ```json
 {
-	"email":"testuser@example.com",
-	"password":"testuser123567",
-	"username": "testuser_123",
+  "email":"testuser@example.com",
+  "password":"testuser123567",
+  "username": "testuser_123",
   "interests": [
     "wassersystem"
   ],
@@ -358,12 +358,12 @@ OK
 **Anfrage**:
 ```json
 {
-	"description": "Dies ist ein Cache mit einer Testbeschreibung",
-	"title": "Testcache mit Testtitel",
-	"longitude": -111.693987,
-	"latitude": 33.384195,
-	"public": true,
-	"tags": ["kurios"]
+  "description": "Dies ist ein Cache mit einer Testbeschreibung",
+  "title": "Testcache mit Testtitel",
+  "longitude": -111.693987,
+  "latitude": 33.384195,
+  "public": true,
+  "tags": ["kurios"]
 }
 ```
 **Antwort**:
