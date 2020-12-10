@@ -1,7 +1,8 @@
 const db = require('./db_connection')
 const {
     BadRequestError,
-    NotFoundError
+    NotFoundError,
+    ForbiddenError
 } = require('../utils/errors');
 
 const getCaches = async () => {
@@ -149,7 +150,7 @@ const postCache = async (cache, user_id) => {
     return cache_id;
 }
 
-// Erstes post: Eintrag in collect; Sonst: Liken oder Entliken    oder lieber neue Route zum liken?
+// Erstes post: Eintrag in collect; Sonst: Liken oder Entliken    oder lieber neue Route zum liken? Wahrscheinlich nicht restfull?
 const postCacheCollect = async (cache_id, user_id) => {
     const alreadyLiked = await db.query(`
         SELECT liked
@@ -161,7 +162,7 @@ const postCacheCollect = async (cache_id, user_id) => {
             INSERT INTO collected (user_id, cache_id) VALUES
             ($1, $2)`
             , [user_id, cache_id]);
-    } else if (!alreadyLiked.rows[0].liked) {        // geht das?
+    } else if (alreadyLiked.rows[0].liked == 'f') {        // geht das? 
         await db.query(`
             UPDATE collected 
             SET liked = TRUE
@@ -178,13 +179,27 @@ const postCacheCollect = async (cache_id, user_id) => {
 }
 
 const postCacheComment = async (comment, cache_id, user_id) => {
-    const db_resp = await db.query(`
-        INSERT INTO comments (user_id, cache_id, content) VALUES
-        ($1, $2, $3)
-        RETURNING comment_id`,
-        [user_id, cache_id, comment]);
-    const comment_id = db_resp.rows[0].comment_id;
-    return comment_id;
+    /*
+    Nur Kommentieren wenn eingesammelt ?
+
+    const collected = await db.query(`
+        SELECT *
+        FROM collected
+        WHERE cache_id = $1 AND user_id = $2`
+        , [cache_id, user_id]
+    )
+    if (collected.rows.length < 1){
+        throw new ForbiddenError();
+    } else {
+        */
+        const db_resp = await db.query(`
+            INSERT INTO comments (user_id, cache_id, content) VALUES
+            ($1, $2, $3)
+            RETURNING comment_id`,
+            [user_id, cache_id, comment]);
+        const comment_id = db_resp.rows[0].comment_id;
+        return comment_id;
+    //}
 }
 
 
@@ -208,28 +223,55 @@ const putCache = async (cache) => {
 }
 
 const putCacheComment = async (comment, cache_id, user_id) => {
-    await db.query(`
-        UPDATE comments 
-        SET content = $1
-        WHERE  cache_id = $2 AND user_id = $3`
-        , [comment, cache_id, user_id]);
+    const rightUserId = await db.query(`
+        GET user_id
+        FROM comments
+        WHERE cache_id = $1 AND user_id = $2`
+        , [cache_id, user_id]);
+    if (rightUserId == user_id){
+        await db.query(`
+            UPDATE comments 
+            SET content = $1
+            WHERE  cache_id = $2 AND user_id = $3`
+            , [comment, cache_id, user_id]);
+    } else {
+        throw new ForbiddenError();
+    }
 }
 
-const deleteCache = async (cache_id) => {
-    await db.query(`
-        DELETE FROM caches
+const deleteCache = async (user_id, cache_id) => {
+    const rightUserId = await db.query(`
+        GET user_id
+        FROM caches
         WHERE cache_id = $1`
-    , [cache_id]);
-    return;
+        , [cache_id]);
+    if (rightUserId == user_id){
+        await db.query(`
+            DELETE FROM caches
+            WHERE cache_id = $1`
+        , [cache_id]);
+    } else {
+        throw new ForbiddenError();
+    }
 }
 
-const deleteCacheComment = async (comment_id) => {
-    await db.query(`
-        DELETE FROM comments
+const deleteCacheComment = async (user_id, comment_id) => {
+    const rightUserId = await db.query(`
+        GET user_id
+        FROM comments
         WHERE comment_id = $1`
         , [comment_id]);
+    if (rightUserId == user_id){
+        await db.query(`
+            DELETE FROM comments
+            WHERE comment_id = $1`
+            , [comment_id]);
+    } else {
+        throw new ForbiddenError();
+    }
 }
 
+//wer darf die tags löschen? und alle auf einmal oder nur einzelne?
 const deleteCacheTags = async (cache_id) => {
     await db.query(`
         DELETE FROM cache_tags

@@ -145,8 +145,9 @@ const putCacheComment = async (req, res, next) => {
 
 const deleteCache = async (req, res, next) => {
     const cache_id = req.params.cache_id;
+    const user_id = req.user_id
     try {
-        await cacheService.deleteCache(cache_id);
+        await cacheService.deleteCache(user_id, cache_id);
         res.sendStatus(200);
         next();
     } catch (error) {
@@ -156,8 +157,9 @@ const deleteCache = async (req, res, next) => {
 
 const deleteCacheComment = async (req, res, next) => {
     const comment_id = req.params.comment_id;
+    const user_id = req.user_id
     try {
-        await cacheService.deleteCacheComment(comment_id);
+        await cacheService.deleteCacheComment(user_id, comment_id);
         res.sendStatus(200);
         next();
     } catch (error) {
