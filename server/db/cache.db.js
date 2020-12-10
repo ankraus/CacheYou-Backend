@@ -203,8 +203,9 @@ const postCacheComment = async (comment, cache_id, user_id) => {
 }
 
 
-const postCacheTags = async (cache_id, tags) => {
+const postCacheTags = async (cache_id, tags, user_id) => {
     await legitTags(tags);
+    await authorizedUserForCache(cache_id, user_id)
     await db.query(`
         INSERT INTO caches_tags(tag_id, cache_id)(
             SELECT tag_id, $1 as cache_id
@@ -216,9 +217,10 @@ const postCacheTags = async (cache_id, tags) => {
     return;
 }
 
-const putCache = async (cache) => {
 
-    const db_resp = await db.query(`
+const putCache = async (cache, user_id) => {
+    await authorizedUserForCache(cache.cache_id, user_id)
+    await db.query(`
         UPDATE caches SET
         latitude = $1, 
         longitude = $2, 
@@ -230,61 +232,38 @@ const putCache = async (cache) => {
         , [cache.latitude, cache.longitude, cache.public, cache.title, cache.description, cache.link, cache.cache_id]);
 }
 
-const putCacheComment = async (comment, cache_id, user_id) => {
-    const rightUserId = await db.query(`
-        GET user_id
-        FROM comments
-        WHERE cache_id = $1 AND user_id = $2`
-        , [cache_id, user_id]);
-    if (rightUserId == user_id){
-        await db.query(`
-            UPDATE comments 
-            SET content = $1
-            WHERE  cache_id = $2 AND user_id = $3`
-            , [comment, cache_id, user_id]);
-    } else {
-        throw new ForbiddenError();
-    }
+const putCacheComment = async (comment, user_id, comment_id) => {
+    await authorizedUserForComment(comment_id, user_id)
+    await db.query(`
+        UPDATE comments 
+        SET content = $1
+        WHERE  comment_id = $2`
+        , [comment, comment_id]);
 }
 
 const deleteCache = async (user_id, cache_id) => {
-    const rightUserId = await db.query(`
-        GET user_id
-        FROM caches
+    await authorizedUserForCache(cache_id, user_id)
+    await db.query(`
+        DELETE FROM caches
         WHERE cache_id = $1`
         , [cache_id]);
-    if (rightUserId == user_id){
-        await db.query(`
-            DELETE FROM caches
-            WHERE cache_id = $1`
-        , [cache_id]);
-    } else {
-        throw new ForbiddenError();
-    }
 }
 
 const deleteCacheComment = async (user_id, comment_id) => {
-    const rightUserId = await db.query(`
-        GET user_id
-        FROM comments
+    await authorizedUserForComment(comment_id, user_id)
+    await db.query(`
+        DELETE FROM comments
         WHERE comment_id = $1`
-        , [comment_id]);
-    if (rightUserId == user_id){
-        await db.query(`
-            DELETE FROM comments
-            WHERE comment_id = $1`
-            , [comment_id]);
-    } else {
-        throw new ForbiddenError();
-    }
+        , [comment_id]);   
 }
 
-//wer darf die tags löschen? und alle auf einmal oder nur einzelne?
-const deleteCacheTags = async (cache_id) => {
+//Alle auf einmal oder nur einzelne?
+const deleteCacheTags = async (user_id, cache_id) => {
+    await authorizedUserForCache(user_id, cache_id)
     await db.query(`
         DELETE FROM cache_tags
         WHERE cache_id = $1`
-    , [cache_id]);
+        , [cache_id]);
 }
 
 const legitTags = async (tags) => {
@@ -299,6 +278,28 @@ const legitTags = async (tags) => {
     if (all_tags_not_in_db.rows.length != 0) {
         const notFoundTags = all_tags_not_in_db.rows.map(x => x.name);
         throw new BadRequestError('One or more tags do not exist: ' + JSON.stringify(notFoundTags));
+    }
+}
+
+const authorizedUserForComment = async (comment_id, user_id) => {
+    const authorizedUserId = await db.query(`
+        GET user_id
+        FROM comments
+        WHERE comment_id = $1`
+        , [comment_id]);
+    if (authorizedUserId != user_id){
+        throw new ForbiddenError('User isnt the creator of the this Comment');
+    }
+}
+
+const authorizedUserForCache = async (cache_id, user_id) => {
+    const authorizedUserId = await db.query(`
+        GET user_id
+        FROM cache
+        WHERE cache_id = $1`
+        , [cache_id]);
+    if (authorizedUserId != user_id){
+        throw new ForbiddenError('User isnt the creator of the this Cache');
     }
 }
 

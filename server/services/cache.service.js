@@ -95,35 +95,35 @@ const postCacheComment = async (comment, cache_id, user_id) => {
     }
 }
 
-const postCacheTags = async (cache_id, tags) => {
+const postCacheTags = async (cache_id, tags, user_id) => {
     try {
-        await cacheDb.postCacheTags(cache_id, tags);
+        await cacheDb.postCacheTags(cache_id, tags, user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const putCache = async (cache) => {
+const putCache = async (cache, user_id) => {
     try {
         await cacheDb.getCacheById(cache.cache_id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.putCache(cache);
+        await cacheDb.putCache(cache, user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const putCacheComment = async (comment, cache_id, user_id, comment_id) => {
+const putCacheComment = async (comment, user_id, comment_id) => {
     try {
         await cacheDb.getCommentById(comment_id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.putCacheComment(comment, cache_id, user_id);
+        await cacheDb.putCacheComment(comment, user_id, comment_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
@@ -142,7 +142,7 @@ const deleteCache = async (user_id, cache_id) => {
     }
 }
 
-const deleteCacheComment = async (comment_id) => {
+const deleteCacheComment = async (user_id, comment_id) => {
     try {
         await cacheDb.getCommentById(comment_id)
     } catch (error) {
@@ -155,14 +155,14 @@ const deleteCacheComment = async (comment_id) => {
     }
 }
 
-const deleteCacheTags = async (cache_id) => {
+const deleteCacheTags = async (user_id, cache_id) => {
     try {
         await cacheDb.getCacheById(cache_id)
     } catch (error) {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.deleteCacheTags(cache_id);
+        await cacheDb.deleteCacheTags(user_id, cache_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }

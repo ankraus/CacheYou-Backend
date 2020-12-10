@@ -82,8 +82,10 @@ const postCache = async (req, res, next) => {
 }
 
 const postCacheCollect = async (req, res, next) => {
+    const user_id = req.user_id
+    const cache_id = req.params.cache_id
     try {
-        await cacheService.postCacheCollect(req.params.cache_id, req.user_id);
+        await cacheService.postCacheCollect(cache_id, user_id);
         res.sendStatus(201);
         next();
     } catch (error) {
@@ -93,8 +95,8 @@ const postCacheCollect = async (req, res, next) => {
 
 const postCacheComment = async (req, res, next) => {
     const comment = req.body;
-    const cache_id = req.params.cache_id
-    const user_id = req.user_id
+    const cache_id = req.params.cache_id;
+    const user_id = req.user_id;
     try {
         const comment_id = await cacheService.postCacheComment(comment, cache_id, user_id);
         res.status(201).json({
@@ -108,9 +110,10 @@ const postCacheComment = async (req, res, next) => {
 
 const postCacheTags = async (req, res, next) => {
     const tags = req.body;
-    const cache_id = req.params.cache_id
+    const cache_id = req.params.cache_id;
+    const user_id = req.user_id;
     try {
-        await cacheService.postCacheTags(cache_id, tags);
+        await cacheService.postCacheTags(cache_id, tags, user_id);
         res.sendStatus(201);
         next();
     } catch (error) {
@@ -120,8 +123,9 @@ const postCacheTags = async (req, res, next) => {
 
 const putCache = async (req, res, next) => {
     const cache = req.body;
+    const user_id = req.user_id;
     try {
-        await cacheService.putCache(cache);
+        await cacheService.putCache(cache, user_id);
         res.sendStatus(200);
         next();
     } catch (error) {
@@ -131,11 +135,10 @@ const putCache = async (req, res, next) => {
 
 const putCacheComment = async (req, res, next) => {
     const comment = req.body;
-    const cache_id = req.params.cache_id
-    const user_id = req.user_id
-    const comment_id = req.params.comment_id
+    const user_id = req.user_id;
+    const comment_id = req.params.comment_id;
     try {
-        await cacheService.putCacheComment(comment, cache_id, user_id, comment_id);
+        await cacheService.putCacheComment(comment, user_id, comment_id);
         res.sendStatus(200);
         next();
     } catch (error) {
@@ -145,7 +148,7 @@ const putCacheComment = async (req, res, next) => {
 
 const deleteCache = async (req, res, next) => {
     const cache_id = req.params.cache_id;
-    const user_id = req.user_id
+    const user_id = req.user_id;
     try {
         await cacheService.deleteCache(user_id, cache_id);
         res.sendStatus(200);
@@ -157,7 +160,7 @@ const deleteCache = async (req, res, next) => {
 
 const deleteCacheComment = async (req, res, next) => {
     const comment_id = req.params.comment_id;
-    const user_id = req.user_id
+    const user_id = req.user_id;
     try {
         await cacheService.deleteCacheComment(user_id, comment_id);
         res.sendStatus(200);
@@ -169,8 +172,9 @@ const deleteCacheComment = async (req, res, next) => {
 
 const deleteCacheTags = async (req, res, next) => {
     const cache_id = req.params.cache_id;
+    const user_id = req.user_id;
     try {
-        await cacheService.deleteCacheTags(cache_id);
+        await cacheService.deleteCacheTags(user_id, cache_id);
         res.sendStatus(200);
         next();
     } catch (error) {
