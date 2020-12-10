@@ -160,8 +160,8 @@ Created
 **Anfrage**: 
 ```json
 {
-	"email": "testuser@example.com",
-	"password": "testuser123567"
+  "email": "testuser@example.com",
+  "password": "testuser123567"
 }
 ```
 **Antwort**:
