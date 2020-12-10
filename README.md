@@ -14,6 +14,7 @@
 - [Routen](#routen)
   - [Users](#users)
     - [Liste aller Nutzer](#liste-aller-nutzer)
+    - [Einzelner Nutzer](#einzelner-nutzer)
     - [Registrierung](#registrierung)
     - [Login](#login)
     - [Logout](#logout)
@@ -108,6 +109,25 @@ Aktuell sind folgende Routen verfügbar:
     },
     ...
   ]
+}
+```
+---
+### Einzelner Nutzer
+**Route**: `/users/:user_id`  
+**Methode**: `GET`  
+**Anfrage**: -  
+**Antwort**: 
+```json
+{
+  "user": {
+    "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
+    "username": "TestyMcTestersson",
+    "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c",
+    "interests": [
+      "kurios",
+      "streetart"
+    ]
+  }
 }
 ```
 ---
