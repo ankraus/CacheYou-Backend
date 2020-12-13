@@ -98,7 +98,8 @@ const postCacheLike = async (cache_id, user_id) => {
 
 const postCacheComment = async (comment, cache_id, user_id) => {
     try {
-        return await cacheDb.postCacheComment(comment, cache_id, user_id);
+        const content = comment.content;
+        return await cacheDb.postCacheComment(content, cache_id, user_id);
     } catch (error) {
         if (error instanceof BadRequestError) {
             throw error
