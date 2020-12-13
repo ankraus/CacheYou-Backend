@@ -132,22 +132,16 @@ const getTags = async () => {
 }
 
 const postCache = async (cache, user_id) => {
-    await legitTags(cache.tags);
+    const tags = cache.tags;
+    await legitTags(tags);
     const db_resp = await db.query(`
         INSERT INTO caches (latitude, longitude, public, title, description, link, user_id) VALUES
         ($1, $2, $3, $4, $5, $6, $7)
         RETURNING cache_id`,
         [cache.latitude, cache.longitude, cache.public, cache.title, cache.description, cache.link, user_id]);
     const cache_id = db_resp.rows[0].cache_id;
-    await db.query(`
-        INSERT INTO caches_tags(tag_id, cache_id)(
-            SELECT tag_id, $1 as cache_id
-            FROM tags t
-            WHERE t.name IN (
-                SELECT UNNEST($2::varchar[])
-            )
-        )`, [cache_id, cache.tags]);
-    return cache_id;
+    insertTags(tags, cache_id);
+    return cache_id;    
 }
 
 const postCacheCollect = async (cache_id, user_id) => {
@@ -177,21 +171,6 @@ const postCacheLike = async (cache_id, user_id) => {
     }
 }
 
-const deleteCacheLike = async (cache_id, user_id) => {
-    const db_resp = await db.query(`
-        SELECT *
-        FROM collected
-        WHERE user_id = $1 AND cache_id = $2
-    `, [user_id, cache_id]);
-    if(db_resp.rows[0].liked) {
-        await db.query(`
-            UPDATE collected
-            SET liked = FALSE
-            WHERE user_id = $1 AND cache_id = $2
-        `, [user_id, cache_id]);
-    }
-}
-
 const postCacheComment = async (comment, cache_id, user_id) => {
     /*
     Nur Kommentieren wenn eingesammelt ?
@@ -216,24 +195,10 @@ const postCacheComment = async (comment, cache_id, user_id) => {
     //}
 }
 
-
-const postCacheTags = async (cache_id, tags, user_id) => {
-    await legitTags(tags);
-    await authorizedUserForCache(cache_id, user_id)
-    await db.query(`
-        INSERT INTO caches_tags(tag_id, cache_id)(
-            SELECT tag_id, $1 as cache_id
-            FROM tags t
-            WHERE t.name IN (
-                SELECT UNNEST($2::varchar[])
-            )
-        )`, [cache_id, tags]);
-    return;
-}
-
-
 const putCache = async (cache, user_id) => {
-    await authorizedUserForCache(cache.cache_id, user_id)
+    const tags = cache.tags;
+    await legitTags(tags);
+    await authorizedUserForCache(cache.cache_id, user_id);
     await db.query(`
         UPDATE caches SET
         latitude = $1, 
@@ -244,10 +209,11 @@ const putCache = async (cache, user_id) => {
         link = $6 
         WHERE cache_id = $7`
         , [cache.latitude, cache.longitude, cache.public, cache.title, cache.description, cache.link, cache.cache_id]);
+    await insertTags(tags, cache.cache_id);
 }
 
 const putCacheComment = async (comment, user_id, comment_id) => {
-    await authorizedUserForComment(comment_id, user_id)
+    await authorizedUserForComment(comment_id, user_id);
     await db.query(`
         UPDATE comments 
         SET content = $1
@@ -256,7 +222,7 @@ const putCacheComment = async (comment, user_id, comment_id) => {
 }
 
 const deleteCache = async (user_id, cache_id) => {
-    await authorizedUserForCache(cache_id, user_id)
+    await authorizedUserForCache(cache_id, user_id);
     await db.query(`
         DELETE FROM caches
         WHERE cache_id = $1`
@@ -264,20 +230,37 @@ const deleteCache = async (user_id, cache_id) => {
 }
 
 const deleteCacheComment = async (user_id, comment_id) => {
-    await authorizedUserForComment(comment_id, user_id)
+    await authorizedUserForComment(comment_id, user_id);
     await db.query(`
         DELETE FROM comments
         WHERE comment_id = $1`
         , [comment_id]);   
 }
 
-//Alle auf einmal oder nur einzelne?
-const deleteCacheTags = async (user_id, cache_id) => {
-    await authorizedUserForCache(user_id, cache_id)
+const deleteCacheLike = async (cache_id, user_id) => {
+    const db_resp = await db.query(`
+        SELECT *
+        FROM collected
+        WHERE user_id = $1 AND cache_id = $2
+    `, [user_id, cache_id]);
+    if(db_resp.rows[0].liked) {
+        await db.query(`
+            UPDATE collected
+            SET liked = FALSE
+            WHERE user_id = $1 AND cache_id = $2
+        `, [user_id, cache_id]);
+    }
+}
+
+const insertTags = async (tags, cache_id) => {
     await db.query(`
-        DELETE FROM cache_tags
-        WHERE cache_id = $1`
-        , [cache_id]);
+        INSERT INTO caches_tags(tag_id, cache_id)(
+            SELECT tag_id, $1 as cache_id
+            FROM tags t
+            WHERE t.name IN (
+                SELECT UNNEST($2::varchar[])
+            )
+        )`, [cache_id, tags]);
 }
 
 const legitTags = async (tags) => {
@@ -329,12 +312,10 @@ module.exports = {
     postCache,
     postCacheCollect,
     postCacheLike,
-    deleteCacheLike,
     postCacheComment,
-    postCacheTags,
     putCache,
     putCacheComment,
     deleteCache,
     deleteCacheComment,
-    deleteCacheTags
+    deleteCacheLike
 }
