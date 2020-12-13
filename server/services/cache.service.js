@@ -4,7 +4,8 @@ const {
 const {
     DatabaseError,
     NotFoundError,
-    BadRequestError
+    BadRequestError,
+    ForbiddenError
 } = require('../utils/errors');
 
 const getCaches = async () => {
@@ -77,6 +78,18 @@ const postCacheCollect = async (cache_id, user_id) => {
     } catch (error) {
         if (error instanceof BadRequestError) {
             throw error
+        } else {
+            throw new DatabaseError(error.message);
+        }
+    }
+}
+
+const postCacheLike = async (cache_id, user_id) => {
+    try {
+        await cacheDb.postCacheLike(cache_id, user_id);
+    } catch (error) {
+        if(error instanceof ForbiddenError){
+            throw error;
         } else {
             throw new DatabaseError(error.message);
         }
@@ -168,7 +181,17 @@ const deleteCacheTags = async (user_id, cache_id) => {
     }
 }
 
-
+const deleteCacheLike = async (cache_id, user_id) => {
+    try {
+        await cacheDb.deleteCacheLike(cache_id, user_id);
+    } catch (error) {
+        if(error instanceof ForbiddenError){
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
+    }
+}
 
 module.exports = {
     getCaches,
@@ -179,11 +202,13 @@ module.exports = {
     getTags,
     postCache,
     postCacheCollect,
+    postCacheLike,
     postCacheComment,
     postCacheTags,
     putCache,
     putCacheComment,
     deleteCache,
     deleteCacheComment,
-    deleteCacheTags
+    deleteCacheTags,
+    deleteCacheLike
 }

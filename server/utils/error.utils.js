@@ -5,7 +5,8 @@ const {
     NoCredentialsInRequestError,
     NotFoundError,
     AlreadyExistsError,
-    BadRequestError
+    BadRequestError,
+    ForbiddenError
 } = require("./errors");
 const ValidationError = require('yup').ValidationError;
 
@@ -31,6 +32,9 @@ const authenticationErrorHandler = (err, req, res, next) => {
             break;
         case err instanceof NoCredentialsInRequestError:
             res.status(401).send('No token in request');
+            break;
+        case err instanceof ForbiddenError:
+            res.status(403).send('Forbidden');
             break;
         default:
             next(err);

@@ -33,6 +33,7 @@ router.get('/caches/:cache_id/collected', validationUtils.validateIds, cacheCont
 
 router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, cacheController.postCache);
 router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheCollect);
+router.post('/caches/:cache_id/like', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheLike);
 router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateIds, validationUtils.validateComment, cacheController.postCacheComment);
 router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheTags);
 
@@ -42,6 +43,7 @@ router.put('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticate
 router.delete('/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCache);
 router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheComment);
 router.delete('/caches/:cache_id/tags', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheTags);
+router.delete('/caches/:cache_id/like', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheLike)
 
 //User routes
 router.get('/users', userController.getUsers);

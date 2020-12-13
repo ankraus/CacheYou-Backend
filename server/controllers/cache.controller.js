@@ -93,6 +93,18 @@ const postCacheCollect = async (req, res, next) => {
     }
 }
 
+const postCacheLike = async (req, res, next) => {
+    const user_id = req.user_id;
+    const cache_id = req.params.cache_id;
+    try {
+        await cacheService.postCacheLike(cache_id, user_id);
+        res.sendStatus(200);
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
+
 const postCacheComment = async (req, res, next) => {
     const comment = req.body;
     const cache_id = req.params.cache_id;
@@ -182,6 +194,18 @@ const deleteCacheTags = async (req, res, next) => {
     }
 }
 
+const deleteCacheLike = async (req, res, next) => {
+    const user_id = req.user_id;
+    const cache_id = req.params.cache_id;
+    try {
+        await cacheService.deleteCacheLike(cache_id, user_id);
+        res.sendStatus(200);
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = {
     getCaches,
@@ -192,11 +216,13 @@ module.exports = {
     getTags,
     postCache,
     postCacheCollect,
+    postCacheLike,
     postCacheComment,
     postCacheTags,
     putCache,
     putCacheComment,
     deleteCache,
     deleteCacheComment,
-    deleteCacheTags
+    deleteCacheTags,
+    deleteCacheLike
 }
