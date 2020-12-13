@@ -114,7 +114,7 @@ DROP VIEW IF EXISTS v_user_collected;
 DROP VIEW IF EXISTS v_caches_collections;
 
 CREATE VIEW v_caches AS
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
+    SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
@@ -122,17 +122,17 @@ CREATE VIEW v_caches AS
     JOIN caches_images ci USING (cache_id)
     JOIN images i ON ci.image_id = i.image_id
     WHERE i.is_cover_image
-    GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
+    GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
 CREATE VIEW v_caches_image_array AS 
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(i.image_id) AS image_ids, array_agg(t.name) AS tags
+    SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(i.image_id) AS image_ids, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
     JOIN caches_images ci USING (cache_id)
     JOIN images i ON ci.image_id = i.image_id
-    GROUP BY c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
+    GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
 
 CREATE VIEW v_caches_comments AS 
     SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id 

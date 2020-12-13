@@ -4,7 +4,7 @@ const {
 
 const getCaches = async (req, res, next) => {
     try {
-        const caches = await cacheService.getCaches();
+        const caches = await cacheService.getCaches(req.user_id);
         res.json({
             caches: caches
         });
@@ -15,7 +15,7 @@ const getCaches = async (req, res, next) => {
 
 const getCacheById = async (req, res, next) => {
     try {
-        const cache = await cacheService.getCacheById(req.params.cache_id);
+        const cache = await cacheService.getCacheById(req.params.cache_id, req.user_id);
         res.json({
             cache: cache
         });

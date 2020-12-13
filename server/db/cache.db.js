@@ -5,10 +5,11 @@ const {
     ForbiddenError
 } = require('../utils/errors');
 
-const getCaches = async () => {
+const getCaches = async (user_id) => {
     const db_resp = await db.query(`
             SELECT * FROM v_caches
-        `);
+            WHERE (public OR user_id = $1)
+        `, [user_id]);
 
     var caches = [];
     db_resp.rows.forEach((db_row) => {
@@ -25,6 +26,7 @@ const getCaches = async () => {
                 username: db_row.username,
                 user_id: db_row.user_id
             },
+            public: db_row.public,
             created_at: db_row.created_at
         });
     });
@@ -32,12 +34,13 @@ const getCaches = async () => {
     return caches;
 };
 
-const getCacheById = async (cache_id) => {
+const getCacheById = async (cache_id, user_id) => {
     const db_resp = await db.query(`
         SELECT * 
         FROM v_caches_image_array
         WHERE cache_id = $1
-    `, [cache_id]);
+        AND (public OR user_id = $2)
+    `, [cache_id, user_id]);
     if (db_resp.rows.length < 1) {
         throw new NotFoundError();
     }
@@ -55,6 +58,7 @@ const getCacheById = async (cache_id) => {
             username: db_row.username,
             user_id: db_row.user_id
         },
+        public: db_row.public,
         created_at: db_row.created_at
     }
     return cache;
