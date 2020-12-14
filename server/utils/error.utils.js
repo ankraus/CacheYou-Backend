@@ -34,7 +34,7 @@ const authenticationErrorHandler = (err, req, res, next) => {
             res.status(401).send('No token in request');
             break;
         case err instanceof ForbiddenError:
-            res.status(403).send('Forbidden');
+            res.status(403).send('Forbidden' + errMessage(err));
             break;
         default:
             next(err);
