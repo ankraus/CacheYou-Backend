@@ -74,11 +74,11 @@ const getUserFollows = async (user_id) => {
     return db_resp.rows;
 }
 
-const getUserCollected = async (user_id) => {
+const getUserCollected = async (user_id, req_user_id) => {
     const db_resp = await db.query(`
             SELECT *
             FROM v_user_collected
-            WHERE user_id = $1`, [user_id]);
+            WHERE user_id = $1 AND (user_id = $2 OR public)`, [user_id, req_user_id]);
     var collected = [];
     db_resp.rows.forEach((db_row) => {
         collected.push({
@@ -92,7 +92,8 @@ const getUserCollected = async (user_id) => {
                 longitude: db_row.longitude,
                 tags: db_row.tags,
                 title: db_row.title,
-                cover_image_id: db_row.image_id
+                cover_image_id: db_row.image_id,
+                public: db_row.public
             },
             liked: db_row.liked,
             created_at: db_row.created_at
@@ -101,11 +102,11 @@ const getUserCollected = async (user_id) => {
     return collected;
 }
 
-const getUserCreated = async (user_id) => {
+const getUserCreated = async (user_id, req_user_id) => {
     const db_resp = await db.query(`
         SELECT *
         FROM v_caches
-        WHERE user_id = $1`, [user_id]);
+        WHERE user_id = $1 AND (user_id = $2 OR public)`, [user_id, req_user_id]);
 
     var caches = [];
     db_resp.rows.forEach((db_row) => {
@@ -116,7 +117,8 @@ const getUserCreated = async (user_id) => {
             longitude: db_row.longitude,
             tags: db_row.tags,
             title: db_row.title,
-            created_at: db_row.created_at
+            created_at: db_row.created_at,
+            public: db_row.public
         });
     });
     return caches;

@@ -81,7 +81,7 @@ const getUserFollows = async (req, res, next) => {
 
 const getUserCollected = async (req, res, next) => {
     try {
-        const collected = await userService.getUserCollected(req.params.user_id);
+        const collected = await userService.getUserCollected(req.params.user_id, req.user_id);
         res.json({
             collected: collected
         });
@@ -92,7 +92,7 @@ const getUserCollected = async (req, res, next) => {
 
 const getUserCreated = async (req, res, next) => {
     try {
-        const created = await userService.getUserCreated(req.params.user_id);
+        const created = await userService.getUserCreated(req.params.user_id, req.user_id);
         res.json({
             created: created
         });

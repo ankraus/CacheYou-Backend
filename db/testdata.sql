@@ -154,25 +154,25 @@ CREATE VIEW v_caches_comments AS
     JOIN users u ON u.user_id = c.user_id;
 
 CREATE VIEW v_caches_collected AS
-    SELECT u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at, array_agg(t.name) AS tags
+    SELECT u.user_id, u.username, c.cache_id, c.public, c.title, col.liked, col.created_at, array_agg(t.name) AS tags
     FROM collected col 
     JOIN users u USING (user_id) 
     JOIN caches c USING (cache_id) 
     JOIN caches_tags ct USING (cache_id)
     JOIN tags t USING (tag_id)
-    GROUP BY u.user_id, u.username, c.cache_id, c.title, col.liked, col.created_at;
+    GROUP BY u.user_id, u.username, c.cache_id, c.public, c.title, col.liked, col.created_at;
 
 CREATE VIEW v_caches_collections AS
-    SELECT cc.collection_id, c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username AS creator_username, u.user_id AS creator_id, c.created_at, array_agg(t.name) AS tags
+    SELECT cc.collection_id, c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username AS creator_username, u.user_id AS creator_id, c.created_at, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
     JOIN caches_collections cc USING (cache_id)
-    GROUP BY cc.collection_id, c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
+    GROUP BY cc.collection_id, c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
 
 CREATE VIEW v_user_collected AS
-    SELECT u.user_id, u.username, c.cache_id, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at AS collected_at, array_agg(t.name) AS tags
+    SELECT u.user_id, u.username, c.cache_id, c.public, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at AS collected_at, array_agg(t.name) AS tags
     FROM collected col 
     JOIN users u USING (user_id) 
     JOIN caches c USING (cache_id) 
@@ -180,7 +180,7 @@ CREATE VIEW v_user_collected AS
     JOIN tags t USING (tag_id)
     JOIN caches_images ci USING (cache_id)
     WHERE ci.is_cover_image
-    GROUP BY u.user_id, u.username, c.cache_id, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at;
+    GROUP BY u.user_id, u.username, c.cache_id, c.public, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at;
 
 CREATE VIEW v_users_extended AS
     SELECT user_id, email, username, image_id, terms_of_use, privacy_policy, license, array_agg(t.name) AS interests 

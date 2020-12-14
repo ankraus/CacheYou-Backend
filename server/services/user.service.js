@@ -77,17 +77,17 @@ const getUserFollows = async (user_id) => {
     }
 }
 
-const getUserCollected = async (user_id) => {
+const getUserCollected = async (user_id, req_user_id) => {
     try {
-        return await userDb.getUserCollected(user_id);
+        return await userDb.getUserCollected(user_id, req_user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const getUserCreated = async (user_id) => {
+const getUserCreated = async (user_id, req_user_id) => {
     try {
-        return await userDb.getUserCreated(user_id);
+        return await userDb.getUserCreated(user_id, req_user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
