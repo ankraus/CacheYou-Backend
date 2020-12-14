@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS users_images (
 );
 
 CREATE TABLE IF NOT EXISTS users_interests (
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    tag_id uuid REFERENCES tags(tag_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
+    tag_id uuid REFERENCES tags(tag_id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, tag_id)
 );
 
@@ -75,15 +75,15 @@ CREATE TABLE IF NOT EXISTS caches (
 );
 
 CREATE TABLE IF NOT EXISTS caches_tags (
-    cache_id uuid REFERENCES caches(cache_id) NOT NULL,
-    tag_id uuid REFERENCES tags(tag_id) NOT NULL,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE CASCADE,
+    tag_id uuid REFERENCES tags(tag_id) ON DELETE CASCADE,
     PRIMARY KEY (cache_id, tag_id)
 );
 
 CREATE TABLE IF NOT EXISTS comments (
     comment_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id uuid REFERENCES users(user_id) NOT NULL,
-    cache_id uuid REFERENCES caches(cache_id) NOT NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE SET NULL,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -105,14 +105,14 @@ CREATE TABLE IF NOT EXISTS collected (
 
 CREATE TABLE IF NOT EXISTS collections (
     collection_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id uuid REFERENCES users(user_id),
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
     public BOOLEAN DEFAULT FALSE NOT NULL,
     title VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS caches_collections (
-    collection_id uuid REFERENCES collections(collection_id),
-    cache_id uuid REFERENCES caches(cache_id),
+    collection_id uuid REFERENCES collections(collection_id) ON DELETE CASCADE,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE CASCADE,
     PRIMARY KEY (collection_id, cache_id)
 );
 
