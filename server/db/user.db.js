@@ -96,7 +96,7 @@ const getUserCollected = async (user_id, req_user_id) => {
                 public: db_row.public
             },
             liked: db_row.liked,
-            created_at: db_row.created_at
+            collected_at: db_row.collected_at
         })
     });
     return collected;
