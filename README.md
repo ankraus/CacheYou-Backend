@@ -302,7 +302,7 @@ OK
 **Methode**: `POST`  
 **Anfrage**: -  
 **Antwort**:
-```json
+```
 OK
 ```
 ---
@@ -311,7 +311,7 @@ OK
 **Methode**: `DELETE`  
 **Anfrage**: -  
 **Antwort**:
-```json
+```
 OK
 ```
 ---
@@ -710,6 +710,7 @@ OK
 | 401         | Wrong username or password  | Anmeldedaten falsch                           | richtige Anmeldedaten verwendern        |
 | 401         | No token in request         | Cookie wurde nicht gesendet                   | withCredentials überprüfen              |
 | 403         | token invalid               | Token abgelaufen                              | Nutzer neu einloggen                    |
+| 403         | forbidden                   | Nutzer ist für aktion nicht berechtigt        | richter Nutzer eingeloggt?              |
 | 404         | Not found                   | Ressource existiert nicht                     | Id überprüfen                           |
 | 500         | Database Error              | Fehlerhafte anfrage an die DB                 | Backend ist schuld                      |
 | 500         | Hashing Error               | Hashing Fehlerhaft                            | Backend ist schuld                      |
