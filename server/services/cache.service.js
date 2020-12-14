@@ -136,7 +136,7 @@ const putCache = async (cache, cache_id, user_id) => {
 
 const putCacheComment = async (comment, user_id, comment_id) => {
     try {
-        await cacheDb.getCommentById(comment_id)
+        await cacheDb.getCommentById(comment_id);
     } catch (error) {
         throw new NotFoundError();
     }
@@ -144,33 +144,45 @@ const putCacheComment = async (comment, user_id, comment_id) => {
         const content = comment.content;
         await cacheDb.putCacheComment(content, user_id, comment_id);
     } catch (error) {
-        throw new DatabaseError(error.message);
+        if(error instanceof ForbiddenError) {
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
     }
 }
 
 const deleteCache = async (user_id, cache_id) => {
     try {
-        await cacheDb.getCacheById(cache_id)
+        await cacheDb.getCacheById(cache_id, user_id);
     } catch (error) {
         throw new NotFoundError();
     }
     try {
         await cacheDb.deleteCache(user_id, cache_id);
     } catch (error) {
-        throw new DatabaseError(error.message);
+        if(error instanceof ForbiddenError) {
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
     }
 }
 
 const deleteCacheComment = async (user_id, comment_id) => {
     try {
-        await cacheDb.getCommentById(comment_id)
+        await cacheDb.getCommentById(comment_id);
     } catch (error) {
         throw new NotFoundError();
     }
     try {
         await cacheDb.deleteCacheComment(user_id, comment_id);
     } catch (error) {
-        throw new DatabaseError(error.message);
+        if(error instanceof ForbiddenError) {
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
     }
 }
 
