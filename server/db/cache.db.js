@@ -53,7 +53,7 @@ const getCacheById = async (cache_id, user_id) => {
         description: db_row.description,
         link: db_row.link,
         tags: db_row.tags,
-        image_ids: db_row.image_ids,
+        image_ids: ((db_row.image_ids[0] == null) ? []:db_row.image_ids),
         creator: {
             username: db_row.username,
             user_id: db_row.user_id
@@ -257,7 +257,15 @@ const deleteCacheLike = async (cache_id, user_id) => {
     }
 }
 
+const deleteTags = async (cache_id) => {
+    await db.query(`
+        DELETE FROM caches_tags
+        WHERE cache_id = $1
+    `, [cache_id]);
+}
+
 const insertTags = async (tags, cache_id) => {
+    await deleteTags(cache_id);
     await db.query(`
         INSERT INTO caches_tags(tag_id, cache_id)(
             SELECT tag_id, $1 as cache_id
@@ -285,22 +293,22 @@ const legitTags = async (tags) => {
 
 const authorizedUserForComment = async (comment_id, user_id) => {
     const authorizedUserId = await db.query(`
-        GET user_id
+        SELECT user_id
         FROM comments
         WHERE comment_id = $1`
         , [comment_id]);
-    if (authorizedUserId != user_id){
+    if (authorizedUserId.rows[0].user_id != user_id){
         throw new ForbiddenError('User isnt the creator of the this Comment');
     }
 }
 
 const authorizedUserForCache = async (cache_id, user_id) => {
     const authorizedUserId = await db.query(`
-        GET user_id
-        FROM cache
-        WHERE cache_id = $1`
+        SELECT user_id
+        FROM caches
+        WHERE cache_id = $1::uuid`
         , [cache_id]);
-    if (authorizedUserId != user_id){
+    if (!authorizedUserId.rows[0] || authorizedUserId.rows[0].user_id != user_id){
         throw new ForbiddenError('User isnt the creator of the this Cache');
     }
 }

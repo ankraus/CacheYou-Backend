@@ -136,8 +136,9 @@ const postCacheTags = async (req, res, next) => {
 const putCache = async (req, res, next) => {
     const cache = req.body;
     const user_id = req.user_id;
+    const cache_id = req.params.cache_id;
     try {
-        await cacheService.putCache(cache, user_id);
+        await cacheService.putCache(cache, cache_id, user_id);
         res.sendStatus(200);
         next();
     } catch (error) {

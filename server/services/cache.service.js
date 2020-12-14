@@ -109,9 +109,10 @@ const postCacheComment = async (comment, cache_id, user_id) => {
     }
 }
 
-const putCache = async (cache, user_id) => {
+const putCache = async (cache, cache_id, user_id) => {
     try {
-        const dbCache = await cacheDb.getCacheById(cache.cache_id)
+        const dbCache = await cacheDb.getCacheById(cache_id, user_id);
+        cache.cache_id = cache_id;
         cache.latitude = cache.latitude || dbCache.latitude,
         cache.longitude = cache.longitude || dbCache.longitude,
         cache.title = cache.title || dbCache.title,

@@ -138,13 +138,13 @@ CREATE VIEW v_caches AS
     GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
 CREATE VIEW v_caches_image_array AS 
-    SELECT c.cache_id, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(DISTINCT t.name) AS tags, array_agg(i.image_id ORDER BY is_cover_image DESC) AS image_ids
+    SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(DISTINCT t.name) AS tags, array_agg(i.image_id ORDER BY is_cover_image DESC) AS image_ids
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
-    JOIN caches_images ci USING (cache_id)
-    JOIN images i ON ci.image_id = i.image_id
+    LEFT JOIN caches_images ci USING (cache_id)
+    LEFT JOIN images i ON ci.image_id = i.image_id
     GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, t.name;
 
 CREATE VIEW v_caches_comments AS 
