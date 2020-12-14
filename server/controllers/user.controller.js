@@ -18,7 +18,7 @@ const getUsers = async (req, res, next) => {
 
 const getCurrentUser = async (req, res, next) => {
     try {
-        const user = await userService.getUserById(req.user_id);
+        const user = await userService.getSelf(req.user_id);
         res.json({
             user: user
         });
@@ -50,8 +50,15 @@ const getUserByUsername = async (req, res, next) => {
 }
 
 const getUserById = async (req, res, next) => {
+    const userId = req.tokenValid ? req.user_id : undefined;
+    const requestedUserId = req.params.user_id;
+    var user;
     try {
-        const user = await userService.getUserById(req.params.user_id);
+        if(userId === requestedUserId) {
+            user = await userService.getSelf(userId);
+        } else {
+            user = await userService.getUserById(requestedUserId);
+        }
         res.json({
             user: user
         });
@@ -74,7 +81,7 @@ const getUserFollows = async (req, res, next) => {
 
 const getUserCollected = async (req, res, next) => {
     try {
-        const collected = await userService.getUserCollected(req.params.user_id);
+        const collected = await userService.getUserCollected(req.params.user_id, req.user_id);
         res.json({
             collected: collected
         });
@@ -85,7 +92,7 @@ const getUserCollected = async (req, res, next) => {
 
 const getUserCreated = async (req, res, next) => {
     try {
-        const created = await userService.getUserCreated(req.params.user_id);
+        const created = await userService.getUserCreated(req.params.user_id, req.user_id);
         res.json({
             created: created
         });
@@ -146,6 +153,16 @@ const getIsLoggedIn = async (req, res) => {
     });
 }
 
+const putUpdateUser = async (req, res, next) => {
+    const user = req.body;
+    try {
+        await userService.putUpdateUser(user, req.user_id);
+        res.sendStatus(200);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getUsers,
     getCurrentUser,
@@ -159,5 +176,6 @@ module.exports = {
     postRegisterUser,
     postLoginUser,
     postLogoutUser,
-    getIsLoggedIn
+    getIsLoggedIn,
+    putUpdateUser
 }

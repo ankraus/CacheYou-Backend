@@ -33,20 +33,21 @@ router.get('/caches/:cache_id/collected', validationUtils.validateIds, cacheCont
 
 router.post('/caches', authUtils.checkAuthenticated, validationUtils.validateCreateCache, cacheController.postCache);
 router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheCollect);
+router.post('/caches/:cache_id/like', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheLike);
 router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateIds, validationUtils.validateComment, cacheController.postCacheComment);
-router.post('/caches/:cache_id/tags', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheTags);
 
 router.put('/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.putCache);
-router.put('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.putCacheComment);
+router.put('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, validationUtils.validateComment, cacheController.putCacheComment);
 
 router.delete('/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCache);
-router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheComment);
-router.delete('/caches/:cache_id/tags', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheTags);
+router.delete('/caches/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheComment);
+router.delete('/caches/:cache_id/like', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheLike)
 
 //User routes
 router.get('/users', userController.getUsers);
 router.get('/users/current', authUtils.checkAuthenticated, userController.getCurrentUser);
 router.get('/users/isLoggedIn', userController.getIsLoggedIn);
+router.get('/users/:user_id', validationUtils.validateIds, userController.getUserById);
 router.get('/users/:user_id/follows', validationUtils.validateIds, userController.getUserFollows);
 router.get('/users/:user_id/collected', validationUtils.validateIds, userController.getUserCollected);
 router.get('/users/:user_id/created', validationUtils.validateIds, userController.getUserCreated);
@@ -57,18 +58,20 @@ router.post('/users/login', validationUtils.validateLogin, userController.postLo
 router.post('/users/logout', userController.postLogoutUser);
 router.post('/users/follow/:user_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 
-router.put('/users', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, routerUtils.unimplementedRoute);
+router.put('/users/current', authUtils.checkAuthenticated, validationUtils.validateUpdateUser, userController.putUpdateUser);
 
 router.delete('/users/current', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
 router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 
 //image routes
 router.get('/images/:image_id', validationUtils.validateIds, imageController.getImage);
+router.get('/images/:image_id/info', validationUtils.validateIds, imageController.getImageInfo);
 
-router.post('/images/user/', authUtils.checkAuthenticated, routerUtils.unimplementedRoute);
-router.post('/images/cache/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
+router.post('/images/profile/', authUtils.checkAuthenticated, validationUtils.validateImageTypes, imageController.postProfilePicture);
+router.post('/images/caches/:cache_id/cover', authUtils.checkAuthenticated, validationUtils.validateImageTypes, validationUtils.validateIds, imageController.postCacheImage);
+router.post('/images/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateImageTypes, validationUtils.validateIds, imageController.postCacheImage);
 
-router.delete('/images/:image_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
+router.delete('/images/:image_id', authUtils.checkAuthenticated, validationUtils.validateIds, imageController.deleteImage);
 
 //collection routes
 router.get('/collections', collectionController.getCollections);

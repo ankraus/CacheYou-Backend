@@ -5,7 +5,8 @@ const {
     NoCredentialsInRequestError,
     NotFoundError,
     AlreadyExistsError,
-    BadRequestError
+    BadRequestError,
+    ForbiddenError
 } = require("./errors");
 const ValidationError = require('yup').ValidationError;
 
@@ -32,6 +33,9 @@ const authenticationErrorHandler = (err, req, res, next) => {
         case err instanceof NoCredentialsInRequestError:
             res.status(401).send('No token in request');
             break;
+        case err instanceof ForbiddenError:
+            res.status(403).send('Forbidden' + errMessage(err));
+            break;
         default:
             next(err);
             break;
@@ -49,22 +53,30 @@ const validationErrorHandler = (err, req, res, next) => {
 const generalErrorHandler = (err, req, res, next) => {
     switch (true) {
         case err instanceof BadRequestError:
-            res.status(400).send('Bad request' + (err.message?': ' + err.message:''));
+            res.status(400).send('Bad request' + errMessage(err));
             break;
         case err instanceof NotFoundError:
-            res.status(404).send('Not found' + (err.message?': ' + err.message:''));
+            res.status(404).send('Not found' + errMessage(err));
             break;
         case err instanceof AlreadyExistsError:
-            res.status(400).send('Already exists');
+            res.status(400).send('Already exists' + errMessage(err));
             break;
         case err instanceof SyntaxError:
-            res.status(400).send('Invalid syntax: ' + err.message);
+            res.status(400).send('Invalid syntax' + errMessage(err));
+            break;
+        case err.type === 'entity.too.large':
+            var fileSize = formatFileSize(err.length);
+            var fileLimit = formatFileSize(err.limit);
+            res.status(400).send(`Payload too large: ${fileSize} MB, limit is ${fileLimit} MB`);
             break;
         default:
             res.status(500).send(err.name) && next(err);
             break;
     }
 }
+
+const errMessage = (err) => (err.message?': ' + err.message:'');
+const formatFileSize = (fileSize) => (fileSize / (1024*1024)).toFixed(2);
 
 module.exports = {
     errorLogger,

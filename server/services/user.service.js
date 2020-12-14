@@ -22,6 +22,14 @@ const getUsers = async () => {
     }
 }
 
+const getSelf = async (userId) => {
+    try {
+        return await userDb.getSelf(userId);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 const getUserByEmail = async (email) => {
     var user;
     try {
@@ -69,17 +77,17 @@ const getUserFollows = async (user_id) => {
     }
 }
 
-const getUserCollected = async (user_id) => {
+const getUserCollected = async (user_id, req_user_id) => {
     try {
-        return await userDb.getUserCollected(user_id);
+        return await userDb.getUserCollected(user_id, req_user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
 }
 
-const getUserCreated = async (user_id) => {
+const getUserCreated = async (user_id, req_user_id) => {
     try {
-        return await userDb.getUserCreated(user_id);
+        return await userDb.getUserCreated(user_id, req_user_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
@@ -94,20 +102,10 @@ const getUserCollections = async (user_id) => {
 }
 
 const postRegisterUser = async (newUser) => {
+    await checkIfAlreadyExists(newUser, "");
     newUser.pw_hash = await bcrypt.hash(newUser.password, 10).catch((err) => {
         throw new HashingError(err.message)
     });
-    var userByEmail;
-    var userByUsername;
-    try {
-        userByEmail = await userDb.getUserByEmail(newUser.email);
-        userByUsername = await userDb.getUserByUsername(newUser.username);
-    } catch (error) {
-        throw new DatabaseError(error.message);
-    }
-    if (userByEmail || userByUsername) {
-        throw new AlreadyExistsError();
-    }
     try {
         return await userDb.postRegisterUser(newUser);
     } catch (error) {
@@ -154,8 +152,63 @@ const postLogoutUser = async (user_id) => {
     }
 }
 
+const putUpdateUser = async (user, user_id) => {
+    await checkIfAlreadyExists(user, user_id);
+    try {
+        //if a new password was provided, hash it and store it in user.pw_hash. Else, get old pw_hash from db and use that.
+        if(user.password) {
+            user.pw_hash = await bcrypt.hash(user.password, 10).catch((err) => {
+                throw new HashingError(err.message)
+            });
+        } else {
+            user.pw_hash = (await userDb.getUserPwHash(user_id)).pw_hash;
+        }
+        //get user from db to fill fields that were not provided
+        const dbUser = await userDb.getSelf(user_id);
+        if(!user.username) {
+            user.username = dbUser.username;
+        }
+        if(!user.email) {
+            user.email = dbUser.email;
+        }
+        if(!user.interests) {
+            user.interests = dbUser.interests;
+        }
+        if(user.terms_of_use == null) {
+            user.terms_of_use = dbUser.terms_of_use;
+        }
+        if(user.privacy_policy == null) {
+            user.privacy_policy = dbUser.privacy_policy;
+        }
+        if(user.license == null) {
+            user.license = dbUser.license;
+        }
+        return await userDb.putUpdateUser(user, user_id);
+    } catch (error) {
+        throw new DatabaseError();
+    }
+}
+
+const checkIfAlreadyExists = async (user, user_id) => {
+    var userByEmail;
+    var userByUsername;
+    try {
+        userByEmail = await userDb.getUserByEmail(user.email);
+        userByUsername = await userDb.getUserByUsername(user.username);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+    //if email or username exist on a different user, throw error
+    if ((userByEmail && userByEmail.user_id != user_id)) {
+        throw new AlreadyExistsError('email');
+    } else if ((userByUsername && userByUsername.user_id != user_id)) {
+        throw new AlreadyExistsError('username');
+    }
+}
+
 module.exports = {
     getUsers,
+    getSelf,
     getUserByEmail,
     getUserByUsername,
     getUserById,
@@ -165,5 +218,6 @@ module.exports = {
     getUserCollections,
     postRegisterUser,
     postLoginUser,
-    postLogoutUser
+    postLogoutUser,
+    putUpdateUser
 }

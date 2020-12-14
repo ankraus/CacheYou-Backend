@@ -14,25 +14,43 @@
 - [Routen](#routen)
   - [Users](#users)
     - [Liste aller Nutzer](#liste-aller-nutzer)
+    - [Einzelner Nutzer](#einzelner-nutzer)
     - [Registrierung](#registrierung)
     - [Login](#login)
     - [Logout](#logout)
+    - [Nutzerdaten ändern](#nutzerdaten-ändern)
+    - [Aktuellen Nutzer löschen](#aktuellen-nutzer-löschen)
     - [Alle von einem Nutzer gesammelten Caches](#alle-von-einem-nutzer-gesammelten-caches)
     - [Alle von einem Nutzer erstellten Caches](#alle-von-einem-nutzer-erstellten-caches)
     - [Alle Nutzer, denen ein Nutzer folgt](#alle-nutzer-denen-ein-nutzer-folgt)
+    - [Nutzer folgen](#nutzer-folgen)
+    - [Nutzer entfolgen](#nutzer-entfolgen)
   - [Caches](#caches)
     - [Liste aller Caches](#liste-aller-caches)
     - [Einzelner Cache](#einzelner-cache)
     - [Liste aller Tags](#liste-aller-tags)
-    - [Cache erstellen](#cache-erstellen)
     - [Liste aller Bilder eines Caches](#liste-aller-bilder-eines-caches)
     - [Liste aller Einsammlungen eines Caches](#liste-aller-einsammlungen-eines-caches)
     - [Liste aller Kommentare eines Caches](#liste-aller-kommentare-eines-caches)
+    - [Cache erstellen](#cache-erstellen)
+    - [Cache einsammeln](#cache-einsammeln)
+    - [Cache liken](#cache-liken)
+    - [Cache entliken](#cache-entliken)
+    - [Cache kommentieren](#cache-kommentieren)
+    - [Cache updaten](#cache-updaten)
+    - [Cache Kommentar updaten](#cache-kommentar-updaten)
+    - [Cache löschen](#cache-löschen)
+    - [Cache Kommentar löschen](#cache-kommentar-löschen)
   - [Collections](#collections)
     - [Liste aller Collections](#liste-aller-collections)
     - [Einzelne Collection](#einzelne-collection)
   - [Images](#images)
     - [Einzelnes Bild](#einzelnes-bild)
+    - [Informationen zu einzelnem Bild](#informationen-zu-einzelnem-bild)
+    - [Profilbild posten (aktuell eingeloggter Nutzer)](#profilbild-posten-aktuell-eingeloggter-nutzer)
+    - [Cachebild posten](#cachebild-posten)
+    - [Coverbild posten](#coverbild-posten)
+    - [Bild löschen](#bild-löschen)
 - [Fehlermeldungen](#fehlermeldungen)
 - [Repositorystruktur, Branches und Entwicklung](#repositorystruktur-branches-und-entwicklung)
   - [Entwickler](#entwickler)
@@ -93,12 +111,34 @@ Aktuell sind folgende Routen verfügbar:
   "users": [
     {
       "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
-      "email": "test@example.com",
       "username": "TestyMcTestersson",
-      "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c"
+      "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c",
+      "interests": [
+        "streetart",
+        "kurios"
+      ]
     },
     ...
   ]
+}
+```
+---
+### Einzelner Nutzer
+**Route**: `/users/:user_id`  
+**Methode**: `GET`  
+**Anfrage**: -  
+**Antwort**: 
+```json
+{
+  "user": {
+    "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
+    "username": "TestyMcTestersson",
+    "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c",
+    "interests": [
+      "kurios",
+      "streetart"
+    ]
+  }
 }
 ```
 ---
@@ -108,9 +148,16 @@ Aktuell sind folgende Routen verfügbar:
 **Anfrage**: 
 ```json
 {
-	"email":"testuser@example.com",
-	"password":"testuser123567",
-	"username": "testuser_123"
+  "email":"testuser@example.com",
+  "password":"testuser123567",
+  "username": "testuser_123",
+  "interests": [
+      "streetart",
+      "kurious"
+    ],
+  "license": true,
+  "privacy_policy": true,
+  "terms_of_use": true
 }
 ```
 **Antwort**:
@@ -124,8 +171,8 @@ Created
 **Anfrage**: 
 ```json
 {
-	"email": "testuser@example.com",
-	"password": "testuser123567"
+  "email": "testuser@example.com",
+  "password": "testuser123567"
 }
 ```
 **Antwort**:
@@ -136,6 +183,37 @@ OK
 ### Logout
 **Route**: `/users/logout`  
 **Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Nutzerdaten ändern
+**Route**: `/users/current`  
+**Methode**: `PUT`  
+**Anfrage**: *Mindestens einer der drei Parameter muss übergeben werden.*
+```json
+{
+  "email":"testuser@example.com",
+  "password":"testuser123567",
+  "username": "testuser_123",
+  "interests": [
+    "wassersystem"
+  ],
+  "terms_of_use":true,
+  "privacy_policy":false,
+  "license":false
+}
+```
+**Antwort**:
+```
+OK
+```
+---
+### Aktuellen Nutzer löschen
+**Route**: `/users/current`  
+**Methode**: `DELETE`  
 **Anfrage**: -  
 **Antwort**:
 ```
@@ -160,10 +238,12 @@ OK
         "tags": [
           "kultur"
         ],
-        "title": "Zur Brezn"
+        "title": "Zur Brezn",
+        "cover_image_id": "4b3c7735-cec5-40ef-b416-27dcdad3a646",
+        "public": true
       },
       "liked": false,
-      "created_at": "2020-11-26T20:28:10.412Z"
+      "collected_at": "2020-11-26T20:28:10.412Z"
     }
   ]
 }
@@ -183,7 +263,9 @@ OK
         "streetart"
       ],
       "title": "Wandgemälde bei der Esso Tankstelle",
-      "created_at": "2020-10-30T05:31:08.808Z"
+      "created_at": "2020-10-30T05:31:08.808Z",
+      "cover_image_id":"2155e963-6f90-4370-af16-f2b3d4f05f5a",
+      "public": true
     },
     {
       "cache_id": "d80ee03b-90df-4541-8567-e4932198848a",
@@ -191,7 +273,9 @@ OK
         "wassersystem"
       ],
       "title": "Unterer Brunnenturm",
-      "created_at": "2020-08-11T08:23:54.000Z"
+      "created_at": "2020-08-11T08:23:54.000Z",
+      "cover_image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea",
+      "public": true
     }
   ]
 }
@@ -213,6 +297,24 @@ OK
 }
 ```
 ---
+### Nutzer folgen
+**Route**: `/users/follow/:user_id/`  
+**Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Nutzer entfolgen
+**Route**: `/users/follow/:user_id/`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
 ## Caches
 
 ---
@@ -226,6 +328,7 @@ OK
   "caches": [
     {
       "cache_id": "2967319e-5ee6-4ed0-a251-aaa1fa9deb56",
+      "cover_image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea",
       "latitude": "48.3717700000",
       "longitude": "10.8892950000",
       "title": "Wandgemälde bei der Esso Tankstelle",
@@ -262,6 +365,9 @@ OK
     "tags": [
       "streetart"
     ],
+    "image_ids": [
+      "e8643294-a0b8-4d76-adea-5a5599e3525b"
+    ],
     "creator": {
       "username": "dummy789",
       "user_id": "94eff975-1414-4fe4-8d5d-8871dc23c4f4"
@@ -284,27 +390,6 @@ OK
     "kultur",
     "wassersystem"
   ]
-}
-```
----
-### Cache erstellen
-**Route**: `/caches`  
-**Methode**: `POST`  
-**Anfrage**:
-```json
-{
-	"description": "Dies ist ein Cache mit einer Testbeschreibung",
-	"title": "Testcache mit Testtitel",
-	"longitude": -111.693987,
-	"latitude": 33.384195,
-	"public": true,
-	"tags": ["kurios"]
-}
-```
-**Antwort**:
-```json
-{
-  "cache_id": "78be3f17-f724-4bda-8023-ea3aa689b7f1"
 }
 ```
 ---
@@ -367,6 +452,122 @@ OK
     }
   ]
 }
+```
+---
+### Cache erstellen
+**Route**: `/caches`  
+**Methode**: `POST`  
+**Anfrage**:
+```json
+{
+  "description": "Dies ist ein Cache mit einer Testbeschreibung",
+  "title": "Testcache mit Testtitel",
+  "longitude": -111.693987,
+  "latitude": 33.384195,
+  "public": true,
+  "tags": ["kurios"]
+}
+```
+**Antwort**:
+```json
+{
+  "cache_id": "78be3f17-f724-4bda-8023-ea3aa689b7f1"
+}
+```
+---
+### Cache einsammeln
+**Route**: `/caches/:cache_id/collect`  
+**Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache liken
+**Route**: `/caches/:cache_id/like`  
+**Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache entliken
+**Route**: `/caches/:cache_id/like`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache kommentieren
+**Route**: `/caches/:cache_id/comment`  
+**Methode**: `POST`  
+**Anfrage**: 
+```json
+{
+	"content":"Dies ist ein Testkommentar"
+}
+```  
+**Antwort**:
+```json
+{
+  "comment_id": "aa8b210f-05a6-4d29-8b0f-2e841a4b9704"
+}
+```
+---
+### Cache updaten
+**Route**: `/caches/:cache_id`  
+**Methode**: `PUT`  
+**Anfrage**: *Alle nicht übergebenen Parameter werden aus den existierenden Daten ergänzt.*
+```json
+{
+  "latitude": 47.369813,
+  "logitude": 8.540563,
+  "title": "Cooles Kleidungsgeschäft in Zürich",
+  "public": false,
+  "tags": ["kurios", "kultur"],
+  "description": "Sehr für euch selbst! :D",
+  "link": ""
+}
+```  
+**Antwort**:
+```
+OK
+```
+---
+### Cache Kommentar updaten
+**Route**: `/caches/:cache_id/comments/:comment_id`  
+**Methode**: `PUT`  
+**Anfrage**:
+```json
+{
+  "content": "Dieser Kommentar hat jetzt einen neuen Inhalt"
+}
+```  
+**Antwort**:
+```
+OK
+```
+---
+### Cache löschen
+**Route**: `/caches/:cache_id`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache Kommentar löschen
+**Route**: `/caches/comments/:comment_id`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
 ```
 ---
 ## Collections
@@ -441,6 +642,64 @@ OK
 **Antwort**: Das Bild als Binärdaten
 
 ---
+### Informationen zu einzelnem Bild
+**Route**: `/images/:image_id/info`  
+**Methode**: `GET`  
+**Anfrage**: -  
+**Antwort**:
+```json
+{
+  "image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea",
+  "user_id": "94eff975-1414-4fe4-8d5d-8871dc23c4f4",
+  "username": "dummy789",
+  "created_at": "2020-12-09T22:27:28.382Z",
+  "mimetype": "image/png"
+}
+```
+---
+### Profilbild posten (aktuell eingeloggter Nutzer)
+**Route**: `/images/profile/`  
+**Methode**: `POST`  
+**Anfrage**: Das Bild als Binärdaten, Anfragetyp gleich Mimetype  
+**Antwort**:
+```json
+{
+  "image_id": "4fed05a3-b680-4830-833a-4c93cb25b09a"
+}
+```
+---
+### Cachebild posten
+**Route**: `/images/caches/:cache_id`  
+**Methode**: `POST`  
+**Anfrage**: Das Bild als Binärdaten, Anfragetyp gleich Mimetype  
+**Antwort**:
+```json
+{
+  "image_id": "4fed05a3-b680-4830-833a-4c93cb25b09a"
+}
+```
+---
+### Coverbild posten
+**Route**: `/images/caches/:cache_id/cover`  
+**Methode**: `POST`  
+**Anfrage**: Das Bild als Binärdaten, Anfragetyp gleich Mimetype  
+**Antwort**:
+```json
+{
+  "image_id": "4fed05a3-b680-4830-833a-4c93cb25b09a"
+}
+```
+---
+### Bild löschen
+**Route**: `/images/:image_id`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+
+---
 # Fehlermeldungen
 | Fehlercode  | Fehlermeldung               | mögl. Ursache                                 | Behebung                                |
 | ---         | ---                         | ---                                           | ---                                     |
@@ -451,6 +710,7 @@ OK
 | 401         | Wrong username or password  | Anmeldedaten falsch                           | richtige Anmeldedaten verwendern        |
 | 401         | No token in request         | Cookie wurde nicht gesendet                   | withCredentials überprüfen              |
 | 403         | token invalid               | Token abgelaufen                              | Nutzer neu einloggen                    |
+| 403         | forbidden                   | Nutzer ist für aktion nicht berechtigt        | richter Nutzer eingeloggt?              |
 | 404         | Not found                   | Ressource existiert nicht                     | Id überprüfen                           |
 | 500         | Database Error              | Fehlerhafte anfrage an die DB                 | Backend ist schuld                      |
 | 500         | Hashing Error               | Hashing Fehlerhaft                            | Backend ist schuld                      |

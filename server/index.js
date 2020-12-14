@@ -20,10 +20,19 @@ const corsOptions = {
       },
     credentials: true
 }
+const maxImgSize = '7.5mb';
 
 app.use(morgan('tiny'));
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use(express.raw({
+  type: 'image/png',
+  limit: maxImgSize
+}));
+app.use(express.raw({
+  type: 'image/jpeg',
+  limit: maxImgSize
+}));
 app.use(express.json());
 app.use(cookieParser());
 
