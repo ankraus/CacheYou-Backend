@@ -141,7 +141,8 @@ const putCacheComment = async (comment, user_id, comment_id) => {
         throw new NotFoundError();
     }
     try {
-        await cacheDb.putCacheComment(comment, user_id, comment_id);
+        const content = comment.content;
+        await cacheDb.putCacheComment(content, user_id, comment_id);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
