@@ -40,7 +40,7 @@ router.put('/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.va
 router.put('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, validationUtils.validateComment, cacheController.putCacheComment);
 
 router.delete('/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCache);
-router.delete('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheComment);
+router.delete('/caches/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheComment);
 router.delete('/caches/:cache_id/like', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.deleteCacheLike)
 
 //User routes
