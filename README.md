@@ -19,17 +19,28 @@
     - [Login](#login)
     - [Logout](#logout)
     - [Nutzerdaten ändern](#nutzerdaten-ändern)
+    - [Aktuellen Nutzer löschen](#aktuellen-nutzer-löschen)
     - [Alle von einem Nutzer gesammelten Caches](#alle-von-einem-nutzer-gesammelten-caches)
     - [Alle von einem Nutzer erstellten Caches](#alle-von-einem-nutzer-erstellten-caches)
     - [Alle Nutzer, denen ein Nutzer folgt](#alle-nutzer-denen-ein-nutzer-folgt)
+    - [Nutzer folgen](#nutzer-folgen)
+    - [Nutzer entfolgen](#nutzer-entfolgen)
   - [Caches](#caches)
     - [Liste aller Caches](#liste-aller-caches)
     - [Einzelner Cache](#einzelner-cache)
     - [Liste aller Tags](#liste-aller-tags)
-    - [Cache erstellen](#cache-erstellen)
     - [Liste aller Bilder eines Caches](#liste-aller-bilder-eines-caches)
     - [Liste aller Einsammlungen eines Caches](#liste-aller-einsammlungen-eines-caches)
     - [Liste aller Kommentare eines Caches](#liste-aller-kommentare-eines-caches)
+    - [Cache erstellen](#cache-erstellen)
+    - [Cache einsammeln](#cache-einsammeln)
+    - [Cache liken](#cache-liken)
+    - [Cache entliken](#cache-entliken)
+    - [Cache kommentieren](#cache-kommentieren)
+    - [Cache updaten](#cache-updaten)
+    - [Cache Kommentar updaten](#cache-kommentar-updaten)
+    - [Cache löschen](#cache-löschen)
+    - [Cache Kommentar löschen](#cache-kommentar-löschen)
   - [Collections](#collections)
     - [Liste aller Collections](#liste-aller-collections)
     - [Einzelne Collection](#einzelne-collection)
@@ -200,6 +211,15 @@ OK
 OK
 ```
 ---
+### Aktuellen Nutzer löschen
+**Route**: `/users/current`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
 ### Alle von einem Nutzer gesammelten Caches
 **Route**: `/users/:user_id/collected`  
 **Methode**: `GET`  
@@ -219,10 +239,11 @@ OK
           "kultur"
         ],
         "title": "Zur Brezn",
-        "image_id": "4b3c7735-cec5-40ef-b416-27dcdad3a646"
+        "cover_image_id": "4b3c7735-cec5-40ef-b416-27dcdad3a646",
+        "public": true
       },
       "liked": false,
-      "created_at": "2020-11-26T20:28:10.412Z"
+      "collected_at": "2020-11-26T20:28:10.412Z"
     }
   ]
 }
@@ -243,7 +264,8 @@ OK
       ],
       "title": "Wandgemälde bei der Esso Tankstelle",
       "created_at": "2020-10-30T05:31:08.808Z",
-      "cover_image_id":"2155e963-6f90-4370-af16-f2b3d4f05f5a"
+      "cover_image_id":"2155e963-6f90-4370-af16-f2b3d4f05f5a",
+      "public": true
     },
     {
       "cache_id": "d80ee03b-90df-4541-8567-e4932198848a",
@@ -252,7 +274,8 @@ OK
       ],
       "title": "Unterer Brunnenturm",
       "created_at": "2020-08-11T08:23:54.000Z",
-      "cover_image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea"
+      "cover_image_id": "36a9575e-fd78-4a8d-927b-1fba938854ea",
+      "public": true
     }
   ]
 }
@@ -272,6 +295,24 @@ OK
     }
   ]
 }
+```
+---
+### Nutzer folgen
+**Route**: `/users/follow/:user_id/`  
+**Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```json
+OK
+```
+---
+### Nutzer entfolgen
+**Route**: `/users/follow/:user_id/`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```json
+OK
 ```
 ---
 ## Caches
@@ -352,27 +393,6 @@ OK
 }
 ```
 ---
-### Cache erstellen
-**Route**: `/caches`  
-**Methode**: `POST`  
-**Anfrage**:
-```json
-{
-  "description": "Dies ist ein Cache mit einer Testbeschreibung",
-  "title": "Testcache mit Testtitel",
-  "longitude": -111.693987,
-  "latitude": 33.384195,
-  "public": true,
-  "tags": ["kurios"]
-}
-```
-**Antwort**:
-```json
-{
-  "cache_id": "78be3f17-f724-4bda-8023-ea3aa689b7f1"
-}
-```
----
 ### Liste aller Bilder eines Caches
 **Route**: `/caches/:cache_id/images`  
 **Methode**: `GET`  
@@ -432,6 +452,122 @@ OK
     }
   ]
 }
+```
+---
+### Cache erstellen
+**Route**: `/caches`  
+**Methode**: `POST`  
+**Anfrage**:
+```json
+{
+  "description": "Dies ist ein Cache mit einer Testbeschreibung",
+  "title": "Testcache mit Testtitel",
+  "longitude": -111.693987,
+  "latitude": 33.384195,
+  "public": true,
+  "tags": ["kurios"]
+}
+```
+**Antwort**:
+```json
+{
+  "cache_id": "78be3f17-f724-4bda-8023-ea3aa689b7f1"
+}
+```
+---
+### Cache einsammeln
+**Route**: `/caches/:cache_id/collect`  
+**Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache liken
+**Route**: `/caches/:cache_id/like`  
+**Methode**: `POST`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache entliken
+**Route**: `/caches/:cache_id/like`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache kommentieren
+**Route**: `/caches/:cache_id/comment`  
+**Methode**: `POST`  
+**Anfrage**: 
+```json
+{
+	"content":"Dies ist ein Testkommentar"
+}
+```  
+**Antwort**:
+```json
+{
+  "comment_id": "aa8b210f-05a6-4d29-8b0f-2e841a4b9704"
+}
+```
+---
+### Cache updaten
+**Route**: `/caches/:cache_id`  
+**Methode**: `PUT`  
+**Anfrage**: *Alle nicht übergebenen Parameter werden aus den existierenden Daten ergänzt.*
+```json
+{
+  "latitude": 47.369813,
+  "logitude": 8.540563,
+  "title": "Cooles Kleidungsgeschäft in Zürich",
+  "public": false,
+  "tags": ["kurios", "kultur"],
+  "description": "Sehr für euch selbst! :D",
+  "link": ""
+}
+```  
+**Antwort**:
+```
+OK
+```
+---
+### Cache Kommentar updaten
+**Route**: `/caches/:cache_id/comments/:comment_id`  
+**Methode**: `PUT`  
+**Anfrage**:
+```json
+{
+  "content": "Dieser Kommentar hat jetzt einen neuen Inhalt"
+}
+```  
+**Antwort**:
+```
+OK
+```
+---
+### Cache löschen
+**Route**: `/caches/:cache_id`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
+```
+---
+### Cache Kommentar löschen
+**Route**: `/caches/comments/:comment_id`  
+**Methode**: `DELETE`  
+**Anfrage**: -  
+**Antwort**:
+```
+OK
 ```
 ---
 ## Collections
