@@ -133,8 +133,8 @@ CREATE VIEW v_caches AS
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
-    LEFT JOIN caches_images ci USING (cache_id)
-    LEFT JOIN images i ON ci.image_id = i.image_id AND ci.is_cover_image
+    LEFT JOIN caches_images ci ON ci.cache_id = c.cache_id AND ci.is_cover_image
+    LEFT JOIN images i ON ci.image_id = i.image_id
     GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
 CREATE VIEW v_caches_image_array AS 
