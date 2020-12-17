@@ -47,8 +47,8 @@ const getImageByImageHash = async (imageHash) => {
     return db_resp.rows[0].image_id;
 }
 
-const postProfilePicture = async (imageData, mimeType, userId, imageHash) => {
-    const imageId = await insertImage(imageData, mimeType, userId, imageHash);
+const postProfilePicture = async (images, mimeType, userId, imageHash) => {
+    const imageId = await insertImage(images, mimeType, userId, imageHash);
     await db.query(`
         UPDATE users
         SET image_id = $1

@@ -35,7 +35,8 @@ const getImageInfo = async (imageId) => {
 const postProfilePicture = async (imageData, mimeType, userId) => {
     try {
         const imageHash = hashImage(imageData);
-        return await imageDb.postProfilePicture(imageData, mimeType, userId, imageHash);
+        const resizedImages = (await generateResizedImages(imageData));
+        return await imageDb.postProfilePicture(resizedImages, mimeType, userId, imageHash);
     } catch (error) {
         throw new DatabaseError(error.message);
     }
