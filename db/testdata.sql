@@ -20,6 +20,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS images (
     image_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     image BYTEA NOT NULL,
+    image_large BYTEA,
+    image_medium BYTEA,
+    image_small BYTEA,
+    image_icon BYTEA,
     mimetype VARCHAR(25) DEFAULT 'image/png' NOT NULL,
     image_hash CHAR(32),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL

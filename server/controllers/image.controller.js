@@ -4,7 +4,7 @@ const {
 
 const getImage = async (req, res, next) => {
     try {
-        const {image, mimetype} = await imageService.getImage(req.params.image_id);
+        const {image, mimetype} = await imageService.getImage(req.params.image_id, req.params.image_size);
         res.type(mimetype);
         res.end(image, 'binary');
     } catch (error) {

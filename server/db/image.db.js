@@ -1,11 +1,27 @@
 const { NotFoundError } = require('../utils/errors');
 const db = require('./db_connection');
 
-const getImage = async (imageId) => {
-    const db_resp = await db.query(`
-        SELECT image, mimetype
-        FROM images 
-        WHERE image_id = $1::uuid`, [imageId]);
+const getImage = async (imageId, size) => {
+    const imageSize = 'image' + (size != 'full' ? '_' + size : '');
+    console.log(imageSize);
+    const queries = {
+        image:          `SELECT image AS image, mimetype
+                            FROM images 
+                            WHERE image_id = $1::uuid`,
+        image_icon:     `SELECT image_icon AS image, mimetype
+                            FROM images 
+                            WHERE image_id = $1::uuid`,
+        image_small:    `SELECT image_small AS image, mimetype
+                            FROM images 
+                            WHERE image_id = $1::uuid`,
+        image_medium:   `SELECT image_medium AS image, mimetype
+                            FROM images 
+                            WHERE image_id = $1::uuid`,
+        image_large:    `SELECT image_large AS image, mimetype
+                            FROM images 
+                            WHERE image_id = $1::uuid`
+    }
+    const db_resp = await db.query(queries[imageSize], [imageId]);
     if(db_resp.rowCount != 1){
         throw new NotFoundError();
     }
@@ -41,8 +57,8 @@ const postProfilePicture = async (imageData, mimeType, userId, imageHash) => {
     return {image_id: imageId};
 }
 
-const postCacheImage = async (imageData, mimeType, userId, imageHash, cacheId, isCoverImage) => {
-    const imageId = await insertImage(imageData, mimeType, userId, imageHash);
+const postCacheImage = async (images, mimeType, userId, imageHash, cacheId, isCoverImage) => {
+    const imageId = await insertImage(images, mimeType, userId, imageHash);
     if(isCoverImage) {
         await removeCoverImage(cacheId);
     }
@@ -96,12 +112,12 @@ const removeCoverImage = async (cacheId) => {
             WHERE cache_id = $1`, [cacheId]);
 }
 
-const insertImage = async (imageData, mimeType, userId, imageHash) => {
+const insertImage = async (images, mimeType, userId, imageHash) => {
     const db_resp = await db.query(`
-        INSERT INTO images(image, mimetype, image_hash) VALUES (
-        $1, $2, $3
+        INSERT INTO images(image, image_large, image_medium, image_small, image_icon, mimetype, image_hash) VALUES (
+        $1, $2, $3, $4, $5, $6, $7
         ) RETURNING image_id
-    `, [imageData, mimeType, imageHash]);
+    `, [images['full'], images['large'], images['medium'], images['small'], images['icon'], mimeType, imageHash]);
     const imageId = db_resp.rows[0].image_id;
     await db.query(`
         INSERT INTO users_images(user_id, image_id) VALUES (
