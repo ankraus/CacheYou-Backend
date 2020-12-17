@@ -636,7 +636,15 @@ OK
 
 ---
 ### Einzelnes Bild
-**Route**: `/images/:image_id`  
+**Route**: `/images/:image_id/:image_size`  
+**verfügbare Bildgrößen (Breite in Pixeln)**:  
+```
+icon:   64px (quadratisch)
+small:  256px
+medium: 512px
+large:  1024px
+full:   original
+```
 **Methode**: `GET`  
 **Anfrage**: -  
 **Antwort**: Das Bild als Binärdaten
