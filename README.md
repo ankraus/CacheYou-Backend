@@ -637,16 +637,19 @@ OK
 ---
 ### Einzelnes Bild
 **Route**: `/images/:image_id/:image_size`  
-**verfügbare Bildgrößen (Breite in Pixeln)**:  
-```
-icon:   64px (quadratisch)
-small:  256px
-medium: 512px
-large:  1024px
-full:   original
-```
 **Methode**: `GET`  
 **Anfrage**: -  
+**verfügbare Bildgrößen (Breite in Pixeln)**:  
+```
+icon:   64px      (quadratisch)
+small:  256px
+medium: 512px
+large:  1024px    (default)
+full:   original
+
+Bsp-Url: /images/a98ad4c8-1a40-44b8-b766-8639b678bbf1/small
+```
+Wird keine Bildgröße übergeben wird per default die Bildgröße `large` gewählt.  
 **Antwort**: Das Bild als Binärdaten
 
 ---
