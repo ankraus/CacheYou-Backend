@@ -3,8 +3,10 @@ const {
 } = require('../services');
 
 const getImage = async (req, res, next) => {
+    const defaultImageSize = 'large';
     try {
-        const {image, mimetype} = await imageService.getImage(req.params.image_id, req.params.image_size);
+        const imageSize = req.params.image_size ? req.params.image_size : defaultImageSize;
+        const {image, mimetype} = await imageService.getImage(req.params.image_id, imageSize);
         res.type(mimetype);
         res.end(image, 'binary');
     } catch (error) {

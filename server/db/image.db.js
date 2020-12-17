@@ -3,7 +3,6 @@ const db = require('./db_connection');
 
 const getImage = async (imageId, size) => {
     const imageSize = 'image' + (size != 'full' ? '_' + size : '');
-    console.log(imageSize);
     const queries = {
         image:          `SELECT image AS image, mimetype
                             FROM images 

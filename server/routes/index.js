@@ -65,6 +65,7 @@ router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, validation
 
 //image routes
 router.get('/images/:image_id/:image_size', validationUtils.validateIds, validationUtils.validateImageSizes, imageController.getImage);
+router.get('/images/:image_id', validationUtils.validateIds, imageController.getImage);
 router.get('/images/:image_id/info', validationUtils.validateIds, imageController.getImageInfo);
 
 router.post('/images/profile/', authUtils.checkAuthenticated, validationUtils.validateImageTypes, imageController.postProfilePicture);
