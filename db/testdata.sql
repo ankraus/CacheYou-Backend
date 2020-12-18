@@ -288,7 +288,7 @@ INSERT INTO caches(cache_id, latitude, longitude, public, title, description, li
             10.889295, 
             TRUE,
             'Wandgemälde bei der Esso Tankstelle', 
-            'Dies ist ein großes Wandgemälde das an eine großen Wand gemalt wurde.',
+            'Dies ist ein großes Wandgemälde das an eine große Wand gemalt wurde.',
             NULL,
             u.user_id,
             now() - INTERVAL '27 days 15 hours'
