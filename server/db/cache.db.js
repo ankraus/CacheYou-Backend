@@ -37,13 +37,45 @@ const getCaches = async (user_id) => {
 
 const getRecommendedCaches = async (latitude, longitude, user_id, radius) => {
     const scoreQuery = `
-        WITH interests AS (
-            SELECT t.name 
-            FROM tags t JOIN users_interests ui USING (tag_id) 
-                        JOIN users USING (user_id) 
-            WHERE user_id = %L::uuid
-            ),
-            distances AS (
+        SELECT *
+        FROM v_caches
+            JOIN (
+                WITH interests AS (
+                    SELECT t.name 
+                    FROM tags t JOIN users_interests ui USING (tag_id) 
+                                JOIN users USING (user_id) 
+                    WHERE user_id = %L::uuid
+                    ),
+                    distances AS (
+                        SELECT 
+                        c.cache_id,
+                        ROUND(earth_distance(
+                            ll_to_earth(c.latitude, c.longitude),
+                            ll_to_earth(%L, %L)
+                        )::numeric, 2) AS distance
+                        FROM caches c
+                    ) 
+                SELECT c.cache_id,
+                    d.distance,
+                    ((RANK () OVER (ORDER BY (ROUND(d.distance / 500, 0) * 500) DESC))*0.5 + COUNT(t.name)) as score
+                FROM interests i JOIN tags t ON i.name = t.name
+                                JOIN caches_tags ct USING (tag_id)
+                                JOIN caches c USING (cache_id)
+                                JOIN distances d USING (cache_id)
+                                WHERE distance <= %L
+                                GROUP BY c.cache_id, d.distance
+            ) dummy
+        USING (cache_id)
+        ORDER BY score DESC
+    `
+    const queryString = pgformat(scoreQuery, user_id, latitude, longitude, radius);
+    const db_resp = await db.query(queryString);
+    return db_resp.rows;
+}
+
+const getCloseCaches = async (latitude, longitude, radius) => {
+    const scoreQuery = `
+        WITH distances AS (
                 SELECT 
                 c.cache_id,
                 ROUND(earth_distance(
@@ -53,17 +85,14 @@ const getRecommendedCaches = async (latitude, longitude, user_id, radius) => {
                 FROM caches c
             ) 
         SELECT c.title, 
-               d.distance, 
-               ((RANK () OVER (ORDER BY (ROUND(d.distance / 500, 0) * 500) DESC))*0.5 + COUNT(*)) as score
-        FROM interests i JOIN tags t ON i.name = t.name
-                         JOIN caches_tags ct USING (tag_id)
-                         JOIN caches c USING (cache_id)
-                         JOIN distances d USING (cache_id)
-                         WHERE distance <= %L
-                         GROUP BY c.title, d.distance
-                         ORDER BY score DESC
+               d.distance
+        FROM caches c 
+            JOIN distances d USING (cache_id)
+        WHERE distance <= %L
+        GROUP BY c.title, d.distance
+        ORDER BY d.distance ASC
     `
-    const queryString = pgformat(scoreQuery, user_id, latitude, longitude, radius);
+    const queryString = pgformat(scoreQuery, latitude, longitude, radius);
     const db_resp = await db.query(queryString);
     return db_resp.rows;
 }
@@ -351,6 +380,7 @@ const authorizedUserForCache = async (cache_id, user_id) => {
 module.exports = {
     getCaches,
     getRecommendedCaches,
+    getCloseCaches,
     getCacheById,
     getCacheImages,
     getCacheComments,

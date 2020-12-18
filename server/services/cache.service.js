@@ -18,7 +18,11 @@ const getCaches = async (user_id) => {
 
 const getRecommendedCaches = async (latitude, longitude, user_id, radius) => {
     try {
-        return await cacheDb.getRecommendedCaches(latitude, longitude, user_id, radius);
+        if(user_id) {
+            return await cacheDb.getRecommendedCaches(latitude, longitude, user_id, radius);
+        } else {
+            return await cacheDb.getCloseCaches(latitude, longitude, radius);
+        }
     } catch (error) {
         throw new DatabaseError(error.message);
     }
