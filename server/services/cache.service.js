@@ -16,6 +16,14 @@ const getCaches = async (user_id) => {
     }
 }
 
+const getRecommendedCaches = async (latitude, longitude, user_id, radius) => {
+    try {
+        return await cacheDb.getRecommendedCaches(latitude, longitude, user_id, radius);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+}
+
 const getCacheById = async (cache_id, user_id) => {
     try {
         return await cacheDb.getCacheById(cache_id, user_id);
@@ -200,6 +208,7 @@ const deleteCacheLike = async (cache_id, user_id) => {
 
 module.exports = {
     getCaches,
+    getRecommendedCaches,
     getCacheById,
     getCacheImages,
     getCacheComments,
