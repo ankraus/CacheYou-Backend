@@ -64,6 +64,7 @@ router.delete('/users/current', authUtils.checkAuthenticated, routerUtils.unimpl
 router.delete('/users/follow/:user_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 
 //image routes
+router.get('/images/:image_id/:image_size', validationUtils.validateIds, validationUtils.validateImageSizes, imageController.getImage);
 router.get('/images/:image_id', validationUtils.validateIds, imageController.getImage);
 router.get('/images/:image_id/info', validationUtils.validateIds, imageController.getImageInfo);
 

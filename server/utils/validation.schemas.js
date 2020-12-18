@@ -11,6 +11,12 @@ const uuidSchema = yup.object().shape({
     })
 });
 
+const imageSizesSchema = yup.object().shape({
+    params: yup.object().shape({
+        image_size: yup.string().oneOf(['icon', 'small', 'medium', 'large', 'full'])
+    })
+})
+
 const imageTypesSchema = yup.object().shape({
     headers: yup.object().shape({
         'content-type': yup.string().oneOf(['image/png', 'image/jpeg'], 'content type must be one of  [image/png, image/jpeg]')
@@ -87,6 +93,7 @@ const updateCollectionSchema = yup.object().shape({
 
 module.exports = {
     uuidSchema,
+    imageSizesSchema,
     imageTypesSchema,
     loginSchema,
     registerSchema,
