@@ -1,28 +1,18 @@
 const { NotFoundError } = require('../utils/errors');
 const db = require('./db_connection');
+const pgformat = require('pg-format');
 
 const getImage = async (imageId, size) => {
     const imageSize = 'image' + (size != 'full' ? '_' + size : '');
-    const queries = {
-        image:          `SELECT image AS image, mimetype
-                            FROM images 
-                            WHERE image_id = $1::uuid`,
-        image_icon:     `SELECT image_icon AS image, mimetype
-                            FROM images 
-                            WHERE image_id = $1::uuid`,
-        image_small:    `SELECT image_small AS image, mimetype
-                            FROM images 
-                            WHERE image_id = $1::uuid`,
-        image_medium:   `SELECT image_medium AS image, mimetype
-                            FROM images 
-                            WHERE image_id = $1::uuid`,
-        image_large:    `SELECT image_large AS image, mimetype
-                            FROM images 
-                            WHERE image_id = $1::uuid`
-    }
-    const db_resp = await db.query(queries[imageSize], [imageId]);
+    const queryString = pgformat(`SELECT %I AS image, mimetype
+                                  FROM images 
+                                  WHERE image_id = $1::uuid`,
+                                  imageSize);
+    const db_resp = await db.query(queryString, [imageId]);
     if(db_resp.rowCount != 1){
         throw new NotFoundError();
+    } else if(!db_resp.rows[0].image) {
+        throw new NotFoundError('Image not found in specified size. Try \'full\'.');
     }
     return db_resp.rows[0];
 }
