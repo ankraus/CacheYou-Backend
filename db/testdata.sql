@@ -279,7 +279,27 @@ INSERT INTO tags(name) VALUES
     ('streetart'),
     ('kurios'),
     ('kultur'),
-    ('wassersystem');
+    ('wassersystem'),
+    ('kunst'),
+    ('natur'),
+    ('statuen'),
+    ('architektur'),
+    ('essen'),
+    ('geschichte'),
+    ('sagen'),
+    ('religion'),
+    ('geheim'),
+    ('graffity'),
+    ('chillen'),
+    ('lost places'),
+    ('denkmal'),
+    ('mahnmal'),
+    ('sport'),
+    ('wald'),
+    ('see'),
+    ('fluss'),
+    ('berg'),
+    ('felsen');
 
 INSERT INTO caches(cache_id, latitude, longitude, public, title, description, link, user_id, created_at) 
         SELECT
@@ -288,7 +308,7 @@ INSERT INTO caches(cache_id, latitude, longitude, public, title, description, li
             10.889295, 
             TRUE,
             'Wandgemälde bei der Esso Tankstelle', 
-            'Dies ist ein großes Wandgemälde das an eine große Wand gemalt wurde.',
+            'Dies ist ein großes Wandgemälde, das an einer großen Wand gemalt wurde.',
             NULL,
             u.user_id,
             now() - INTERVAL '27 days 15 hours'
