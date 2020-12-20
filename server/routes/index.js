@@ -26,6 +26,7 @@ router.get('/', (req, res) => {
 //Cache routes
 router.get('/caches', cacheController.getCaches);
 router.get('/caches/recommended/:latitude/:longitude/:radius', validationUtils.validateCoordinates, cacheController.getRecommendedCaches);
+router.get('/caches/near/:latitude/:longitude/:radius', validationUtils.validateCoordinates, cacheController.getNearCaches);
 router.get('/caches/tags/', cacheController.getTags);
 router.get('/caches/:cache_id', validationUtils.validateIds, cacheController.getCacheById);
 router.get('/caches/:cache_id/images', validationUtils.validateIds, cacheController.getCacheImages);
