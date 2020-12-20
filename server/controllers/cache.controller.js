@@ -13,6 +13,17 @@ const getCaches = async (req, res, next) => {
     }
 }
 
+const getRecommendedCaches = async (req, res, next) => {
+    try {
+        const caches = await cacheService.getRecommendedCaches(req.params.latitude, req.params.longitude, req.user_id, req.params.radius);
+        res.json({
+            caches: caches
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getCacheById = async (req, res, next) => {
     try {
         const cache = await cacheService.getCacheById(req.params.cache_id, req.user_id);
@@ -185,6 +196,7 @@ const deleteCacheLike = async (req, res, next) => {
 
 module.exports = {
     getCaches,
+    getRecommendedCaches,
     getCacheById,
     getCacheImages,
     getCacheComments,

@@ -4,6 +4,7 @@ const {
     NotFoundError,
     ForbiddenError
 } = require('../utils/errors');
+const pgformat = require('pg-format');
 
 const getCaches = async (user_id) => {
     const db_resp = await db.query(`
@@ -33,6 +34,77 @@ const getCaches = async (user_id) => {
 
     return caches;
 };
+
+const getRecommendedCaches = async (latitude, longitude, user_id, radius) => {
+    const distanceWeight = 0.5;
+    const interestWeight = 1.0;
+    const scoreQuery = `
+        SELECT *
+        FROM v_caches
+            JOIN (
+                WITH interests AS (
+                    SELECT t.name 
+                    FROM tags t JOIN users_interests ui USING (tag_id) 
+                                JOIN users USING (user_id) 
+                    WHERE user_id = %L::uuid
+                    ),
+                    distances AS (
+                        SELECT 
+                        c.cache_id,
+                        ROUND(earth_distance(
+                            ll_to_earth(c.latitude, c.longitude),
+                            ll_to_earth(%L, %L)
+                        )::numeric, 2) AS distance
+                        FROM caches c
+                    ) 
+                SELECT c.cache_id,
+                    d.distance,
+                    ((RANK () OVER (ORDER BY (ROUND(d.distance / 500, 0) * 500) DESC))*%s + COUNT(t.name)*%s) as score
+                FROM interests i JOIN tags t ON i.name = t.name
+                                JOIN caches_tags ct USING (tag_id)
+                                JOIN caches c USING (cache_id)
+                                JOIN distances d USING (cache_id)
+                                WHERE distance <= %L
+                                GROUP BY c.cache_id, d.distance
+            ) dummy
+        USING (cache_id)
+        WHERE user_id <> %L::uuid AND public
+        ORDER BY score DESC, distance ASC
+    `
+    const queryString = pgformat(scoreQuery, user_id, latitude, longitude, distanceWeight, interestWeight, radius, user_id);
+    const db_resp = await db.query(queryString);
+    return db_resp.rows;
+}
+
+const getCloseCaches = async (latitude, longitude, radius) => {
+    const scoreQuery = `
+        SELECT *
+        FROM v_caches
+            JOIN (
+                WITH distances AS (
+                        SELECT 
+                        c.cache_id,
+                        ROUND(earth_distance(
+                            ll_to_earth(c.latitude, c.longitude),
+                            ll_to_earth(%L, %L)
+                        )::numeric, 2) AS distance
+                        FROM caches c
+                    ) 
+                SELECT  c.cache_id, 
+                        d.distance
+                FROM caches c 
+                        JOIN distances d USING (cache_id)
+                WHERE distance <= %L
+                GROUP BY c.cache_id, d.distance
+            ) dummy
+        USING (cache_id)
+        WHERE public
+        ORDER BY distance ASC
+    `
+    const queryString = pgformat(scoreQuery, latitude, longitude, radius);
+    const db_resp = await db.query(queryString);
+    return db_resp.rows;
+}
 
 const getCacheById = async (cache_id, user_id) => {
     const db_resp = await db.query(`
@@ -316,6 +388,8 @@ const authorizedUserForCache = async (cache_id, user_id) => {
 
 module.exports = {
     getCaches,
+    getRecommendedCaches,
+    getCloseCaches,
     getCacheById,
     getCacheImages,
     getCacheComments,
