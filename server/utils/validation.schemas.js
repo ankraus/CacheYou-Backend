@@ -18,7 +18,7 @@ const imageSizesSchema = yup.object().shape({
 })
 
 const coordinatesSchema = yup.object().shape({
-    params: yup.object.shape({
+    params: yup.object().shape({
         latitude: yup.number().min(-90.0, 'latitude must be >= -90').max(90.0, 'latitude must be <= 90').required('latitude required'),
         longitude: yup.number().min(-180.0, 'longitude must be >= -180').max(180.0, 'longitude must be <= 180').required('longitude required'),
         radius: yup.number().positive('radius must be positive').required('radius required')

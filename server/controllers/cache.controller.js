@@ -15,7 +15,20 @@ const getCaches = async (req, res, next) => {
 
 const getRecommendedCaches = async (req, res, next) => {
     try {
-        const caches = await cacheService.getRecommendedCaches(req.params.latitude, req.params.longitude, req.user_id, req.params.radius);
+        const { latitude, longitude, radius } = req.params;
+        const caches = await cacheService.getRecommendedCaches(latitude, longitude, req.user_id, radius);
+        res.json({
+            caches: caches
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getNearCaches = async (req, res, next) => {
+    try {
+        const { latitude, longitude, radius } = req.params;
+        const caches = await cacheService.getRecommendedCaches(latitude, longitude, null, radius);
         res.json({
             caches: caches
         });
@@ -197,6 +210,7 @@ const deleteCacheLike = async (req, res, next) => {
 module.exports = {
     getCaches,
     getRecommendedCaches,
+    getNearCaches,
     getCacheById,
     getCacheImages,
     getCacheComments,
