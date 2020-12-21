@@ -1,13 +1,18 @@
 const { NotFoundError } = require('../utils/errors');
 const db = require('./db_connection');
+const pgformat = require('pg-format');
 
-const getImage = async (imageId) => {
-    const db_resp = await db.query(`
-        SELECT image, mimetype
-        FROM images 
-        WHERE image_id = $1::uuid`, [imageId]);
+const getImage = async (imageId, size) => {
+    const imageSize = 'image' + (size != 'full' ? '_' + size : '');
+    const queryString = pgformat(`SELECT %I AS image, mimetype
+                                  FROM images 
+                                  WHERE image_id = $1::uuid`,
+                                  imageSize);
+    const db_resp = await db.query(queryString, [imageId]);
     if(db_resp.rowCount != 1){
         throw new NotFoundError();
+    } else if(!db_resp.rows[0].image) {
+        throw new NotFoundError('Image not found in specified size. Try \'full\'.');
     }
     return db_resp.rows[0];
 }
@@ -32,8 +37,8 @@ const getImageByImageHash = async (imageHash) => {
     return db_resp.rows[0].image_id;
 }
 
-const postProfilePicture = async (imageData, mimeType, userId, imageHash) => {
-    const imageId = await insertImage(imageData, mimeType, userId, imageHash);
+const postProfilePicture = async (images, mimeType, userId, imageHash) => {
+    const imageId = await insertImage(images, mimeType, userId, imageHash);
     await db.query(`
         UPDATE users
         SET image_id = $1
@@ -41,8 +46,8 @@ const postProfilePicture = async (imageData, mimeType, userId, imageHash) => {
     return {image_id: imageId};
 }
 
-const postCacheImage = async (imageData, mimeType, userId, imageHash, cacheId, isCoverImage) => {
-    const imageId = await insertImage(imageData, mimeType, userId, imageHash);
+const postCacheImage = async (images, mimeType, userId, imageHash, cacheId, isCoverImage) => {
+    const imageId = await insertImage(images, mimeType, userId, imageHash);
     if(isCoverImage) {
         await removeCoverImage(cacheId);
     }
@@ -96,12 +101,12 @@ const removeCoverImage = async (cacheId) => {
             WHERE cache_id = $1`, [cacheId]);
 }
 
-const insertImage = async (imageData, mimeType, userId, imageHash) => {
+const insertImage = async (images, mimeType, userId, imageHash) => {
     const db_resp = await db.query(`
-        INSERT INTO images(image, mimetype, image_hash) VALUES (
-        $1, $2, $3
+        INSERT INTO images(image, image_large, image_medium, image_small, image_icon, mimetype, image_hash) VALUES (
+        $1, $2, $3, $4, $5, $6, $7
         ) RETURNING image_id
-    `, [imageData, mimeType, imageHash]);
+    `, [images['full'], images['large'], images['medium'], images['small'], images['icon'], mimeType, imageHash]);
     const imageId = db_resp.rows[0].image_id;
     await db.query(`
         INSERT INTO users_images(user_id, image_id) VALUES (

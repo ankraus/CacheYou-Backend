@@ -28,6 +28,8 @@
   - [Caches](#caches)
     - [Liste aller Caches](#liste-aller-caches)
     - [Einzelner Cache](#einzelner-cache)
+    - [Vorgeschlagene Caches](#vorgeschlagene-caches)
+    - [Caches an Koordinaten mit Radius](#caches-an-koordinaten-mit-radius)
     - [Liste aller Tags](#liste-aller-tags)
     - [Liste aller Bilder eines Caches](#liste-aller-bilder-eines-caches)
     - [Liste aller Einsammlungen eines Caches](#liste-aller-einsammlungen-eines-caches)
@@ -377,6 +379,71 @@ OK
 }
 ```
 ---
+### Vorgeschlagene Caches
+**Route**: `/caches/recommended/:latitude/:longitude/:radius`  
+**Methode**: `GET`  
+**Anfrage**: -  
+**Antwort**:  
+Die Caches werden nach Score sortiert ausgegeben. Radius und Distanz sind in Metern angegeben.
+```json
+{
+  "caches": [
+    {
+      "cache_id": "e6d4abc1-a627-4d78-8f82-0bfd81a582f0",
+      "public": true,
+      "latitude": "48.3658160000",
+      "longitude": "10.8951030000",
+      "title": "Zur Brezn",
+      "description": "Absolutes Kulturgut, darf man nicht verpassen, wenn man Augsburg besucht.",
+      "link": null,
+      "username": "TestyMcTestersson",
+      "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
+      "created_at": "2020-12-15T10:51:10.054Z",
+      "cover_image_id": "4b3c7735-cec5-40ef-b416-27dcdad3a646",
+      "tags": [
+        "kultur"
+      ],
+      "distance": "1137.98",
+      "score": "3.5"
+    },
+    ...
+  ]
+}
+```
+Ist kein Nutzer eingeloggt, werden einfach die nächsten Caches ausgegeben.  
+
+---
+### Caches an Koordinaten mit Radius
+**Route**: `/caches/near/:latitude/:longitude/:radius`  
+**Methode**: `GET`  
+**Anfrage**: -  
+**Antwort**:  
+Radius und Distanz sind in Metern angegeben.
+```json
+{
+  "caches": [
+    {
+      "cache_id": "e6d4abc1-a627-4d78-8f82-0bfd81a582f0",
+      "public": true,
+      "latitude": "48.3658160000",
+      "longitude": "10.8951030000",
+      "title": "Zur Brezn",
+      "description": "Absolutes Kulturgut, darf man nicht verpassen, wenn man Augsburg besucht.",
+      "link": null,
+      "username": "TestyMcTestersson",
+      "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
+      "created_at": "2020-12-15T10:51:10.054Z",
+      "cover_image_id": "4b3c7735-cec5-40ef-b416-27dcdad3a646",
+      "tags": [
+        "kultur"
+      ],
+      "distance": "1137.98"
+    },
+    ...
+  ]
+}
+```
+---
 ### Liste aller Tags
 **Route**: `/caches/tags`  
 **Methode**: `GET`  
@@ -636,9 +703,20 @@ OK
 
 ---
 ### Einzelnes Bild
-**Route**: `/images/:image_id`  
+**Route**: `/images/:image_id/:image_size`  
 **Methode**: `GET`  
 **Anfrage**: -  
+**verfügbare Bildgrößen (Breite in Pixeln)**:  
+```
+icon:   64px      (quadratisch)
+small:  256px
+medium: 512px
+large:  1024px    (default)
+full:   original
+
+Bsp-Url: /images/a98ad4c8-1a40-44b8-b766-8639b678bbf1/small
+```
+Wird keine Bildgröße übergeben wird per default die Bildgröße `large` gewählt.  
 **Antwort**: Das Bild als Binärdaten
 
 ---

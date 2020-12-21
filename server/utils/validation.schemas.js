@@ -11,6 +11,20 @@ const uuidSchema = yup.object().shape({
     })
 });
 
+const imageSizesSchema = yup.object().shape({
+    params: yup.object().shape({
+        image_size: yup.string().oneOf(['icon', 'small', 'medium', 'large', 'full'])
+    })
+})
+
+const coordinatesSchema = yup.object().shape({
+    params: yup.object().shape({
+        latitude: yup.number().min(-90.0, 'latitude must be >= -90').max(90.0, 'latitude must be <= 90').required('latitude required'),
+        longitude: yup.number().min(-180.0, 'longitude must be >= -180').max(180.0, 'longitude must be <= 180').required('longitude required'),
+        radius: yup.number().positive('radius must be positive').required('radius required')
+    })
+})
+
 const imageTypesSchema = yup.object().shape({
     headers: yup.object().shape({
         'content-type': yup.string().oneOf(['image/png', 'image/jpeg'], 'content type must be one of  [image/png, image/jpeg]')
@@ -87,6 +101,8 @@ const updateCollectionSchema = yup.object().shape({
 
 module.exports = {
     uuidSchema,
+    imageSizesSchema,
+    coordinatesSchema,
     imageTypesSchema,
     loginSchema,
     registerSchema,
