@@ -9,7 +9,7 @@ const app = express();
 const routes = require('./routes');
 const {errorUtils} = require('./utils');
 
-const whitelist = ['http://localhost:8100', 'http://127.0.0.1:8100'];
+const whitelist = ['http://localhost:8100', 'http://127.0.0.1:8100', 'https://cacheyou.netlify.app'];
 const corsOptions = {
     origin: function (origin, callback) {
         if (!origin || whitelist.indexOf(origin) !== -1) {
