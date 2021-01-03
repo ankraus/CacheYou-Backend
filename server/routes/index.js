@@ -11,7 +11,8 @@ const {
     cacheController,
     userController,
     imageController,
-    collectionController
+    collectionController,
+    statisticsController
 } = require('../controllers');
 
 //check all requests for tokens, sets user_id in req object if token is valid
@@ -88,5 +89,8 @@ router.put('/collections/:collection_id', authUtils.checkAuthenticated, validati
 router.delete('/collections/:collection_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 router.delete('/collections/:collection_id/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 
+
+router.get('/stats/caches', statisticsController.getCacheStats);
+router.get('/stats/images', statisticsController.getImageStats);
 
 module.exports = router;

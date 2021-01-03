@@ -1,6 +1,6 @@
 --Insert dummy data
 
-INSERT INTO images(image_id, image, image_large, image_medium, image_small, image_icon, mimetype) VALUES
+INSERT INTO images(image_id, image, image_large, image_medium, image_small, image_icon, mimetype, created_at) VALUES
     (
         '166fc680-8dc3-4707-8f49-dfd223e58e2c'::uuid,
         pg_read_binary_file('/img/p1_full.jpg'),
@@ -8,7 +8,8 @@ INSERT INTO images(image_id, image, image_large, image_medium, image_small, imag
         pg_read_binary_file('/img/p1_medium.jpg'),
         pg_read_binary_file('/img/p1_small.jpg'),
         pg_read_binary_file('/img/p1_icon.jpg'),
-        'image/jpeg'
+        'image/jpeg',
+        '2020-10-12'
     ),
     (
         'a258475f-88de-4f20-a98b-b3b0d830b66e'::uuid,
@@ -17,7 +18,8 @@ INSERT INTO images(image_id, image, image_large, image_medium, image_small, imag
         pg_read_binary_file('/img/p2_medium.jpg'),
         pg_read_binary_file('/img/p2_small.jpg'),
         pg_read_binary_file('/img/p2_icon.jpg'),
-        'image/jpeg'
+        'image/jpeg',
+        '2020-10-15'
     ),
     (
         '36a9575e-fd78-4a8d-927b-1fba938854ea'::uuid,
@@ -26,7 +28,8 @@ INSERT INTO images(image_id, image, image_large, image_medium, image_small, imag
         pg_read_binary_file('/img/1_medium.png'),
         pg_read_binary_file('/img/1_small.png'),
         pg_read_binary_file('/img/1_icon.png'),
-        'image/png'
+        'image/png',
+        '2020-11-01'
     ),
     (
         '4b3c7735-cec5-40ef-b416-27dcdad3a646'::uuid,
@@ -35,7 +38,8 @@ INSERT INTO images(image_id, image, image_large, image_medium, image_small, imag
         pg_read_binary_file('/img/2_medium.png'),
         pg_read_binary_file('/img/2_small.png'),
         pg_read_binary_file('/img/2_icon.png'),
-        'image/png'
+        'image/png',
+        '2020-12-01'
     ),
     (
         '2155e963-6f90-4370-af16-f2b3d4f05f5a'::uuid,
@@ -44,7 +48,8 @@ INSERT INTO images(image_id, image, image_large, image_medium, image_small, imag
         pg_read_binary_file('/img/3_medium.png'),
         pg_read_binary_file('/img/3_small.png'),
         pg_read_binary_file('/img/3_icon.png'),
-        'image/png'
+        'image/png',
+        '2020-12-02'
     );    
 
 INSERT INTO users(user_id, email, username, pw_hash, image_id) VALUES 

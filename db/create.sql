@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS comments (
 
 CREATE TABLE IF NOT EXISTS caches_images (
     image_id uuid REFERENCES images(image_id) ON DELETE CASCADE,
-    cache_id uuid REFERENCES caches(cache_id) ON DELETE RESTRICT,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE CASCADE,
     is_cover_image BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY (image_id, cache_id)
 );
@@ -133,7 +133,7 @@ DROP VIEW IF EXISTS v_users_extended;
 DROP VIEW IF EXISTS v_users;
 DROP VIEW IF EXISTS v_image_info;
 
-CREATE VIEW v_caches AS
+CREATE OR REPLACE VIEW v_caches AS
     SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id AS cover_image_id, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
@@ -143,7 +143,7 @@ CREATE VIEW v_caches AS
     LEFT JOIN images i ON ci.image_id = i.image_id
     GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
-CREATE VIEW v_caches_image_array AS 
+CREATE OR REPLACE VIEW v_caches_image_array AS 
     SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(DISTINCT t.name) AS tags, array_agg(DISTINCT i.image_id) AS image_ids
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
@@ -153,13 +153,13 @@ CREATE VIEW v_caches_image_array AS
     LEFT JOIN images i ON ci.image_id = i.image_id
     GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
 
-CREATE VIEW v_caches_comments AS 
+CREATE OR REPLACE VIEW v_caches_comments AS 
     SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id, u.image_id 
     FROM comments c 
     JOIN caches ca USING (cache_id) 
     JOIN users u ON u.user_id = c.user_id;
 
-CREATE VIEW v_caches_collected AS
+CREATE OR REPLACE VIEW v_caches_collected AS
     SELECT u.user_id, u.username, c.cache_id, c.public, c.title, col.liked, col.created_at, array_agg(t.name) AS tags
     FROM collected col 
     JOIN users u USING (user_id) 
@@ -168,7 +168,7 @@ CREATE VIEW v_caches_collected AS
     JOIN tags t USING (tag_id)
     GROUP BY u.user_id, u.username, c.cache_id, c.public, c.title, col.liked, col.created_at;
 
-CREATE VIEW v_caches_collections AS
+CREATE OR REPLACE VIEW v_caches_collections AS
     SELECT cc.collection_id, c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username AS creator_username, u.user_id AS creator_id, c.created_at, array_agg(t.name) AS tags
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
@@ -177,7 +177,7 @@ CREATE VIEW v_caches_collections AS
     JOIN caches_collections cc USING (cache_id)
     GROUP BY cc.collection_id, c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
 
-CREATE VIEW v_user_collected AS
+CREATE OR REPLACE VIEW v_user_collected AS
     SELECT u.user_id, u.username, c.cache_id, c.public, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at AS collected_at, array_agg(t.name) AS tags
     FROM collected col 
     JOIN users u USING (user_id) 
@@ -188,14 +188,14 @@ CREATE VIEW v_user_collected AS
     WHERE ci.is_cover_image
     GROUP BY u.user_id, u.username, c.cache_id, c.public, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at;
 
-CREATE VIEW v_users_extended AS
+CREATE OR REPLACE VIEW v_users_extended AS
     SELECT user_id, email, username, image_id, terms_of_use, privacy_policy, license, array_agg(t.name) AS interests 
     FROM users 
     LEFT JOIN users_interests USING(user_id) 
     LEFT JOIN tags t USING(tag_id) 
     GROUP BY user_id, email, username, image_id, terms_of_use, privacy_policy, license;
 
-CREATE VIEW v_users AS
+CREATE OR REPLACE VIEW v_users AS
     SELECT user_id, username, image_id, array_agg(t.name) AS interests 
     FROM users 
     LEFT JOIN users_interests USING(user_id) 
@@ -203,10 +203,20 @@ CREATE VIEW v_users AS
     GROUP BY user_id, username, image_id;
  
 
-CREATE VIEW v_image_info AS
+CREATE OR REPLACE VIEW v_image_info AS
     SELECT i.image_id, ui.user_id, u.username, i.created_at, i.mimetype
     FROM images i
     JOIN users_images ui USING (image_id)
     JOIN users u USING (user_id);
 
+CREATE OR REPLACE VIEW v_stats_caches_per_month AS 
+    SELECT date_trunc('month', created_at) AS month, count(date_trunc('month', created_at)) 
+    FROM CACHES 
+    GROUP BY month 
+    ORDER BY month;
 
+CREATE OR REPLACE VIEW v_stats_images_per_month AS 
+    SELECT date_trunc('month', created_at) AS month, count(date_trunc('month', created_at)) 
+    FROM images 
+    GROUP BY month 
+    ORDER BY month;
