@@ -5,7 +5,8 @@ const {
 const {
     NoCredentialsInRequestError,
     TokenInvalidError,
-    DatabaseError
+    DatabaseError,
+    ForbiddenError
 } = require('./errors');
 
 const cookieOptions = {
@@ -58,6 +59,19 @@ const checkToken = async (req, res, next) => {
     next();
 }
 
+const checkAdmin = async (req, res, next) => {
+    if(req.user_id) {
+        const is_admin = await userDb.getUserIsAdmin(req.user_id).catch((err) => {
+            next(new DatabaseError(err.message))
+        });
+        if(is_admin) {
+            next();
+        } else {
+            next(new ForbiddenError());
+        }
+    }
+}
+
 const delToken = (res) => {
     res.cookie('token', 'deleted', cookieOptionsDeleted);
 }
@@ -75,6 +89,7 @@ module.exports = {
     cookieOptionsDeleted,
     checkAuthenticated,
     checkToken,
+    checkAdmin,
     delToken,
     genToken
 }

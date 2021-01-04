@@ -39,6 +39,7 @@ router.post('/caches/:cache_id/collect', authUtils.checkAuthenticated, validatio
 router.post('/caches/:cache_id/like', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.postCacheLike);
 router.post('/caches/:cache_id/comment', authUtils.checkAuthenticated, validationUtils.validateIds, validationUtils.validateComment, cacheController.postCacheComment);
 
+router.put('/caches/tags/', authUtils.checkAuthenticated, authUtils.checkAdmin, cacheController.putTags);
 router.put('/caches/:cache_id', authUtils.checkAuthenticated, validationUtils.validateIds, cacheController.putCache);
 router.put('/caches/:cache_id/comments/:comment_id', authUtils.checkAuthenticated, validationUtils.validateIds, validationUtils.validateComment, cacheController.putCacheComment);
 

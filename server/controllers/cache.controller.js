@@ -170,6 +170,17 @@ const putCacheComment = async (req, res, next) => {
     }
 }
 
+const putTags = async (req, res, next) => {
+    const tags = req.body.tags;
+    try {
+        await cacheService.putTags(tags);
+        res.sendStatus(200);
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
+
 const deleteCache = async (req, res, next) => {
     const cache_id = req.params.cache_id;
     const user_id = req.user_id;
@@ -222,6 +233,7 @@ module.exports = {
     postCacheComment,
     putCache,
     putCacheComment,
+    putTags,
     deleteCache,
     deleteCacheComment,
     deleteCacheLike

@@ -33,6 +33,14 @@ const getUserHasLoggedOut = async (user_id) => {
     return db_resp.rows[0].has_logged_out;
 }
 
+const getUserIsAdmin = async (user_id) => {
+    const db_resp = await db.query(`
+        SELECT is_admin
+        FROM users
+        WHERE user_id = $1`, [user_id]);
+    return db_resp.rows[0].is_admin;
+}
+
 const setUserHasLoggedOut = async (user_id, value) => {
     await db.query(`
         UPDATE users
@@ -167,6 +175,7 @@ module.exports = {
     getSelf,
     getUserPwHash,
     getUserHasLoggedOut,
+    getUserIsAdmin,
     setUserHasLoggedOut,
     getUserByEmail,
     getUserByUsername,

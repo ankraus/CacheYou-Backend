@@ -164,6 +164,18 @@ const putCacheComment = async (comment, user_id, comment_id) => {
     }
 }
 
+const putTags = async (tags) => {
+    try {
+        await cacheDb.putTags(tags);
+    } catch (error) {
+        if(error instanceof ForbiddenError){
+            throw error;
+        } else {
+            throw new DatabaseError(error.message);
+        }
+    }
+}
+
 const deleteCache = async (user_id, cache_id) => {
     try {
         await cacheDb.getCacheById(cache_id, user_id);
@@ -224,6 +236,7 @@ module.exports = {
     postCacheComment,
     putCache,
     putCacheComment,
+    putTags,
     deleteCache,
     deleteCacheComment,
     deleteCacheLike

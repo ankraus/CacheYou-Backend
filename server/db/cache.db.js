@@ -298,6 +298,21 @@ const putCacheComment = async (comment, user_id, comment_id) => {
         , [comment, comment_id]);
 }
 
+const putTags = async (tags) => {
+    await db.query(`
+        DELETE FROM tags t 
+        WHERE t.name NOT IN (SELECT UNNEST($1::varchar[]) as name);
+    `, [tags]);
+    await db.query(`
+        INSERT INTO tags(name)
+        SELECT name 
+        FROM (
+            SELECT UNNEST($1::varchar[]) as name
+        ) as tags_input 
+        WHERE name NOT IN (SELECT t.name FROM tags t);
+    `, [tags]);
+}
+
 const deleteCache = async (user_id, cache_id) => {
     await authorizedUserForCache(cache_id, user_id);
     await db.query(`
@@ -402,6 +417,7 @@ module.exports = {
     postCacheComment,
     putCache,
     putCacheComment,
+    putTags,
     deleteCache,
     deleteCacheComment,
     deleteCacheLike
