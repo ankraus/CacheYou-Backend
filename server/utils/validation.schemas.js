@@ -76,12 +76,14 @@ const updateUserSchema = yup.object().shape({
         email: yup.string().email().notRequired(),
         username: yup.string().notRequired(),
         password: yup.string().notRequired(),
+        current_password: yup.string().notRequired(),
         interests: yup.array().of(yup.string()).notRequired(),
         terms_of_use: yup.boolean().notRequired(),
         privacy_policy: yup.boolean().notRequired(),
         license: yup.boolean().notRequired()
     }).test('at-least-one-field', 'at least one field must be provided', (value) =>
         !!(value.email || value.username || value.password || value.interests || (value.terms_of_use != null) || (value.privacy_policy != null) || (value.license != null)))
+    .test('current-password', 'when updating a password, the current password must be provided', (value) => (!!value.password === !!value.current_password))
 });
 
 const collectionSchema = yup.object().shape({

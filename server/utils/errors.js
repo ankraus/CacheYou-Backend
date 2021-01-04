@@ -6,9 +6,10 @@ class TokenInvalidError extends Error {
 }
 
 class WrongCredentialsError extends Error {
-    constructor(message) {
+    constructor(message, doLogout = true) {
         super(message);
         this.name = "WrongCredentialsError";
+        this.doLogout = doLogout;
     }
 }
 

@@ -27,7 +27,9 @@ const authenticationErrorHandler = (err, req, res, next) => {
             res.status(403).send('Token invalid');
             break;
         case err instanceof WrongCredentialsError:
-            authUtils.delToken(res);
+            if(err.doLogout){
+                authUtils.delToken(res);
+            }
             res.status(401).send('Wrong username or password');
             break;
         case err instanceof NoCredentialsInRequestError:

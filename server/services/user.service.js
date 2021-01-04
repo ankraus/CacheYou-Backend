@@ -154,6 +154,10 @@ const postLogoutUser = async (user_id) => {
 
 const putUpdateUser = async (user, user_id) => {
     await checkIfAlreadyExists(user, user_id);
+    //check credentials when updating password
+    if(user.password){
+        await checkPassword(user.current_password, user_id);
+    }
     try {
         //if a new password was provided, hash it and store it in user.pw_hash. Else, get old pw_hash from db and use that.
         if(user.password) {
@@ -203,6 +207,24 @@ const checkIfAlreadyExists = async (user, user_id) => {
         throw new AlreadyExistsError('email');
     } else if ((userByUsername && userByUsername.user_id != user_id)) {
         throw new AlreadyExistsError('username');
+    }
+}
+
+const checkPassword = async (password, user_id) => {
+    let pw_hash;
+    try {
+        pw_hash = (await userDb.getUserPwHash(user_id)).pw_hash;
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+    if (!pw_hash) {
+        throw new WrongCredentialsError();
+    }
+    const match = await bcrypt.compare(password, pw_hash).catch((err) => {
+        throw new HashingError(err.message);
+    });
+    if (!match) {
+        throw new WrongCredentialsError('current password is not correct', false);
     }
 }
 
