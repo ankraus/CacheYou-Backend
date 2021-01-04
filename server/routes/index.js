@@ -58,6 +58,7 @@ router.get('/users/:user_id/collections', validationUtils.validateIds, userContr
 
 router.post('/users', validationUtils.validateRegistration, userController.postRegisterUser);
 router.post('/users/login', validationUtils.validateLogin, userController.postLoginUser);
+router.post('/users/login/admin', validationUtils.validateLogin, userController.postLoginAdmin);
 router.post('/users/logout', userController.postLogoutUser);
 router.post('/users/follow/:user_id', authUtils.checkAuthenticated, validationUtils.validateIds, routerUtils.unimplementedRoute);
 

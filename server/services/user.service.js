@@ -10,7 +10,8 @@ const {
     DatabaseError,
     HashingError,
     WrongCredentialsError,
-    AlreadyExistsError
+    AlreadyExistsError,
+    ForbiddenError
 } = require('../utils/errors');
 
 
@@ -228,6 +229,21 @@ const checkPassword = async (password, user_id) => {
     }
 }
 
+const checkAdmin = async (email) => {
+    let user;
+    try {
+        user = await userDb.getUserByEmail(email);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+    if(!user) {
+        throw new NotFoundError();
+    }
+    if(!user.is_admin){
+        throw new ForbiddenError();
+    }
+}
+
 module.exports = {
     getUsers,
     getSelf,
@@ -241,5 +257,6 @@ module.exports = {
     postRegisterUser,
     postLoginUser,
     postLogoutUser,
-    putUpdateUser
+    putUpdateUser,
+    checkAdmin
 }

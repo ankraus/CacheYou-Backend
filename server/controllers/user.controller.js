@@ -137,6 +137,15 @@ const postLoginUser = async (req, res, next) => {
     }
 }
 
+const postLoginAdmin = async (req, res, next) => {
+    try {
+        await userService.checkAdmin(req.body.email);
+        await postLoginUser(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const postLogoutUser = async (req, res, next) => {
     try {
         await userService.postLogoutUser(req.user_id);
@@ -175,6 +184,7 @@ module.exports = {
     getUserCollections,
     postRegisterUser,
     postLoginUser,
+    postLoginAdmin,
     postLogoutUser,
     getIsLoggedIn,
     putUpdateUser

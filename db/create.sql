@@ -189,11 +189,11 @@ CREATE OR REPLACE VIEW v_user_collected AS
     GROUP BY u.user_id, u.username, c.cache_id, c.public, c.longitude, c.latitude, c.title, ci.image_id, col.liked, col.created_at;
 
 CREATE OR REPLACE VIEW v_users_extended AS
-    SELECT user_id, email, username, image_id, terms_of_use, privacy_policy, license, array_agg(t.name) AS interests 
+    SELECT user_id, email, username, image_id, terms_of_use, privacy_policy, license, is_admin, array_agg(t.name) AS interests 
     FROM users 
     LEFT JOIN users_interests USING(user_id) 
     LEFT JOIN tags t USING(tag_id) 
-    GROUP BY user_id, email, username, image_id, terms_of_use, privacy_policy, license;
+    GROUP BY user_id, email, username, image_id, terms_of_use, privacy_policy, license, is_admin;
 
 CREATE OR REPLACE VIEW v_users AS
     SELECT user_id, username, image_id, array_agg(t.name) AS interests 
