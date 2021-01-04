@@ -194,10 +194,13 @@ OK
 ### Nutzerdaten ändern
 **Route**: `/users/current`  
 **Methode**: `PUT`  
-**Anfrage**: *Mindestens einer der drei Parameter muss übergeben werden.*
+**Anfrage**:  
+*Mindestens einer der Parameter muss übergeben werden.*  
+*Wenn das Passwort geändert werden soll, muss das aktuelle Passwort ebenfalls übergeben werden*
 ```json
 {
   "email":"testuser@example.com",
+  "current_password": "testuser987",
   "password":"testuser123567",
   "username": "testuser_123",
   "interests": [
