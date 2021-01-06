@@ -1,4 +1,5 @@
 const db = require('./db_connection')
+const userDb = require('./user.db')
 const {
     BadRequestError,
     NotFoundError,
@@ -384,7 +385,8 @@ const authorizedUserForComment = async (comment_id, user_id) => {
         FROM comments
         WHERE comment_id = $1`
         , [comment_id]);
-    if (authorizedUserId.rows[0].user_id != user_id){
+    const userIsAdmin = await userDb.getUserIsAdmin(user_id);
+    if (!(userIsAdmin || authorizedUserId.rows[0].user_id == user_id)){
         throw new ForbiddenError('User isnt the creator of the this Comment');
     }
 }
@@ -395,7 +397,8 @@ const authorizedUserForCache = async (cache_id, user_id) => {
         FROM caches
         WHERE cache_id = $1::uuid`
         , [cache_id]);
-    if (!authorizedUserId.rows[0] || authorizedUserId.rows[0].user_id != user_id){
+    const userIsAdmin = await userDb.getUserIsAdmin(user_id);
+    if (!(userIsAdmin || authorizedUserId.rows[0].user_id == user_id)){
         throw new ForbiddenError('User isnt the creator of the this Cache');
     }
 }

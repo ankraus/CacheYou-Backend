@@ -1,9 +1,10 @@
 const {
-    imageDb
+    imageDb, userDb
 } = require('../db');
 const {
     DatabaseError,
-    NotFoundError
+    NotFoundError,
+    ForbiddenError
 } = require('../utils/errors');
 const crypto = require('crypto')
 const sharp = require('sharp');
@@ -52,10 +53,21 @@ const postCacheImage = async (imageData, mimeType, userId, cacheId, isCoverImage
     }
 }
 
-const deleteImage = async (imageId) => {
+const deleteImage = async (imageId, user_id) => {
+    let imageCreatorId;
+    let userIsAdmin;
+    try {
+        imageCreatorId = (await imageDb.getImageInfo(imageId)).user_id;
+        userIsAdmin = await userDb.getUserIsAdmin(user_id);
+    } catch (error) {
+        throw new DatabaseError(error.message);
+    }
+    if(!(userIsAdmin || imageCreatorId == user_id)){
+        throw new ForbiddenError();
+    }
     try {
         await imageDb.deleteImage(imageId);
-    } catch (error) {
+    } catch (error) {        
         throw new DatabaseError(error.message);
     }
 }
