@@ -131,6 +131,8 @@ const getCacheById = async (cache_id, user_id) => {
             username: db_row.username,
             user_id: db_row.user_id
         },
+        like_count: db_row.like_count,
+        comment_count: db_row.comment_count,
         public: db_row.public,
         created_at: db_row.created_at
     }

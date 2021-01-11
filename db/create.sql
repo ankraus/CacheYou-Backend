@@ -144,14 +144,28 @@ CREATE OR REPLACE VIEW v_caches AS
     GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, i.image_id;
 
 CREATE OR REPLACE VIEW v_caches_image_array AS 
-    SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, array_agg(DISTINCT t.name) AS tags, array_agg(DISTINCT i.image_id) AS image_ids
+    WITH comment_counts AS (
+	SELECT c.cache_id, COUNT(co.comment_id) AS comment_count
+	FROM caches c
+	LEFT JOIN comments co USING (cache_id)
+	GROUP BY c.cache_id
+	), like_counts AS (
+	SELECT cache_id, COUNT(liked) AS like_count
+	FROM caches
+	LEFT JOIN collected USING (cache_id)
+	GROUP BY cache_id
+	)
+    SELECT c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, like_count, comment_count, array_agg(DISTINCT t.name) AS tags, array_agg(DISTINCT i.image_id) AS image_ids
     FROM caches c
     JOIN caches_tags ct USING (cache_id)
     JOIN users u USING (user_id)
     JOIN tags t USING (tag_id)
+    JOIN comment_counts USING (cache_id)
+    JOIN like_counts USING (cache_id)
     LEFT JOIN caches_images ci USING (cache_id)
     LEFT JOIN images i ON ci.image_id = i.image_id
-    GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at;
+    GROUP BY c.cache_id, c.public, c.latitude, c.longitude, c.title, c.description, c.link, u.username, u.user_id, c.created_at, like_count, comment_count;
+
 
 CREATE OR REPLACE VIEW v_caches_comments AS 
     SELECT c.comment_id, c.content, c.created_at, ca.cache_id, u.username, u.user_id, u.image_id 
