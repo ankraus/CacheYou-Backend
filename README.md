@@ -515,7 +515,8 @@ Radius und Distanz sind in Metern angegeben.
       "comment_id": "2b267676-dd66-403b-b4c9-757f8ce54281",
       "user": {
         "username": "TestyMcTestersson",
-        "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109"
+        "user_id": "05200483-43b9-4fe4-b96f-1cc173bb8109",
+        "image_id": "166fc680-8dc3-4707-8f49-dfd223e58e2c" 
       },
       "content": "Ganz schön groß, dieses Gemälde!",
       "created_at": "2020-11-26T20:26:42.986Z"
