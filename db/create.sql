@@ -102,8 +102,8 @@ CREATE TABLE IF NOT EXISTS caches_images (
 );
 
 CREATE TABLE IF NOT EXISTS collected (
-    user_id uuid REFERENCES users(user_id) ON DELETE SET NULL,
-    cache_id uuid REFERENCES caches(cache_id) ON DELETE SET NULL,
+    user_id uuid REFERENCES users(user_id) ON DELETE CASCADE,
+    cache_id uuid REFERENCES caches(cache_id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     liked BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY (user_id, cache_id)
