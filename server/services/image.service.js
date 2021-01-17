@@ -81,18 +81,29 @@ const generateResizedImages = async (imageData) => {
     for(let size in imageSizes) {
         resizedImages[size] = await resizeImage(imageData, imageSizes[size]);
     }
-    resizedImages['full'] = imageData;
+    resizedImages['full'] = correctImageOrientation(imageData);
     return resizedImages;
 }
 
 const resizeImage = async (imageData, size) => {
     let resizedImage;
     await sharp(imageData)
+        .rotate()
         .resize(...size)
         .toBuffer()
         .then(data => resizedImage = data)
         .catch(err => console.log(err));
     return resizedImage;
+}
+
+const correctImageOrientation = async (imageData) => {
+    let correctedImage;
+    await sharp(imageData)
+        .rotate()
+        .toBuffer()
+        .then(data => correctedImage = data)
+        .catch(err => console.log(err));
+    return correctedImage;
 }
 
 module.exports = {
