@@ -52,7 +52,8 @@ const postCacheImage = async (req, res, next) => {
 const deleteImage = async (req, res, next) => {
     try {
         const imageId = req.params.image_id;
-        await imageService.deleteImage(imageId);
+        const userId = req.user_id;
+        await imageService.deleteImage(imageId, userId);
         res.sendStatus(200);
     } catch (error) {
         next(error);
